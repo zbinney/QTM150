@@ -1,0 +1,232 @@
+---
+title: "Tutorial 2.1 - Working Directories; Data Import and Export"
+
+author: "Zachary Binney, PhD"
+date: "September 2020"
+
+output: 
+  learnr::tutorial:
+    css: css/zb_style.css
+    progressive: TRUE
+runtime: shiny_prerendered
+description: "Import_Export"
+---
+
+## Intro and Setup
+
+We just spent several weeks doing (what I hope was) some of the most fun stuff in R - data viz. We sort of started with our dessert. Now, unfortunately, we have to take a week for some vegetables. But then we'll get back into entrees for a couple weeks - then, sadly, some more vegetables, and then close out with some side dishes. OK, I'm really torturing this metaphor but I'm writing this just before lunch. You get the point. Moving on.
+
+We need to load 4 packages today. You'll likely need to install a couple of them first, but relax - remember, `p_load()` should take care of that for you. **Just remember to run this code in your own script before proceeding.**
+
+```{r setup}
+pacman::p_load(tidyverse, readxl, data.table, rstudioapi)
+
+```
+
+
+## Working Directories
+
+Before we get into the import and export business...
+
+```{r, out.width = "100%", fig.cap = "*Like these wise fellows!*"}
+knitr::include_graphics("./images/import_export_biz.jpg")
+```
+
+...do you have a moment to talk about **working directories**? Well whether you do or not that's what we're about to do.
+
+### Finding Your **Working Directory**
+
+Whenever you open RStudio it sets a **working directory**, which is the place where it's going to look for (or in the case of exporting, try to write) any files by default, *unless you specify otherwise*. You can see where it is using the `getwd()` command. Try it in your own script. 
+
+
+```{r getwd, eval = FALSE}
+#Find out what your working directory is
+getwd()
+
+```
+
+### Setting or Changing Your Working Directory
+
+I *typically* want my **working directory** to be either: 
+
+1. The folder where the script I'm working in is located, OR
+
+2. If it's part of an R Project (we haven't learned about those yet, but [here's an intro from R4DS](https://r4ds.had.co.nz/workflow-projects.html)), the parent directory for the project itself
+
+But what if you use `getwd()` and notice R/RStudio has chosen a different working directory for some reason? 
+
+There are two ways to set the **working directory** to be the location of the file you're working in. I usually like to include this code in the top of my files:
+
+```{r here, eval = FALSE}
+#Set the working directory to be the location of the script 
+#or R Markdown document you're working in
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
+```
+
+Alternatively, more recent versions of RStudio allow you to do this manually by going to the top menu and clicking `Session > Set Working Directory... > To Source File Location`.
+
+```{r, out.width = "100%", fig.cap = "*How to set your working directory to the script location manually.*"}
+knitr::include_graphics("./images/setting_wd_manually.jpg")
+```
+
+### How a Working Directory...Uh, Works
+
+As noted above, the **working directory** is the default place where R and RStudio will look for or try to write files to. For example, go to Canvas and download the file `obesity-diabetes.csv` from the Datasets Module. This is a simple data frame that contains the prevalence of diabetes and obesity in all 50 states for 2017. *Do not move it from the Downloads folder.*
+
+Now try and import the file using this code in your own script (we'll discuss what this does more in a moment):
+
+```{r import_fail, eval = FALSE}
+diabobes <- read_csv("./obesity-diabetes.csv")
+
+```
+
+I bet you got an error, didn't you? Something about how `obesity-diabetes.csv` doesn't exist in your current working directory? That's because R looked for the CSV file by default in your **working directory** - it had no idea to look in downloads instead. To fix this you can either:
+
+1. Specify the actual location of the file: `diabobes <- read_csv("[FILE PATH TO DOWNLOADS FOLDER]/obesity-diabetes.csv")`
+
+2. NOT RECOMMENDED: Change your working directory to match the location of the file
+
+3. (USUALLY) THE BEST SOLUTION: Save the CSV file to your working directory *or* a sub-directory thereof.
+
+Save the CSV to the folder of your working directory, then re-run the import code above. Did it seem to successfully import the data this time?
+
+
+
+
+#### What's With the Dot?
+
+Note in the above code that little `./` that begins the file path. The `.` is a stand-in for the working directory. So that code really tells R "go to the working directory", then "look for the file named `obesity-diabetes.csv` there.
+
+
+
+
+#### Accessing Sub-Folders in Your Working Directory
+
+Often your working directory will have sub-folders (also known as sub-directories) you'll want to access - for example, a folder just for data.
+
+In your working directory, create a new folder called `datasets`. Save `diabetes-obesity.csv` there. Then try this code to import it:
+
+```{r import_work_sub, eval = FALSE}
+diabobes <- read_csv("./datasets/obesity-diabetes.csv")
+
+```
+
+This should work. It tells R to go to your working directory - indicated by the `.` - then the folder `datasets`, then search *there* for `obesity-diabetes.csv`.
+
+
+
+#### Accessing Parent Folders
+
+Occasionally you'll want to move "up" (to a "parent" directory) rather than "down" (to a "child" sub-directory) of your working directory. You can move up one level by starting the file path with `..` - try moving the dataset to the folder one step *above* your working directory, then use this code to import it:
+
+```{r import_work_parent, eval = FALSE}
+diabobes <- read_csv("../obesity-diabetes.csv")
+
+```
+
+You can also combine these tricks to move up, then down. If you need to take one step "up" in your file structure, then access another sub-directory, just start with `..` and then specify the sub-directory you need. Note you can specify as many sub-directory steps as you want, just like with a normal file path.
+
+## Data Import
+
+There are several ways you can get data into R to work on it:
+
+1. Data that's native to R (for example, `cars`) - we've already covered this
+
+2. Data that's included in a package (for example, `mpg` in `tidyverse` or `penguins` in `palmerpenguins`) - we've already covered this, too
+
+3. Importing so-called "**flat**" data files, most commonly comma-separated variable (`.csv`) or Excel (`.xls` or `.xlsx`) files - we'll cover this today, and it's what most of you will do most of the time
+
+4. Querying SQL or other "**relational**" databases straight from R - this is beyond the scope of this course
+
+5. Querying data from an **application programming interface (API)**, commonly in hierarchical `JSON` or `.xml` formats - this is *way* beyond the scope of this course
+
+If you have no idea what 4 and 5 mean, that's fine! We're not covering them. I'm just including them to be *explicit* about what we're not covering.
+
+### Importing a CSV
+
+The simplest way to do this is to use `readr::read_csv()` - `readr` is one of the packages loaded with the `tidyverse`. Save the diabetes and obesity CSV somewhere sensible, then try importing the CSV and assigning it to a **tibble** named `diabobes`. Be sure to change the working directory in your code if needed:
+
+```{r import_work, eval = FALSE}
+diabobes <- read_csv("./obesity-diabetes.csv")
+
+```
+```{r, out.width = "100%", fig.cap = "*A successful import.*"}
+knitr::include_graphics("./images/successful_import.png")
+```
+
+You should see the data frame appear in your **Environment** tab on the upper right, as well as a message like the above. This indicates R read the file, provides a list of the **columns/variables** it imported, and the data type it "**parsed**" (guessed and identified) each variable as. You've already learned a bit about these data types, and we'll discuss it more in a later tutorial, so no need to go into more detail now.
+
+### Importing an Excel File
+
+Sometimes you'll see data in Excel workbooks, especially with multiple tabs. Try downloading the dataset `obesity-diabetes-excel.xlsx` from Canvas, and save it in an appropriate location. Open it in Excel and take a look at the data in both tabs.
+
+Now say you wanted to import the data in the *second* tab. Here's where `readxl::read_excel()` comes in handy. To grab the data on any sheet simply use the `sheet = [SHEET NAME]` argument, like below:
+
+```{r import_xl, eval = FALSE}
+diabobes_trend <- read_excel("./obesity-diabetes-excel.xlsx", sheet = "diabobes_trends")
+
+```
+
+You can also specify the second sheet with `sheet = 2`, but this is more fragile. What if you later move this data to be the *third* sheet in the workbook? So my recommendation is just use sheet names. 
+
+Make sure the file isn't open in Excel when you try to import it or you'll get an error. To fix that, simply close the file in Excel. Curiously this isn't a problem when importing CSVs. Go figure.
+
+
+### Need for Speed? Turn to `fread`!
+
+If you have a REALLY big file, like a bunch of genomic data, sometimes `read_csv()` just isn't fast enough. In these situations I recommend the flexible and incredibly fast `data.table::fread()`. It works like this (make sure you load `data.table`!):
+
+```{r import_fast, eval = FALSE}
+diabobes <- fread("./obesity-diabetes.csv")
+
+```
+
+In 95% of cases you won't be able to detect any practical difference. But if your importing is taking a long time, try `fread()`.
+
+### Removing Files You No Longer Need
+
+Sometimes you'll want to remove (delete) files, like old or temporary data frames, you no longer need. It helps to have a less cluttered work environment and also can free up memory for other tasks. You do this with the `rm()` function. Just put the name of the object, or objects separated by commas, you want to get rid of.
+
+In your own script, try assigning a number to an object called `x`, then remove (delete) that object.
+
+
+
+
+## Data Export
+
+### Exporting Data to a CSV
+
+Instead of **reading** data in, let's **write** it out to a file. To export the diabetes and obesity data to a CSV file called `diabetes-obesity-exported.csv`, use code like this:
+
+```{r export, eval = FALSE}
+write_csv(diabobes, "./obesity-diabetes-exported.csv")
+
+```
+
+You first specify the name of the object you want to export, then the location you want to save it and the name you want to give the exported file. Remember the `.` once again refers to your working directory.
+
+### Exporting Data to Excel
+
+There are ways to export data directly to an Excel workbook, but I'd *usually* recommend against this. So I won't cover it in detail here. But if you want more information, [here's a basic intro](http://www.sthda.com/english/wiki/writing-data-from-r-to-excel-files-xls-xlsx). It works more or less like reading from Excel files, but you need a different package. 
+
+### Exporting Plots
+
+The other main thing you'll often want to export are plots. We already covered the basics of that in Tutorial 1.3 and so won't rehash it here. 
+
+Just note that rather than specifying the full file path as we did in 1.3 before you knew what **working directories** were, you can leverage your working directory to shorten that considerably. There's nothing special about specifying the paths for plots or images vs. data files.
+
+### Exporting Taking So Long It's a Fright? Turn to `fwrite`!
+
+If you have a REALLY big file, like a bunch of genomic data, sometimes `write_csv()` just isn't fast enough. In these situations I recommend the flexible and incredibly fast `data.table::fwrite()`. It works like this (make sure you load `data.table`!):
+
+```{r export_fast, eval = FALSE}
+fwrite(diabobes, "./obesity-diabetes-exported.csv")
+
+```
+
+In 95% of cases you won't be able to detect any practical difference. But if your exporting is taking a long time, try `fwrite()`. This has saved me a *ton* of time in the past.
+
+## Summary
+
+This tutorial was a bit boring, but we needed to cover setting working directories and importing and exporting (some common types of) data. Next up is learning how to manipulate data frames like a deity.

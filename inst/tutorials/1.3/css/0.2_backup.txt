@@ -1,0 +1,436 @@
+---
+title: "Tutorial 0.2 - Intro to R, Rstudio and Rmarkdown"
+
+author: "Zachary Binney, PhD"
+date: "June 2020"
+
+output: 
+  learnr::tutorial:
+    css: css/zb_style.css
+runtime: shiny_prerendered
+description: "Intro to R, Rstudio and Rmarkdown"
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(fig.height=4)
+```
+
+## R vs. RStudio vs. RMarkdown
+
+There are (at least) 3 confusingly named things in this course we should tease out right from the start:
+
+* R is the actual programming language we'll be using. It was developed specifically for data analysis and statistics. Other languages you may be familiar with, like C or Java, are more "general purpose" languages that do a broader set of computer-y things but aren't as specialized or easy to work with for data analysis and statistics.
+
+* RStudio is an interface for using R. It's made by a company called...you guessed it, RStudio, that also does a lot of education and promotion around the R language. It makes programming in R much more pleasant but isn't technically *necessary* to program in R.
+
+* RMarkdown. This is probably the most confusing of the three. It's what I used to produce this document. It's a way of using a language called "Markdown" alongside R to create pretty reports, presentations, and other documents that interweave your code, graphics, and explanatory text. It's also how you will use to submit your homework.
+
+  + You can just write R code with written comments in an R "script" (a file of code that ends ".R"). But RMarkdown creates a ".Rmd" file that lets you write and format (e.g. bolding and italicizing and bullets) text to explain your commented code and also show its output, and then share that as a website (HTML output), PDF document, or many other options.
+  
+Some analogies may help. Let's go to our first interactive question of the course!
+
+
+```{r r-analogies, echo=FALSE}
+  question("Which of the following might make for a good analogy for R, RStudio, and RMarkdown?",
+    answer("Cars", message = "Sorry, try again!"),
+    answer("Video Games", message = "Get off the couch and try again."),
+    answer("Movies", correct = TRUE, message = "That'll work! Keep reading below."),
+    answer("Taylor Swift", message = "I wish this were correct, but try again."),
+    type = "learnr_radio",
+    allow_retry = TRUE)
+```
+
+
+&nbsp;  
+&nbsp;  
+&nbsp;  
+&nbsp;  
+&nbsp;  
+&nbsp;  
+&nbsp;  
+&nbsp;  
+&nbsp;  
+&nbsp;  
+&nbsp;  
+&nbsp;  
+&nbsp;  
+&nbsp; 
+
+<div class="imggroup">
+ <figure>
+  <img src="/images/film_strip.jpg" alt = "A film strip" style="width:100%">
+  <figcaption> R </figcaption>
+  </figure>
+  
+  <figure>
+  <img src="/images/film_projector.jpg" alt = "A film projector" style="width:100%">
+  <figcaption> RStudio </figcaption>
+  </figure>
+  
+  <figure>
+  <img src="/images/film_commentary.jpg" alt = "A DVD with commentary track" style="width:100%">
+  <figcaption> RMarkdown </figcaption>
+  </figure>
+</div>
+
+
+
+
+<br clear="left">  
+ 
+R itself (or more specifically, R code you write in the default R interface) is like a film strip - it has the movie (code) on it, and by sliding the filmstrip past your eyes you could technically sort of watch the movie, but it would be really unpleasant.
+
+RStudio, then, is a prettier interface to work with and watch the movie - a projecter you put the movie (code) in and display and edit using a beautiful, easy-to-watch screen.
+
+RMarkdown is an alternative way of presenting your movie (code). It allows you to add more depth to your movie (code) by adding in extra information like a narrative discussion of what you did and why, or the output of the code. The movie (code) is still there, but now it has a bunch of extra features like what might come on a DVD. It allows an even richer movie-watching experience.
+  
+
+
+
+
+## What is R code?
+
+
+- A piece of R code is some text asking R to do something.
+
+- Below are pieces of code that R understands, with
+
+    - R code in box with grey background, and 
+    
+    - R's answer in box with white background (relevant part of R's answer is after "## [1]")
+
+- Basic arithmetic
+
+```{r}
+2+7
+```
+
+- Computing the value of some functions
+
+```{r}
+sum(1,2,3,4,5)
+```
+
+
+- Plotting vectors
+
+```{r fig.width = 4, fig.height = 5}
+plot(c(1,4,9,16,25,36,49))
+```
+
+*Complete DataCamp assignment "Intro to basics" (extra credit) to learn more about some of the queries that R understands*
+
+## Where can I run R code?
+
+### Option 1: directly in the Console
+
+  <figure>
+  <img src="Rstudio.jpg" width="500px">
+  <figcaption> When open Rstudio for first time, Console is tall window on the left
+  </figcaption>
+  </figure>
+
+- Just type your R code in the Console after the `>` symbol and hit `enter/return`.
+
+<div class="you">
+ Try asking R to perform some basic arithmetic operations through the Console.
+</div>
+
+- Console is great for fiddling around.
+
+- But not for more ambitious projects and keeping track of what you're doing.
+
+### Option 2: Send code to console from R script
+
+- In Rstudio, click on the `File` menu, then `New File`, then `R Script`.
+
+- R studio should now look more like this:
+
+ <figure>
+  <img src="Rstudio4-comments.jpg" width="500px">
+  <figcaption> Rstudio after opening a script
+  </figcaption>
+  </figure>
+
+- You can now write the "source" code you *plan* on running in the source window
+
+- Comment your code with plain English starting comment lines with `#`, for  example
+
+ <figure>
+  <img src="R_script.jpg" width="300px">
+  </figure>
+
+- Then send source code in your script to console in one of three ways:
+
+    1. Copy code from the Editor into the Console.
+
+    2. Highlight the code you want to run (with your mouse or by holding Shift), then use the CommandâReturn (Mac) or Ctrl-Return (Windows) shortcut.
+
+    3. Place the cursor on single line you want to run, then use CommandâReturn shortcut to run just that line.
+
+<figure>
+  <img src="run.jpg" width="300px">
+  <figcaption> Most of the time, you'll run code from script window using method 2.
+  </figcaption>
+  </figure>
+
+<div class="you">
+ Pre-type some R code in an R-script and run it through the three above methods.
+
+Maybe try some new code this time, like computing a sum of numbers, e.g., `sum(1,2,3,4,5)`, or computing the sum of vectors, e.g., `c(1,2,3) + c(4,5,6)`
+</div>
+
+- R scripts are great for background machinery when projects get involved
+
+- To communicate results on the front-end, you need Rmarkdown
+
+### Option 3 (most common in this class): run code from Rmarkdown document
+
+- This note is output of an R Markdown
+
+- To create new Rmarkdown, click `File` menu in Rstudio, then `New file`, then `Rmarkdown...`
+
+- A window pops-up: click `OK`. Rstudio should now look like this
+
+<figure>
+  <img src="Markdown.jpg" width="500px">
+  <figcaption> RStudio after you create new Rmarkdown document
+  </figcaption>
+  </figure>
+
+#### Why Rmarkdown?
+
+- As the default text explains, an Rmarkdown allows you to write text that can  then be exported into different formats (HTML, PDF, WORD)
+
+- Throughout the text, you can weave in chunks of R code.
+
+- Simply click on the `Insert` menu then `R`, or use a shortcut (`option` + `control` + `i` on Mac).
+
+<figure>
+  <img src="Mark-ex.jpg" width="350px">
+  <figcaption> Example of RMarkdown document with text and a chunk of R code
+  </figcaption>
+  </figure>
+
+#### Running R chunks in Rmarkdown
+
+-  You can run the code in a chunk by clicking on the green triangle at the top-right of the chunk (or using methods 2. and 3. in Option 2 above)
+
+- R's output appears right under the chunk in the RMarkdown editor 
+
+<figure>
+  <img src="Mark-ex-run.jpg" width="350px">
+  <figcaption> Example of RMarkdown document with text and a chunk of R code
+  </figcaption>
+  </figure>
+
+- You can also "knit" the whole document, which exports the text *and* the ran code chunks into a portable format like HTML  (which is the default).
+
+- After clicking on the knit button (or shortcut therefor, e.g., `command` + `shift` + `k` on Mac) the "knitted" document should appear in a new window.
+
+<figure>
+  <img src="Mark-ex-knit.jpg" width="450px">
+  <figcaption> Rstudio right after you knitted and RMarkdown
+  </figcaption>
+  </figure>
+
+<div class="you">
+ Try knitting your first HTML document using R Markdown. 
+
+Include a phrase and an R chunk, for example, a basic arithmetic operation, or even a plot (e.g., `plot(c(1,2,3,4,6)`).
+</div>
+
+#### A little more about RMarkdown: text formatting
+
+- Many ways to format the text knitted version of an RMardown, e.g.,
+
+    - Text surrounded by stars will be italicized in knitted document
+  
+    - Text surrounded by pairs of stars will be bold in knitted document
+  
+    - ...
+  
+  - See RMarkdown cheat sheet (https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf) and DataCamp assignment (extra credit) for more
+
+<div class="you">
+ Knit your first HTML document containing bold text.
+</div>
+
+#### A little more about RMarkdown: the YAML header
+
+- The YAML header of an Rmarkdown is the top section (follows so-called "YAML" format).
+
+- Looks like this in default document:
+
+```{r eval=F}
+---
+title: "Untitled"
+output: html_document
+---
+```
+
+- What follows `title:` determines title of knitted document.
+
+- What follows `output:` determines default format of knitted document when click on "knit" button.
+
+- You can change the title and many things to the header, such as an author name
+
+```{r eval=F}
+---
+title: "A new title"
+author: "My name"
+output: html_document
+---
+```
+
+- Again, see RMarkdown cheat sheet (https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf) and DataCamp assignment (extra credit) for more things you can customize through header
+
+<div class="you">
+ Change the title and add an author name to your HTML document.
+</div>
+
+#### A little more about RMarkdown: chunk option
+
+- The first line of a *default* R chunk is ` ```{r}`
+
+- This first line can be used to add options about the way knitting should process the chunk.
+
+- For example, chunks starting with
+  
+    - chunks starting with ` ```{r, include=F}` are skipped altogether by knitting process
+    
+    - with ` ```{r, echo=F}`, final document include the *output* of the code in the chunk, but *not* the source code in the chunk itself
+    
+    - ` ```{r, eval=F}` does the opposite: it includes the source code in the chunk itself, but not the *output* of the code in the chunk
+    
+    - ...
+
+
+- Once more, see RMarkdown cheat sheet (https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf) and DataCamp assignment (extra credit) for more chunk options
+
+<div class="you">
+ Include your own code chunk in an R Markdown and knit it into an HTML without the chunk showing at all.
+</div>
+
+Adding functionalities: Base-R and packages
+---------------------------------------------
+
+
+### Base-R
+
+- Things R knows right off the bat (before load any package or create any object) called **base-R**.
+
+- For example, `pi` is part of base-R
+
+```{r}
+pi
+```
+
+- But `e` is not
+
+```{r error=T}
+e
+```
+<div class="you">
+ Can you find something else that R does not know?
+
+*Harder*: Can you find something that R knows but has a weird understanding of (try `pie` for an example).
+</div>
+
+### Adding objects yourself
+
+- You can create new objects using `<-`
+
+```{r eval=F}
+<Name of new object> <- <What new object is>
+```
+
+-  For example
+
+```{r error=T}
+love_this_class
+```
+
+- But
+
+```{r}
+love_this_class <- "Yeah, I know, this class is great"
+love_this_class
+```
+
+<div class="you">
+ Add your own object to R and ask R to return its value
+</div>
+
+### Adding objects with packages
+
+- Often need more than Base-R alone, and don't want to add it ourselves
+
+- Packages allow to add objects created by others
+
+- Packages are like light bulbs. You need to: 
+
+    - install them only once, 
+    
+    - but turn them on every time you use them
+
+- Installing a package
+
+```{r eval=F}
+install.packages("<NAME OF PACKAGE>")  # ***in the Console, DO NOT KNIT***
+```
+
+- Turn package on (i.e., load it)
+
+```{r eval=F}
+library("<NAME OF PACKAGE>")   # must knit if used later in R Markdown
+```
+
+<figure>
+  <img src="packagebulb.png" width="350px">
+  <figcaption> Installing v. loading a package
+  </figcaption>
+  </figure>
+
+
+### Example: Installing and loading the tidyverse
+
+- One package we'll use over and over is the "tidyverse" package
+
+- For example, the "tidyverse" package contains a function `qplot()` we'll learn about soon, 
+but that Base-R does not know.
+
+<div class="you">
+ Try running `qplot(x = c(1,2,3,4), y = c(2,1,4,3))` *before* installing and loading the tidyverse package and see how R responds
+</div>
+
+```{r error=T}
+qplot(x = c(1,2,3,4), y = c(2,1,4,3))
+```
+
+<div class="you">
+ Instal and load the tidyverse package
+</div>
+
+- Installing the tidyverse package
+
+```{r eval=F}
+install.packages("tidyverse")  # ***in the Console, DO NOT EVALUATE WHEN KNIT***
+```
+
+- Turn package on
+
+```{r}
+library("tidyverse")   # must evaluate when knitting if used later in R Markdown
+```
+
+- Among other new things R now knows is the `qplot()` function
+
+<div class="you">
+ Try again to run `qplot(x = c(1,2,3,4), y = c(2,1,4,3))` now that you have installed and loaded the tidyverse package and see how R responds
+</div>
+
+```{r error=T}
+qplot(x = c(1,2,3,4), y = c(2,1,4,3))
+```

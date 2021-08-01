@@ -1,0 +1,640 @@
+---
+title: "Tutorial 4.2 - Data Types II (Data Frames, Tibbles, and Factors)"
+
+author: "Zachary Binney, PhD"
+date: "October 2020"
+
+output: 
+  learnr::tutorial:
+    css: css/zb_style.css
+    progressive: TRUE
+runtime: shiny_prerendered
+description: "Data Types II"
+---
+
+```{r hidden, include = FALSE}
+pacman::p_load(learnr)
+
+```
+
+
+## Intro and Setup
+
+Today we build upon our previous tutorial - which covered **vectors** and **lists** - to learn about the underlying structure of **data frames/tibbles**. We'll also get into much more depth on **factors**, which we'd discussed superficially before because we needed knowledge of vectors before diving deeper.
+
+Once again we don't need much from packages today - just `lubridate` for dates and the `tidyverse` to create tables and help us deal with factors (through the tidyverse's `**forcats**` package - which is loaded along with many others from the single command `p_load(tidyverse)`). **Just remember to run this code in your own script before proceeding.**
+
+```{r setup, message = FALSE}
+pacman::p_load(tidyverse, lubridate)
+
+```
+
+
+
+## Augmented Vectors
+
+At this point you might be thinking, "OK, we've seen vectors and lists, but they don't look anything like the **data frames** and **tibbles** we've been working with. I'm so confused." Fret not, everyone! We've just been building up to it. Data frames and tibbles are really just vectors and lists under the hood. 
+
+To understand how we need to talk about **augmented vectors** - which are just vectors with some additional **attributes**.
+
+### Attributes
+
+**Attributes** are additional **metadata** (that is, information) that's attached to a vector or list that alters its behavior. You can always check an object's attributes with `attributes()`. 
+
+There are 3 main types we need to learn, and you've actually already learned one:
+
+#### 1. Names
+
+These allow you to name elements of a vector (SEE Tutorial 4.1)
+
+#### 2. Dimensions
+
+**Dimensions**, or **dims**, turn a vector into a **matrix/array**.
+
+**Vectors** by default only have a length - but you can also specify a height via dimension attributes.
+
+```{r dims, exercise = TRUE}
+# A vector
+nums <- c(1:10)
+
+  # Check its attributes
+  attributes(nums) # No attributes (beyond being a vector, which doesn't show here)
+
+# A matrix with dimension attributes
+num_mat <- matrix(c(1:10), ncol = 5, nrow = 2)
+
+  #Check its attributes
+  attributes(num_mat) #This now has two dimensions: 2 (rows), and 5 (columns), or 2 x 5
+  
+  #Note this matrix is still a vector!
+  is.numeric(num_mat)
+  is.atomic(num_mat)
+  is.list(num_mat) # And not a list
+```
+
+#### 3. Classes
+
+These are used to specify how objects like vectors and data frames interact with various functions in the S3 object oriented system. Do not worry about this right now beyond being able to recognize what a **class** is.
+
+Here's an analogy that may help: let's say there's a function for humans called `eat()`. We can eat various things but not other things. Consider two objects, like vectors: `rock` and `rice`. 
+
+The object `rock` is not food - that is, it lacks an **attribute** that makes it food. So if I, a human, tried to run the function `eat(rock)`, the "function" would likely break and throw an error along the lines of `Hey idiot, you can't eat a rock.` The same thing happens in R if you try to feed a function an object type it isn't expecting and can't deal with - for example, feeding a **vector** to `select()`. Try eating a rock below:
+
+```{r eat_rock, exercise = TRUE}
+#Eat a rock
+x <- c(1:10)
+
+x %>% select(everything())
+```
+But the object `rice` *does* have the food **attribute**. So when our body encounters it and we run `eat(rice)`, the function `eat()` works. Try eating rice by feeding a **tibble** to `select()`:
+
+```{r eat_rice, exercise = TRUE}
+#Eat rice
+midwest
+
+midwest %>% select(everything())
+```
+
+Often functions can take multiple types of input but may do different things depending on what the **class** of that input is. For example, `print()`, `str()`, and `as.Date()` will try to do different things depending on whether you feed it a vector or list, and what `typeof` vector or list it is.
+
+### Types of Augmented Vectors
+
+There are also 3 main types of augmented vectors we need to cover. 
+
+#### Dates and Date-Times
+
+We're not going to cover these in detail here since we get into them more in QTM 151, but here's a brief overview. You can look to [Chapter 16 of *R for Data Science* for more.](https://r4ds.had.co.nz/dates-and-times.html)
+
+R stores **dates** as an integer number of days since January 1, 1970. Why? Don't ask.
+
+R stores **date-times** as an integer number of *seconds* since midnight on January 1, 1970.
+
+For example, here's how R stores my birthday. We use `as.Date()` to create a date so R doesn't simply store it as a character string:
+
+```{r date, exercise = TRUE}
+# My birthdate
+bday <- as.Date("1986-08-29")
+
+  #Print it - it looks like a character string, doesn't it?
+  bday
+
+  # Check its type
+  typeof(bday) # But R tells us it's numeric (specifically, a double)! What!?
+  
+  # Check its attributes
+  attributes(bday) # Here R tells us it has the class attribute "Date", which explains why it prints as it does
+  
+  #Here's how we print its underlying numeric value
+  unclass(bday) # I was born 6,084 days after January 1, 1970
+```
+
+And here's how R stores my (approximate, I don't remember exactly) birth time:
+
+```{r datetime, exercise = TRUE}
+# My birthdate and time
+bday <- ymd_hms("1986-08-29 10:19:52 AM") #ymd_hms tells R we're giving it data in the order Year, Month, Day, Hours, Minutes, Seconds
+
+  #Print it - it looks like a character string, doesn't it?
+  bday
+
+  # Check its type
+  typeof(bday) # But R tells us it's numeric (specifically, a double)! What!?
+  
+  # Check its attributes
+  attributes(bday) # Here R tells us it has the class attributes "POSIXCt" and "POSIXt", which indicate date-times
+  
+  #Here's how we print its underlying numeric value
+  unclass(bday) # I was born 525,694,792 seconds after midnight on January 1, 1970
+```
+R only knows how to deal with these as dates and date-times because of attributes - otherwise it would treat these as character vectors!
+
+#### Data Frames and Tibbles
+
+We're going to cover these in their own section shortly.
+
+#### Factors
+
+Same.
+
+Speaking of...
+
+## Data Frames and Tibbles
+
+**Data frames/tibbles** are actually augmented lists. More specifically, they're lists with:
+
+* 3 new class attributes: `tbl`, `tbl_df`, and `data.frame`
+* 2 new name attributes: 
+
+    - `names` for column (variable) names 
+    - `row.names` to identify observation numbers
+
+Let's take a look at the `mpg` tibble:
+
+```{r tbl, exercise = TRUE}
+# Our old friend mpg
+mpg
+
+  # Under the hood, it's a list
+  typeof(mpg)
+  
+    #What's the first "element" of the list?
+    mpg[[1]]
+    
+    #What about the third "element"?
+    mpg[[3]]
+
+  # Check its type
+  typeof(traffic_light) # But R tells us it's an integer! What!?
+  
+  # Check its attributes
+  attributes(mpg) # Here R tells us it has the 3 classes we expect
+                  # names, which lists the column/variable names
+                  # and row.names, which lists observation numbers
+```
+Let's orient you to what we're seeing above:
+
+The `mpg` tibble is a list. 
+
+Each element of that list is a column of the tibble - the first is `manufacturer`, the third is `displ` (engine size), and so on. Each of these elements/columns is a vector, and *all of these vectors must be of the same length* - the number of observations in the data frame/tibble! For example, the 3rd column (`displ`) is a double vector of engine sizes of length 234. 
+
+The i'th row is comprised of the i'th elements of each column/vector that comprises the data frame/tibble. Consider, for example, the third observation when we print the tibble: the 2008 Audi A4 2.0L. It's manufacturer is the 3rd element of the `manufacturer` column/vector, its engine size is the 3rd element of the `displ` column/vector, and so on.
+
+If this feels a bit confusing to you, that's OK. Just move on. Happily when actually interfacing with data frames/tibbles R feels much more like a spreadsheet program, so everything you need is fairly intuitive. The key conceptual thing to understand is that underneath everything, a data frame/tibble is actually just an augmented list of columns, where each column is a vector. So it's lists, vectors, and attributes all the way down, even in seemingly more complex structures!
+
+### Subsetting Data Frames and Tibbles
+
+How do you grab single rows, columns, or elements from a data frame/tibble?
+
+#### Getting single elements
+
+Say I want the value of the 5th column (`cyl`, or number of cylinders in the engine) for the 31st observation:
+
+```{r one_element, exercise = TRUE}
+# Give me the value from the 5th column of the 31st row
+mpg[[31,5]] # This will extract the element as a vector of length 1
+            # outside the context of a data frame
+
+mpg[31,5] # This will extract the element as a 1 x 1 data frame
+
+```
+The format here is always `[[ROW_NUMBER(S), COLUMN_NUMBER(S)]]`. If you leave either of these blank R returns *all* the columns or rows of the blank element. Speaking of which...
+
+#### Getting Single Rows
+
+Say you want just the 31st row of `mpg`:
+
+```{r one_row, exercise = TRUE}
+# Give me all columns of the 31st row
+mpg[31,]
+```
+##### **How Does `filter()` Really Work?**
+
+Here's a weird way to get the 1st row of `mpg`:
+
+```{r odd_rows_1, exercise = TRUE}
+# Give me the 1st row
+mpg[c(TRUE, rep(FALSE, nrow(mpg)-1)),]
+```
+Here's what this does:
+
+* `nrow(mpg)` returns 234, the number of observations in the data
+
+* `c(TRUE, rep(FALSE, nrow(mpg)-1))`, then, returns a logical vector of length 234, with 1 `TRUE` followed by 233 `FALSE`s
+
+* Finally, R interprets `mpg[c(TRUE, rep(FALSE, nrow(mpg)-1)),]` to say "return all columns from the rows marked `TRUE`, and drop those marked `FALSE`
+
+It turns out this is *exactly* how `filter()` works! Consider this code:
+
+```{r filt, exercise = TRUE}
+# This returns all cars with a 4-cylinder engine
+mpg %>% 
+  filter(cyl == 4)
+
+# So does this!
+mpg[mpg$cyl == 4,]
+
+  # To see why, run this:
+  mpg$cyl == 4
+```
+
+What `filter()` is doing is creating a logical vectors of `TRUE`s and `FALSE`s depending on the specified condition - whether `cyl == 4` - and then returning those where it's `TRUE`!
+
+#### Getting Single Columns
+
+Say you want the 5th column of `mpg`: `cyl`. You have a few different options here! They can return different kinds of objects, though.
+
+```{r one_column, exercise = TRUE}
+# We can use numbers to index...
+mpg[,5] # Returns a data frame with one column
+
+mpg[5] # Returns a data frame with one column
+
+  # This is essentially how select() works!
+  mpg %>% 
+    select(cyl) # Returns a data frame with one column
+
+# Or column names with this new subset operator, $
+mpg$cyl # Returns a vector
+
+```
+
+The `$` operator can also be useful for quickly creating a new column without `mutate()`. For example:
+
+```{r create_column, exercise = TRUE}
+# Create a new column called "count" that just counts observations (a repeat of row numbers, essentially)
+mpg$count <- c(1:nrow(mpg))
+
+  #Scroll over to the rightmost column to prove it
+  mpg
+```
+
+### A Deeper Dive on `mutate()`
+
+`mutate()` works by, essentially, extracting the columns you're asking R to perform operations on as vectors of equal length. Then it performs **vectorized** operations (SEE Tutorial 4.1) across columns to create a new column. Then, finally, it adds that vector onto the data frame as a new column. For example:
+
+```{r mut1, exercise = TRUE}
+# Calculate the difference between city and highway mileage for each car
+mpg %>% 
+  mutate(mile_diff = cty - hwy) %>% 
+  select(mile_diff, everything())
+```
+
+This basically subtracts each value of `hwy` from each corresponding value of `cty` and then tacks that resulting vector, which we've named `mile_diff`, back on to `mpg`.
+
+Not every function is vectorized, though. For example, you need a workaround if you want to calculate the mean city and highway mileage:
+
+```{r mut2, exercise = TRUE}
+# Mean highway and city mileage - works
+mpg %>% 
+  mutate(mile_diff = (cty+hwy)/2) %>% 
+  select(mile_diff, everything())
+
+# Mean highway and city mileage - broken
+mpg %>% 
+  mutate(mile_diff = mean(cty, hwy)) %>%
+  select(mile_diff, everything())
+
+```
+Addition, subtraction, multiplication, and division are all vectorized, but `mean()` isn't, so it can't be used in `mutate()` (without some extra monkeying around I don't want to teach you). 
+
+Don't worry, though, this is a well-known issue and R and the tidyverse offer many other options for calculating means across multiple columns. Feel free to research them on your own.
+
+
+### Data Frames vs. Tibbles
+
+I'm using these terms interchangeably here, but we already talked about this back in Tutorial 1.1. Briefly, **tibbles** are **data frames** specialized for the `tidyverse` with some better default printing behaviors and other tweaks. 
+
+From your perspective, they're simply data frames with two added class attributes: `tbl` and `tbl_df`. These are in addition to the `data.frame` class attribute that both possess.
+
+At your level you don't need to know more about the difference, so we'll leave it there!
+
+## Factors
+
+Factors represent categorical data, but they're actually integer vectors with a **levels attribute**. That attribute assigns a character name to each integer value. Let's take a deeper look at how that works.
+
+### Creating Factors
+
+Here's some code for how to manually create and explore a factor; run the below code in your own script to see what appears in the Environment pane:
+
+```{r fct_intro}
+# Specify the levels for the factor
+traffic_light_levels <- c("Red", "Yellow", "Green")
+
+#Create a factor with 3 levels
+traffic_light <- factor(c("Red", "Yellow", "Red", "Green"), levels = traffic_light_levels)
+
+  
+  #Print it - it looks like a character vector, doesn't it?
+  traffic_light
+
+  #You can print just the levels this way
+  levels(traffic_light)
+  
+  # Check its type
+  typeof(traffic_light) # But R tells us it's an integer! What!?
+  
+  # Check its attributes
+  attributes(traffic_light) # Here R tells us it has the class attribute "factor" - making it a factor
+                            # and lists its levels in the order we provided them
+```
+
+Look in your Environment pane, under "Values", where it says `traffic_light`. It tells you you're looking at a factor, then starts to list the levels (but probably doesn't complete them due to a lack of space). Then look all the way to the right: `1 2 1 3`. What's that? Can you figure it out before I tell you in the next section?
+
+You can also create factors from existing character or numeric variables in a dataset. For example:
+
+```{r fct_intro2}
+# Create factors from numeric and character variables
+str(mpg)
+
+mpg_fct <- mpg %>%
+  mutate(cyl = factor(cyl),
+         manufacturer = factor(manufacturer))
+
+str(mpg_fct)
+```
+
+Compare the difference in the output from the structure statements above. Do you see where the two new factors were created?
+
+If you create a factor but don't specify the levels - as we did above - they'll be automatically created in alphabetical order. **One level will be created per distinct value of the factor**.
+
+*Most* of the time R will automatically create factors for you, but sometimes you'll want to explicitly specify (or just re-name) the levels of a factor. 
+
+
+### Specifying Factor Levels
+
+Notice the order that we specified the `levels =` argument with above: Red, Yellow, Green. R says, "OK, I'll make 1 = Red, 2 = Yellow, and 3 = Green." Thus `Red Yellow Red Green` becomes `1 2 1 3`. Alongside that R stores the knowledge of what you've named 1, 2, and 3! So if we sort our factor:
+
+```{r fct_sort, exercise = TRUE}
+# Specify the levels for the factor
+traffic_light_levels <- c("Red", "Yellow", "Green")
+
+#Create a factor with 3 levels
+traffic_light <- factor(c("Red", "Yellow", "Red", "Green"), levels = traffic_light_levels)
+
+  # Sort it
+  sort(traffic_light)
+```
+It puts the Reds first because they're coded as `1`, then Yellow as `2`, then Green as `3`.
+
+Let's practice a bit more:
+
+```{r fct_prac1, eval = FALSE}
+# Change the levels = argument below in your own code so traffic_light becomes 3 1 3 2 instead of 1 2 1 3
+traffic_light <- factor(c("Red", "Yellow", "Red", "Green"), levels = c("Red", "Yellow", "Green"))
+  #Note the underlying data is the same, you just changed how it was coded!
+```
+
+Now 1 = Green, 2 = Red, and 3 = Yellow, since G < R < Y.
+
+If you include a value in your data that isn't specified in an explicit levels list, it'll be replaced with `NA`:
+
+```{r fct_prac2, eval = FALSE}
+# What happens if you change the data to this, but don't change the levels? Look at your Environment pane.
+# What did "Blue" become? Can you figure out why?
+traffic_light2 <- factor(c("Red", "Yellow", "Red", "Blue"), levels = c("Red", "Yellow", "Green"))
+
+
+  # 2b. Change the code above so "Blue" is actually stored as 4/"Blue", rather than what happened to it above
+```
+
+As we already saw, without further specification R will create the levels from *all* values in the factor in alphabetical order. You can also ask for them to be automatically created in the order they appear in the data with `levels = unique(<FACTOR NAME>)`.
+
+If you manually create a factor but don't provide levels for all possible values, you may run into trouble!
+
+### Viewing Factors in a Tibble
+
+We're going to work with some data from the General Social Survey in the U.S., which is in the `gss_cat` tibble that comes with the `tidyverse`. Let's see what it looks like:
+
+```{r gss1, exercise = TRUE}
+head(gss_cat)
+str(gss_cat)
+```
+
+
+```{r quiz1, echo=FALSE}
+quiz(
+  question("Which of the variables in `gss_cat` are factors?",
+      answer("year"),
+      answer("marital", correct = TRUE),
+      answer("age"),
+      answer("race", correct = TRUE),
+     answer("rincome", correct = TRUE),
+     answer("partyid", correct = TRUE),
+     answer("relig", correct = TRUE),
+     answer("denom", correct = TRUE),
+     answer("tvhours"),
+      type = "learnr_checkbox",
+      allow_retry = TRUE)
+)  
+```
+
+Let's take `marital`. How can we figure out what the levels are, how many people are in each level, and so on?
+
+```{r gss2, exercise = TRUE}
+# View levels and number of observations at each level of a factor
+gss_cat %>% 
+  count(marital)
+
+gss_cat %>% 
+  ggplot(aes(x = marital)) +
+  geom_bar()
+```
+Note these methods will NOT show any levels of the factor for which there are no values in your data. That is, there may be other defined levels that simply don't exist in what you're looking at.
+
+By the way, factors are great for a few reasons, but one major one is they help with sorting. You can specify the order of values of a categorical variable when that's important - think months. Months aren't in alphabetical order, so you want a way to set the order (Jan, Feb, Mar...). Speaking of which, let's dive a bit more into how to create a sensible order for factor levels.
+
+### Reordering Factor Levels
+
+Let's try to plot the number of hours of TV watched per day by religion:
+
+```{r fct_reorderlvl, exercise = TRUE}
+# Plot hours of TV per day by religion
+gss_cat %>%
+  group_by(relig) %>%
+  summarise(age = mean(age, na.rm = TRUE),
+            tvhours = mean(tvhours, na.rm = TRUE),
+            n = n()) %>% 
+  ggplot(aes(x = tvhours, 
+             y = relig)) + 
+  geom_point()
+```
+Note that R has somehow figured out how to do a scatterplot with a categorical variable. Can you articulate how?
+
+Remember factors are integers under the hood! So it simply plots the point for "No Answer" - which is assigned to the first level, or an integer value of 1 - at the y-coordinate for 1, for Protestant at y = 15, and so on!
+
+This plot is a bit annoying, though. There's no clear pattern. What if we wanted to order the hours per day from highest to lowest? Well we'd actually have to modify the level order of `relig` to make them plot at the right y-values. We do this with `fct_reorder()`:
+
+```{r fct_reorderlvl2, exercise = TRUE}
+# Plot hours of TV per day by religion, ordered most to least
+gss_cat %>%
+  group_by(relig) %>%
+  summarise(age = mean(age, na.rm = TRUE),
+            tvhours = mean(tvhours, na.rm = TRUE),
+            n = n()) %>% 
+  mutate(relig = fct_reorder(relig, tvhours)) %>% # This reorders "relig" by the number of TV hours, highest-to-lowest
+  ggplot(aes(x = tvhours, 
+             y = relig)) + 
+  geom_point()
+```
+
+We can also manually change the order of a factor. What if we wanted to put all Christian faiths at the bottom (no offense, it's just an example)! But here we have to use `fct_relevel()`:
+
+
+```{r fct_reorderlvl3, exercise = TRUE}
+# Plot hours of TV per day by religion, Christians at bottom
+gss_cat %>%
+  group_by(relig) %>%
+  summarise(age = mean(age, na.rm = TRUE),
+            tvhours = mean(tvhours, na.rm = TRUE),
+            n = n()) %>% 
+  # This reorders "relig" by starting with whatever you specify, then filling in prior levels in order
+  mutate(relig = fct_relevel(relig, "Protestant", "Catholic", "Christian")) %>% 
+  ggplot(aes(x = tvhours, 
+             y = relig)) + 
+  geom_point()
+```
+
+If you're creating a bar plot to count the number of appearances of various factor levels you can also reorder factors by their frequency. Consider the two plots below:
+
+```{r fct_reorderlvl4, exercise = TRUE}
+# Plot default bar chart - ugly
+gss_cat %>% 
+  ggplot(aes(x = marital)) +
+  geom_bar()
+
+# Plot bar chart ordered by frequency - prettier!
+gss_cat %>% 
+  mutate(marital = fct_infreq(marital)) %>% 
+  ggplot(aes(x = marital)) +
+  geom_bar()
+```
+
+### Modifying Factor Levels
+
+Say you have levels of a factor that are too long or you don't like, such as `partyid` in `gss_cat`. `fct_recode()` can help you change them in a principled, reproducible way:
+
+```{r fct_recodelvl, exercise = TRUE}
+# These aren't the best values
+gss_cat %>% count(partyid)
+
+# Let's recode them to something more understandable
+gss_cat %>%
+  mutate(partyid = fct_recode(partyid,
+    "Republican, strong"    = "Strong republican",
+    "Republican, weak"      = "Not str republican",
+    "Independent, near rep" = "Ind,near rep",
+    "Independent, near dem" = "Ind,near dem",
+    "Democrat, weak"        = "Not str democrat",
+    "Democrat, strong"      = "Strong democrat"
+  )) %>%
+  count(partyid)
+```
+
+You can also collapse some categories into fewer categories using `fct_collapse`!
+
+```{r fct_recodelvl2, exercise = TRUE}
+# Let's create fewer categories of partyid
+gss_cat %>%
+  mutate(partyid = fct_collapse(partyid,
+    Other = c("No answer", "Don't know", "Other party"), # Sets these 3 levels to "Other"
+    Republican = c("Strong republican", "Not str republican"), # Sets these 3 levels to "Republican
+    Independent = c("Ind,near rep", "Independent", "Ind,near dem"),
+    Democrat = c("Not str democrat", "Strong democrat")
+  )) %>%
+  count(partyid)
+```
+
+### Factors and `ggplot`
+
+Factors play an important role in plotting. What if we wanted to plot the number of TV hours watched by political persuasion by year (it's a weird idea, but bear with me)?
+
+```{r fct_plot, exercise = TRUE}
+# Year is treated as continuous
+gss_cat %>%
+  mutate(partyid = fct_collapse(partyid,
+                                Other = c("No answer", "Don't know", "Other party"), # Sets these 3 levels to "Other"
+                                Republican = c("Strong republican", "Not str republican"), # Sets these 3 levels to "Republican
+                                Independent = c("Ind,near rep", "Independent", "Ind,near dem"),
+                                Democrat = c("Not str democrat", "Strong democrat"))) %>%
+  group_by(partyid, year) %>% 
+  summarize(tvhours = mean(tvhours, na.rm = TRUE)) %>% 
+  ggplot(aes(x = tvhours, y = partyid, color = year)) +
+  geom_point()
+```
+
+Here it's treating year as a continuous variable, so when you assign it a color it gives you a continuous, graded scale. What if you want more distinct colors for each year, though? How about we make `year` a factor so R treats it as categorical?
+
+```{r fct_plot2, exercise = TRUE}
+# Year is treated as categorical
+gss_cat %>%
+  mutate(partyid = fct_collapse(partyid,
+                                Other = c("No answer", "Don't know", "Other party"), # Sets these 3 levels to "Other"
+                                Republican = c("Strong republican", "Not str republican"), # Sets these 3 levels to "Republican
+                                Independent = c("Ind,near rep", "Independent", "Ind,near dem"),
+                                Democrat = c("Not str democrat", "Strong democrat")),
+         year = factor(year)) %>%
+  group_by(partyid, year) %>% 
+  summarize(tvhours = mean(tvhours, na.rm = TRUE)) %>% 
+  ggplot(aes(x = tvhours, y = partyid, color = year)) +
+  geom_point()
+```
+
+Now R assigns a discrete color scale for each year, since now `year` is a categorical factor.
+
+### Ordered Factors
+
+You can also create **ordered factors** by adding the `ordered = TRUE` argument to the end of your creation command. While we won't do that, let's take a look at some already-ordered factors in the `diamonds` data:
+
+```{r fct_order, exercise = TRUE}
+head(diamonds)
+str(diamonds)
+```
+
+Ordered factors explicitly treat each subsequent level as bigger than the ones below it. This is important for making comparisons. Even though an unordered (default) factor assigns levels to integers so you might *think* the value assigned to 2 is bigger than the value assigned to 1, R doesn't treat them that way. Only in an ordered factor will it make explicit comparisons.
+
+If you have values like "small, medium, large," (or diamond cut qualities), it makes sense to make them into an ordered factor. "Red, Yellow, Green" - not as much.
+
+```{r fct_order2, exercise = TRUE}
+#Create an unordered factor
+shirts <- factor(c("Small", "Small", "Medium", "Large", "Large"), levels = c("Small", "Medium", "Large"))
+  
+  shirts[5] > shirts[3] # Asking if "Large" is > "Medium" has no meaning
+  
+  #Create an ordered factor
+shirts_ord <- factor(c("Small", "Small", "Medium", "Large", "Large"), levels = c("Small", "Medium", "Large"), ordered = TRUE)
+  
+  shirts_ord[5] > shirts_ord[3] # "Large" is now > "Medium"!
+```
+One other important thing to note about ordered factors is they'll plot by default in the order specified by their levels.
+
+```{r fct_order3, exercise = TRUE}
+diamonds %>% 
+  ggplot(aes(x = clarity)) +
+  geom_bar()
+```
+
+## Summary
+
+Today we covered attributes and the more complex data types they allow: factors, dates, data frames, and tibbles. That's it for the Data Types section of the course.
+
+The next and final section (briefly and superficially) covers some major statistical programming techniques you might need in your careers: if-else statements, for-loops, basic function writing, and statistical simulation. Then we're finished!

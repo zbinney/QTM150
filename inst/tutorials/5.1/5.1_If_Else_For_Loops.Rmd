@@ -1,0 +1,386 @@
+---
+title: "Tutorial 5.1 - If-Else Blocks, For-Loops"
+
+author: "Zachary Binney, PhD"
+date: "November 2020"
+
+output: 
+  learnr::tutorial:
+    css: css/zb_style.css
+    progressive: TRUE
+runtime: shiny_prerendered
+description: "If-Else and For-Loops"
+---
+
+```{r hidden, include = FALSE}
+pacman::p_load(learnr)
+
+```
+
+
+## Intro and Setup
+
+Today we enter our final chapter, where we superficially cover some major statistical programming techniques you might need in your careers: if-else statements, for-loops, basic function writing, and statistical simulation. Today we cover the first two of these.
+
+Once again we don't need much from packages today - just `lubridate` for dates and the `tidyverse`. **Just remember to run this code in your own script before proceeding.**
+
+```{r setup, message = FALSE}
+pacman::p_load(tidyverse, lubridate, palmerpenguins)
+data(penguins)
+
+```
+
+
+## Conditional Execution
+
+So far you've written code that runs when you run it - either by selecting specific lines or running a whole script or RMarkdown document.
+
+But what if sometimes you want code to run, and other times you don't?
+
+Or what if sometimes you want your code to do one thing, but other times another thing?
+
+Enter the idea of **conditional execution** - code should run ("execute") different ways depending on whether certain conditions are met. We'll look at two fundamental methods for conditional execution, common across many programming languages besides R: **if-else statements** and **for-loops**.
+
+Every time I write for-loops I think of Froot Loops. Now I want some Froot Loops. Is that everybody or just me? Go have some Froot Loops, then come back. I'll wait.
+
+## If-Else Statements
+
+The first structure we're going to discuss is **if-else statements**. Here's the basic structure:
+
+```{r if_intro, eval = FALSE}
+
+if (condition) {
+  # code executed when condition is TRUE
+} else {
+  # code executed when condition is FALSE
+}
+
+```
+
+Let's have a little fun to introduce if-else statements. Say you want R to offer you some sort of greeting when you start a script, but that greeting should depend on the time of day: "Good Morning!", "Good Afternoon!", "Good Evening!", or "Go To Sleep, Dummy." 
+
+### A Single If Statement
+
+The simplest if-else statement actually just involves a single `if` condition. The code below will print "Good Morning" if it's between the hours of 5:00am and 11:59 am.
+
+```{r if, exercise = TRUE}
+
+if (hour(Sys.time()) %>% # Extract the hour from your computer clock
+    between(5, 11)) { # Check if it's between 5am and 11am
+  
+  print("Good Morning!")
+
+} 
+
+```
+Did the above code print anything? It should have printed "Good Morning!" **if** it's between 5:00am and 11:59am per your computer clock.
+
+If it isn't, it should have done...nothing. R simply skips this code block. Printing "Good Morning!" was conditional on it actually being morning; since it wasn't, R doesn't execute the command.
+
+Note we also introduced three new functions here. 
+
+1. `Sys.time()` is a base R function that extracts the date and time from your system (computer) clock at that instant; it stores it as a date-time object of type POSIXct. 
+
+2. `hour()` is a function from the `lubridate` package that extracts the integer hour value from that date-time (e.g. "14" from "2020-11-08 14:08:08 EST")
+
+3. `between()` is a function from the `dplyr` package that takes a numeric vector (in our case, of length 1) as input and returns `TRUE` or `FALSE` depending on whether each element is between the two specified numbers, inclusive.
+
+Hopefully you can see by now how these piece together to print "Good Morning!" if it's between 5:00am and 11:59am.
+
+### A Simple If-Else Statement
+
+Let's kick up the complexity just a notch. What if we still want R to print something to let us know it's not morning?
+
+```{r if_else, exercise = TRUE}
+
+if (hour(Sys.time()) %>% # If this condition is met, run the code immediately below
+    between(5, 11)) { 
+  
+  print("Good Morning!")
+
+} else { # If the condition above ISN'T met, do this instead ("else")
+    
+  print("Good Not-Morning!")
+  
+}
+
+```
+If it isn't between 5:00am and 11:59am, this code still skips the initial **if** condition.
+
+But notice now there's an **else** condition right next to it, making this a full **if-else** statement. Rather than doing nothing and moving on, R now executes the code in the **else** block instead!
+
+### If - Else If - Else Statements
+
+You can also extend **if-else** statements to more than two options using **if - else if - else** logic. Here R will 
+
+* Go through the conditions in order, 
+
+* Execute the first one that is met, and 
+
+* Either skip the rest, or execute the last **else** condition if none of the ones above it is met
+
+For example, what if we want R to tell us something specific no matter what time of day it is?
+
+```{r if_elseif_else, exercise = TRUE}
+# Create and save an object with the hour value separately so we can feed it to multiple conditions
+hr <- hour(Sys.time())
+
+if (between(hr, 5, 11)) { 
+  
+  print("Good Morning!")
+
+} else if (between(hr, 12, 16)) { # If the condition above ISN'T met, check this condition instead ("else if")
+    
+  print("Good Afternoon!")
+  
+} else if (between(hr,17, 23)) { # If the conditions above AREN'T met, check this condition instead ("else if")
+  
+  print("Good Evening!")
+  
+} else { # If all the conditions above aren't met (i.e. in any other hour), do this
+  
+  print("Go to bed, dummy!")
+  
+}
+
+```
+Notice here we captured the hour in a separate object above the entire if-else statement. We did this so we could feed that new object, `hr`, to the various conditions without typing `hour(Sys.time())` over and over again each time. It's more efficient and compact this way.
+
+You can also have statements with just **if** and **else if** but no **else** - if none of the conditions is met, R will simply do nothing and move on.
+
+If you find yourself writing a lot of else-if statements and creating a very long block, consider another technique to create more compact code, like `switch()`. In `mutate()`, `case_when()` fills that same kind of role - allowing you to write compactly what might otherwise take a nasty string of nested if-else statements. We're not going to get into these strategies in more detail today, though. See [*R for Data Science* Ch. 19.4.2 for an example, though.](https://r4ds.had.co.nz/functions.html#multiple-conditions)
+
+### More on the Conditions
+
+When encountering an **if-else statement** R will first execute the code you put inside the `if()` or `else if()` functions. It will try and return a single logical `TRUE` or `FALSE` for each of those. For example, above it checks whether the hour from `Sys.time()` is between 5 and 11 (or 12 and 16, etc.), and returns either `TRUE` or `FALSE` depending on the time of day.  It will execute the code attached to the condition if it returns `TRUE`.
+
+An `else` condition simply always returns `TRUE`, so it is executed if everything above it is false.
+
+If the code inside an `if()` or `else if()` function returns `NA`, the whole **if-else** statement will throw an error. If it returns a vector rather than a single `TRUE`/`FALSE` logical value, you'll get a warning and R will execute or not execute the code based on the first value of that vector.
+
+This also means you need to be careful if you want to test for equality in an `if()` or `else if()` condition. The normal equality operator `==` is vectorized, so if you feed it any vector of length 2 or more on either side it will return a vector of length 2 or more. Instead you can use the function `identical()` - but be careful, as you can run into problems with type comparisons (e.g. `identical(6L, 6)` will return `FALSE` because the former is an integer and the latter a double) and floating point arithmetic (e.g. `identical(sqrt(2)**2, 2)` will return `FALSE` because R has to round the former so it's not *exactly* 2).
+
+One other way to deal with vectors being returned is to use `any()` or `all()`. For example:
+
+```{r any_all, exercise = TRUE}
+# == operator is vectorized
+2 == c(1:3)
+
+# any() returns TRUE if, well, ANY element of the vector is TRUE
+any(2 == c(1:3))
+
+# all() returns TRUE if, well, ALL elements of the vector are TRUE
+all(2 == c(1:3))
+
+all(2 == c(2, 2, 2))
+
+```
+
+
+### Multiple Conditions
+
+If you want code to execute only if multiple conditions are met, use the operators `||` for "OR" and `&&` for "AND". Don't use a single `|` or `&` as these functions are vectorized, and you don't want a vector - you want to produce a single `TRUE` or `FALSE`.
+
+For example, what if I want my computer to only wish *me* good morning, and not you?
+
+```{r if_mult, exercise = TRUE}
+# Tell R a name
+name <- "Zach"
+
+
+hr <- 6 # Setting the hour manually to 6am for this example so you know that condition is met
+
+if (between(hr, 5, 11) && name == "Zach") { # Check if it's between 5am and 11am
+  
+  print("Good Morning, Zach!")
+
+} else {
+  
+  "Hey, you're not Zach! Security!!!"
+  
+}
+
+```
+<mark>Challenge:</mark> Make R tell *you* good morning using your name.
+
+
+## For-Loops
+
+**For-loops** are another common construct in many programming languages. They can be used as a form of **conditional execution** where the code inside the for-loop will run as long as the conditions outlined are met but no longer. They simply ask the same code be run multiple times - "iterated" - until some condition is satisfied. They have 2 basic parts: I like to think of them as "FOR THIS" and "DO THIS." Here's a very trivial example:
+
+```{r basic_for, exercise = TRUE}
+for(i in (1:15)){   # "FOR THIS": define range of iteration and iteration variable
+  
+  print(i) # "DO THIS": define what to do at each iteration, commonly involving iteration variable
+}
+```
+This just prints the numbers 1 through 15, in order. Notice this isn't a length-15 vector, but 15 length-1 vectors, each one printed separately at each invocation of the for-loop.
+
+For-loops are our first encounter with the idea of **iteration**, where you want code to run multiple times rather than just once, but you only want to *write* it once - always a good practice when it comes to creating concise, readable code.
+
+### Iteration
+
+It's been awhile, so let's revisit our penguins data.
+
+```{r penguins}
+str(penguins)
+```
+It looks like there are four numeric variables. Maybe we'd like to get the median for each of them. (Note we could just do this with `summary()` as well, but I'm doing it this way to make a point.) Here's one way we might do that:
+
+```{r iteration1, exercise = TRUE}
+# One way of calculating median
+median(penguins$bill_length_mm, na.rm = TRUE)
+median(penguins$bill_depth_mm, na.rm = TRUE)
+median(penguins$flipper_length_mm, na.rm = TRUE)
+median(penguins$body_mass_g, na.rm = TRUE)
+```
+This isn't the best way, though. Let's discuss why.
+
+#### When to Copy-Paste and When to Iterate
+
+Notice we've duplicated a *lot* of code above. We've copy-pasted `median()` 4 times. That's not great for a few reasons.
+
+1. Our code is long, messy, less compact, and harder to read.
+
+2. If we need to make a change (say, get the `mean()` instead), we have to make changes in *4* places. Wouldn't it be great if we could just do it in *1* spot?
+
+3. Writing the code 4 times gives us more chances to introduce a bug, and makes bugs harder to find.
+
+A rule of thumb is: **If you find yourself copy-pasting similar code *more than twice*, figure out some way to abstract it - either with a for-loop or other iteration method, or by abstracting it into a single custom function you can call over and over again.**
+
+
+### For-Loops for Iteration
+
+Here's a much better way to do what we did above, using a **for-loop**:
+
+```{r for_loop1, exercise = TRUE}
+
+output <- vector(mode = "double", length = 4)  # 3. Output storage space
+
+j <- 1 # Create a new index variable j to help store output
+
+for (i in c(3:6)) {              # 1. "FOR THIS" sequence It's 3-6 because we want columns 3-6 (not e.g. 1-4)
+
+    output[[j]] <- median(penguins[[i]], na.rm = TRUE)      # 2. "DO THIS" body
+    names(output)[j] <- colnames(penguins[i])               # Calculate median and name the resulting value the column name
+    j <- j + 1                                              # Increment out output vector position by 1
+}
+
+output
+```
+This for-loop has the 2 parts we're already used to, but we also add a third part:
+
+1. **Sequence** - "FOR THIS"; what you loop over. 
+
+    Here we ask it to simply start i from the first element in the vector (1), and keep going until it reaches the last element (4). Once it reaches the end of the vector `c(1:4)`, it will stop and not run the loop again.
+
+2. **Body** - "DO THIS"; the code that runs multiple times
+
+    Here we ask R to, for each value of i, take the median of i'th column (ignoring `NA`s!) and save it to the i'th element in our vector `output`. We also ask it to name that i'th element using the name of the i'th column in `penguins`.
+
+3. **Output** - where any results the for-loop generates are stored. Note in all but things like our first toy example where we printed the numbers 1-15, you're probably going to want to save some output.
+
+    Here we created a double vector of length 4 ahead of time to hold the medians (and names).
+    
+#### Fragility and "Hard-Coding"
+    
+Note this particular for-loop is actually very "fragile" - it will only work on data where we the median of exactly *four* columns in positions *3-6* in a data frame. I **hard-coded** both of these values into the loop above - 4 in our output vector, 3-6 in our FOR THIS sequence. Hard-coding means specifying a fixed value for some parameter or argument rather than allowing it to change with different circumstances. *If we try to deal with more than 4 numeric columns, or columns not in positions 3-6, our for-loop will break!!!*
+
+This is not good coding practice.
+
+Much better would be to modify this code to be able to accept an arbitrary number of numeric columns in arbitrary positions in the data. I didn't want to get into this in detail above because it adds quite a bit more complexity and I wanted you to focus on the for-loop itself, but here's one way you could do it:
+
+```{r for_loop_robust, exercise = TRUE}
+
+# Number of numeric columns
+num_numeric_cols <- ncol(select(penguins, where(is.numeric))) # Just count numeric columns
+
+# Position of numeric columns
+pos_numeric_cols <- which(sapply(penguins, is.numeric)) # sapply() applies the is.numeric() function to each element of penguins. Why does that work?
+                                                        # Recall data frames are lists, with each element corresponding to a column.
+                                                        # Thus this code is asking "is each column numeric?" and getting a TRUE or FALSE, leading to a logical vector
+                                                        # which() then returns the positions in that logical vector that are TRUE
+
+output <- vector(mode = "double", length = num_numeric_cols)  # Creates a length-5 vector because there are 5 numeric columns
+                                                              # year is also numeric although we ignored it before
+
+j <- 1 # Create a new index variable j to help store output
+
+for (i in pos_numeric_cols) {              # 1. "FOR THIS" sequence
+
+    output[j] <- median(penguins[[i]], na.rm = TRUE)      # 2. "DO THIS" body
+    names(output)[j] <- colnames(penguins[i])             # Calculate median and name the resulting value the column name
+    j <-  j + 1                                           # Increment j by 1 before going back through the loop
+
+}
+
+output
+```
+### While-Loops
+
+A slight variation on **for-loops** is the **while-loop**. While loops simply run until some condition stops being met. It's used when you don't know how long the input sequence will be - which you need to know for a for-loop. What if, for example, we wanted to simulate how many coin tosses it would take until we get at least 13 heads?
+
+```{r while_loop, exercise = TRUE}
+# Custom function to flip a single coin
+flip <- function() sample(c("T", "H"), 1)
+
+flips <- 0 # Set number of flips to start at 0
+nheads <- 0 # Set number of heads to start at 0
+
+while (nheads < 13) {
+  
+  if (flip() == "H") { # Run the flip function once and check the result
+    nheads <- nheads + 1 # If its heads, increment that counter
+  } 
+  
+  flips <- flips + 1 # Increment the flip counter no matter what
+  
+}
+
+#Print the number of flips
+flips
+```
+While loops are more general than for-loops. Any for-loop can be rewritten as a while loop, but not vice-versa.
+
+
+
+## Other Approaches to Iteration
+
+There are two other ways to run the same code over and over again efficiently that merit a brief mention here.
+
+### Custom Functions
+
+We will discuss these in the next Tutorial, but basically: every function you use has some code underlying it. Think about `mean()` for example - this code takes a vector, adds the values together, and divides by the length. You could, in theory, right the more basic code to do this yourself over and over again every time you needed it. But that would require a lot of copy-pasting and be *comically* inefficient.
+
+Instead, somebody long before you recognized this would be a problem and "abstracted" the general task into a function that could be called any time you want to calculate the a mean of a vector. 
+
+Simply put: **Common tasks should have a function.** You should not be copying the same code over and over again if you can avoid it. You write individual bits of code for specific analyses and one-time ad hoc tasks. But once you catch yourself doing it over and over again, you may want to make the greater upfront investment to write a function to save time and code on the back end.
+
+For more on this, check out [Chapter 19 of *R for Data Science.*](https://r4ds.had.co.nz/functions.html)
+
+### The `map()` functions and `purrr`
+
+The `purrr` package is another member of the `tidyverse`. We cover this more in QTM 151, but basically the `map_XX()` family of functions
+
+* Takes a function and 
+* Applies it to every element of a vector or list, then
+* Returns a vector (if using `map_xx()`) or list (if using `map()`) of the results
+
+Consider a very simple example:
+
+```{r map, exercise = TRUE}
+
+map_dbl( # Return a double vector
+  .x = select(penguins, where(is.numeric)), # Run the function .f on all numeric columns of penguins
+  .f = median, na.rm = TRUE) # The function we want to run is median...and make sure to remove the NAs!
+
+```
+
+That's it on the `map()` functions for now. I just wanted to show you they're another - arguably better - way you can do iterations in R. They take a little bit more practice to understand well than for-loops, though. [Chapter 21.5 of *R for Data Science.*](https://r4ds.had.co.nz/iteration.html#the-map-functions)
+
+
+## Summary
+
+Today we covered two fundamental building blocks of many programming languages: if-else statements and for-loops. They allow you to tell R to run code some times but not others, or do different things depending on certain conditions. It increases the flexibility of your scripts substantially.
+
+In our next and last Tutorial we'll briefly cover how to write your own basic functions, followed by a bit on how to create your own simulated data for statistical analyses. The latter will come in handy more often than you might think, both in your coursework and beyond.

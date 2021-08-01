@@ -1,0 +1,576 @@
+---
+title: "Tutorial 5.1 - If-Else Blocks, For-Loops"
+
+author: "Zachary Binney, PhD"
+date: "November 2020"
+
+output: 
+  learnr::tutorial:
+    css: css/zb_style.css
+    progressive: TRUE
+runtime: shiny_prerendered
+description: "If-Else and For-Loops"
+---
+
+```{r hidden, include = FALSE}
+pacman::p_load(learnr)
+
+```
+
+
+## Intro and Setup
+
+Today is our *final* Tutorial - yay? yay! - where we briefly cover how and when to write your own functions, as well as some basic techniques for simulating your own data to test out regression models or other statistical techniques.
+
+Once again we don't need much from packages today - just the `tidyverse` and the `palmerpenguins` data, as well as a new package, `MASS`, to produce some of the statistical simulations we'll need. **Just remember to run this code in your own script before proceeding.**
+
+```{r setup, message = FALSE}
+pacman::p_load(tidyverse, palmerpenguins, MASS)
+data(penguins)
+
+```
+
+
+## Creating Your Own Functions
+
+R is a **functional programming language**, meaning...well, that it's largely based around functions. You've been using functions all along in this course, and we've already discussed a lot of things about them, like **arguments**. 
+
+Just as a brief reminder, a function is a reusable piece of code that takes some **input** (**arguments**) and returns some **output**.
+
+R has thousands of functions already that do the vast majority of tasks you'll want to accomplish regularly - think the `dplyr` verbs, `sum()`, `read.csv()`, `ggplot()`, and so on. As an open-source language, these functions come from a mix of the core group that maintains the basics of R, major development groups like RStudio - which also oversees the `tidyverse` - and individual or small groups of developers who write packages with specific functions for their own purposes. You could even contribute a function or package one day.
+
+
+### When and Why Create a Function
+
+Speaking of which, sometimes you run into a task that you want to do over and over but for which a function doesn't exist yet. Usually these will be pretty specific instances - say you want to process a large number of data sets in a way very specific to your company or research project. No one else does exactly what you want to do, but you want to do it many times.
+
+A good rule of thumb is: **if you find yourself copy-pasting the same code structure more than twice, maybe it should be a function instead**. Abstracting common but idiosyncratic (specific to you or your company or research group) tasks into your own functions has several advantages, which we've already discussed but I'll reiterate here:
+
+1. It makes our code shorter, more compact, and easier to read.
+
+2. If we need to make a change to this code we deploy over and over again, we only have to make the change in *1* spot - the function definition. This is much safer than trying to remember to make it in every spot you wrote the code.
+
+3. It makes typos less likely, since we can only introduce them in the function definition. Plus it makes typos and other bugs easier to find because you know where they probably are.
+
+### Basic Function Writing
+
+Let's say we want to re-scale every numeric column of `palmerpenguins` to be between 0 and 1 (so the minimum value is 0, and the maximum value is 1).
+
+```{r pens, message = FALSE}
+str(penguins)
+
+```
+
+First let's figure out how we might do that for one specific variable.
+
+```{r rescale_onevar, exercise = TRUE}
+
+# Re-scale a single variable and save it to a new column
+penguins$body_mass_rescale <- (penguins$body_mass_g - min(penguins$body_mass_g, na.rm = TRUE)) / 
+  (max(penguins$body_mass_g, na.rm = TRUE) - min(penguins$body_mass_g, na.rm = TRUE)) 
+
+# Let's check if the new column ranges 0 to 1
+range(penguins$body_mass_rescale, na.rm = TRUE)
+
+```
+Let's clean this code up some and try and generalize our approach. First notice we've typed `penguins$body_mass_g` over and over again. That should cue us in immediately it's something we can shorten. What if we save that to a shorter object first, then feed that into our code?
+
+```{r rescale_onevar_short, exercise = TRUE}
+
+# Re-scale a single variable and save it to a new column
+vec <- penguins$body_mass_g
+
+penguins$body_mass_rescale <- (vec - min(vec, na.rm = TRUE)) / 
+  (max(vec, na.rm = TRUE) - min(vec, na.rm = TRUE)) 
+
+# Let's check if the new column ranges 0 to 1
+range(penguins$body_mass_rescale, na.rm = TRUE)
+
+```
+But we can actually shorten this even further. Notice what else we repeated: `min()` and `max()`, which are components of `range()`.
+
+</mark>Challenge:</mark> Using `?range` and playing around with it a bit, can you figure out what `range()` returns, and how we might be able to use it before proceeding? Remember, we need the minimum and maximum values of a vector.
+
+```{r rangetest, exercise = TRUE}
+
+range_a <- range(c(1, 2, 3))
+range_a
+
+range_b <- range(c(1, 2, 3, NA))
+range_b
+
+range_c <- range(c(1, 2, 3, NA), na.rm = TRUE)
+range_c
+```
+Let's clean this code up even further by just using `range()` once, and feeding its results in.
+
+```{r rescale_onevar_shorter, exercise = TRUE}
+
+# Re-scale a single variable and save it to a new column
+vec <- penguins$body_mass_g
+rng <- range(vec, na.rm = TRUE)
+
+penguins$body_mass_rescale <- (vec - rng[1]) / 
+  (rng[2] - rng[1]) 
+
+# Let's check if the new column ranges 0 to 1
+range(penguins$body_mass_rescale, na.rm = TRUE)
+
+```
+Even better! Now we can abstract this into a function. The way you do that is with another function called...well, called `function()`. It creates **functions**.
+
+```{r func_rescale, eval = FALSE}
+
+rescale01 <- function(vec) { # Assign the function to an object with a memorable, short and evocative name
+                             # Specify the inputs for the function - in our cae, just the data vector, vec
+  
+  rng <- range(vec, na.rm = TRUE)     # Body of the function - R will execute this code
+  (vec - rng[1]) / (rng[2] - rng[1])  # using the argument(s) you supplied (vec)
+
+}
+```
+
+Run this code in your own script, then look over in the Environment Pane. Scroll down and you'll see a new heading called Functions. Look, there's your new function! It says it's called `rescale01` and takes the argument `vec` - which you know is a vector of numeric data.
+
+Take your new function for a test drive in your own script.
+
+```{r func_rescale_test, eval = FALSE}
+# Now we can use this function any time we want to calculate the range of a column. Let's use it!
+penguins_rescale <- penguins %>% 
+  mutate(body_mass_rescale = rescale01(body_mass_g), # We can use our new function right here. So compact!
+         bill_length_rescale = rescale01(bill_length_mm))
+
+
+# Let's check if the new column ranges 0 to 1
+range(penguins_rescale$body_mass_rescale, na.rm = TRUE)
+
+```
+
+</mark>Challenge:</mark> Modify the code above in your own script to apply the function to the 4 numeric data biometric columns in your data.
+
+Note this code will still be somewhat repetitive - you'll be applying your new function to the different columns 4 times. But you already know a technique for avoiding this if you want - **iteration**. You could use a **for-loop**, though better would likely be a `map_xx()` function from the `purrr` package. We won't get into that today, though.
+
+### General Approach to Writing Functions
+
+The general approach we used above to write our function works well. It was basically:
+
+* Write some code
+* Make sure it works for a specific, *simple* situation
+* Realize you want to actually make it a function
+* Try and abstract and generalize it
+
+Usually it's not a good idea to try to write a function from scratch. Get some code working for a specific and simple situation first, *then* try to make it into a function from there.
+
+### General Function Structure
+
+Here's the general function of a structure, illustrated with a trivial function that takes a single number as input and checks if it's greater than 2.
+
+```{r func_general}
+
+# 1. Name of the function
+check <- 
+# the "function" function is used to create a function  
+  function(
+    # 2. List of arguments to be fed to function body  
+    # separated by commas if more than one
+    x
+  ){
+  
+    # 3. Body: what the function will do
+  
+      if(x > 2){
+      
+      print(x)  
+      
+      } else{
+      
+      print("variable `x` is smaller or equal to 2")      
+      
+      }
+}
+```
+
+Now let's try out our new function. 
+
+</mark>Challenge:</mark> Predict what our function is going to return for each invocation below.
+
+```{r func_general_test, exercise = TRUE, exercise.setup = "func_general"}
+
+check(x = 1)
+
+check(x = 2)
+
+check(x = 3)
+
+# Now try feeding x = NA to the check function. What happens?
+
+```
+
+### Return Values
+
+One important thing we haven't covered yet is a function's **return value**. We left it implicit above, but let's make it explicit now.
+
+A function will return, by default, *the last thing it does*. That's why `check()` returns what it does above. But you can also make this explicit using `return()`:
+
+```{r func_general2, eval = FALSE}
+
+# Make our rescale function more explicit
+rescale01 <- function(vec) {
+  
+  rng <- range(vec, na.rm = TRUE)    
+  rescaled_vec <- (vec - rng[1]) / (rng[2] - rng[1]) # Save to an object you can explicitly return 
+  
+  return(rescaled_vec) # Our function already did this by default since calculating rng was the last thing it did
+
+}
+```
+
+Try changing the body of the `rescale01` function in your script to the above. Then re-run it. Hopefully it does the same thing, just a bit more explicit now.
+
+### So Much We Didn't Cover
+
+There's a *lot* about functions we didn't cover here - the specifics of specifying arguments, environments, writing style, etc. If you want more, please check out:
+
+* [Chapter 19 of *R for Data Science*.](https://r4ds.had.co.nz/functions.html)
+* [This RStudio Primer on writing functions.](https://rstudio.cloud/learn/primers/6)
+
+
+
+
+
+
+
+
+## Statistical Simulations
+
+Usually we work with actual data. But sometimes it's easier to simulate our own. For example, what if you want data with some known properties so you can test out some code and make sure it returns what you expect? Then you don't want to rely on someone else's data - you want to make your own.
+
+Below are some common tasks you may want to accomplish.
+
+### Random Normal Data
+
+The simplest scenario might be that you want a tibble with, say, 100,000 draws from a random normal distribution:
+
+```{r norm_single, exercise = TRUE}
+# Set the seed to create a reproducible draw
+set.seed(11142020)
+
+# Create a tibble with a single column with 100,000 draws from a normal distribution
+rannorm <- tibble(
+  rand1 = rnorm(n = 1e5, # 1e5 = 1 x 10^5 = 100,000 draws
+                mean = 1, # Mean of the normal distribution
+                sd = 2)) # Standard Deviation of the normal distribution
+rannorm
+
+# CHALLENGE: Check the mean and SD to see if the simulation worked right.
+# That is, see if we can "recover" the true mean and SD of the distribution from the data
+
+### YOUR CODE HERE
+```
+```{r quiz1, echo=FALSE}
+  
+quiz(
+  question("What were the mean and SD of the 10,000 random normal draws you conducted above?",
+      answer("1 and 2, exactly" ),
+      answer("Close to 1 and 2, but not exactly", correct = TRUE,
+             message = "Remember, we're drawing randomly from a normal distribution with mean 1 and SD 2. But the mean and SD of the actual draws are going to be a *little* bit off from that because...well, because the draws are random, so there's a little bit of noise. This is exactly what we want to see."),
+      answer("0 and 1, exactly"),
+      answer("Could not tell"),
+      type = "learnr_radio",
+      allow_retry = TRUE)
+)
+```
+
+Now we could plot the data as another gut check that our simulation worked correctly:
+
+```{r norm_single_plot-setup, include = FALSE}
+# Set the seed to create a reproducible draw
+set.seed(11142020)
+
+# Create a tibble with a single column with 100,000 draws from a normal distribution
+rannorm <- tibble(
+  rand1 = rnorm(n = 1e5, # 1e5 = 1 x 10^5 = 100,000 draws
+                mean = 1, # Mean of the normal distribution
+                sd = 2)) # Standard Deviation of the normal distribution
+```
+
+```{r norm_single_plot, exercise = TRUE}
+
+# Plot our random normal draws
+rannorm %>% 
+  ggplot(aes(x = rand1)) +
+  geom_density() +
+  scale_x_continuous(breaks = c(-10:10))
+
+```
+Does the plot above look *approximately* normal, with the expected mean and SD?
+
+Keep in mind it won't be *exact* because we just drew randomly from the actual distribution, but it should be very close.
+
+#### A Note on Seeds
+
+Note that "random" draws in a computer aren't actually random. They use a pseudo-random algorithm most commonly based off the current time. That means that while these draws aren't technically "random," they'll never repeat the exact same way twice. If you want reproducible results - say to share with someone else - you have to specify the **seed** the pseudo-random process uses (normally this seed is based off the current system time). You do this with `set.seed()`. 
+
+You must run `set.seed()` **immediately before the random draw code every time you run it**. That is, in order to get the same results again and again below, you must run from `set.seed()` through the code that actually does the drawing.
+
+#### Multiple Normal Random Variables
+
+Creating multiple random normal variables is a trivial extension of our code above:
+
+```{r norm_multi, exercise = TRUE}
+# Set the seed to create a reproducible draw
+set.seed(11142020)
+
+# Create a tibble with a single column with 10,000 draws from a normal distribution
+rannorm <- tibble(
+  rand1 = rnorm(n = 1e4, # 1e4 = 1 x 10^4 = 10,000 draws (so plotting easier)
+                mean = 1, # Mean of the normal distribution
+                sd = 2), # Standard Deviation of the normal distribution
+  # Create a second variable using the same process, but may change mean/SD
+  rand2 = rnorm(n = 1e4, 
+                mean = 0, 
+                sd = 0.5)) 
+rannorm
+
+#Plot these data
+rannorm %>% 
+  ggplot(aes(x = rand1, y = rand2)) +
+  geom_point(alpha = 0.1)
+
+```
+Does there seem to be any correlation in the two variables above? No, right? And that makes sense - they should be completely independent, as we were just drawing randomly from different normal distributions. But what if we wanted to institute some kind of relationship? Say, rand2 = 2*rand1 + 4. We could do something like this:
+
+```{r norm_multi_line, exercise = TRUE}
+# Set the seed to create a reproducible draw
+set.seed(11142020)
+
+# Create a tibble with a single column with 10,000 draws from a normal distribution
+rannorm <- tibble(
+  rand1 = rnorm(n = 1e4, # 1e4 = 1 x 10^4 = 10,000 draws (so plotting easier)
+                mean = 1, # Mean of the normal distribution
+                sd = 2), # Standard Deviation of the normal distribution
+  
+  # Create a second variable that is equal to 4 + 2 x rand1 + noise
+  # That is, create a linear relationship y = 2x + 4 (+ noise)
+  rand2 = 4 + 2*rand1 + rnorm(n = 1e4, 
+                              mean = 0, 
+                              sd = 0.5)) 
+rannorm
+
+
+# See if we can recover the linear relationship we programmed
+# lm() is a function to fit a simple linear regression model y = mx + b (+ noise), 
+# or rand2 = slope*rand1 + intercept (+ noise)
+lm(data = rannorm, formula = rand2 ~ rand1)
+
+```
+See how we were able to recover the intercept (4) and slope (2) by running a simple linear model on our simulated data? That shows our simulation worked.
+
+You probably won't understand this bit unless you've taken a regression class, but: if I were to show you fuller output from that linear model you would also see that the residual standard error is 0.5033, which is almost exactly the 0.5 SD we programmed for the normal distribution for our noise. Once again, we recovered some element of our simulation to make sure it worked - and, if we didn't already know it was good, test out the `lm()` function.
+
+#### Multiple Variables With Known Correlation
+
+One last wrinkle here. What if instead of specifying a linear (or other) relationship, we just wanted to specify a correlation for our two variables - that is, we didn't want them to be independent/have a correlation of 0.
+
+This is substantially more complicated statistically, as it requires understanding covariance and correlation, as well as what a covariance matrix looks like. If those words make you start panicking, don't worry about it. Just see that this code will create two correlated normal random variables, and that we can plot and recover that correlation.
+
+```{r norm_multi_correl, exercise = TRUE}
+# Set the seed to create a reproducible draw
+set.seed(11142020)
+
+N <- 1e4                           # Set our sample size             
+means <- c(1,0)                    # Set a vector of our means - first mean 1, second mean 0
+
+# Induce a correlation of exactly 1/3 (0.33) between the two variables
+correl <- matrix(c(9,4,   # SD of first variable is 3 --> variance 9
+                   4,16), # SD of second variable is 4 --> variance 16
+                          # Covariance = 4
+                          # Choose 4 because correlation = covariance/sqrt(variance1 * variance2) -->
+                          # correlation = 4 / sqrt(9*16) = 4/sqrt(144) = 4/12 = 1/3
+                 2,2)  # "2,2" defines the number of rows (2) and columns (2) in the matrix
+
+# Simulate the data
+rannorm <- mvrnorm(n=N,
+                   mu=means,
+                   Sigma=correl) %>% # Sigma = correlation matrix
+  as.tibble()
+
+#Rename the columns to what we're used to
+colnames(rannorm) <- c("rand1", "rand2")
+
+rannorm
+  
+#Plot these data
+rannorm %>% 
+  ggplot(aes(x = rand1, y = rand2)) +
+  geom_point(alpha = 0.1)
+
+# Can we recover the correlation coefficient, r?
+cor(rannorm$rand1, rannorm$rand2)
+
+```
+Notice we got a correlation coefficient very close to what we specified (0.333333...). Once again it's not *exact* because we're making random draws, but it indicates our simulation worked.
+
+If you want to learn a bit more about the math behind this, I recommend [this quick blog post!](https://fredclavel.org/2019/04/17/simulating-correlated-multivariate-data/)
+
+### Random Binary Data
+
+What if instead of normally-distributed data we wanted a bunch of 0/1 binary data, like simulated coin flips? There are a bunch of options, but here's one for simulating 100,000 tosses of an *unfair* coin with a 70% chance of coming up tails:
+
+```{r bin_single, exercise = TRUE}
+# Set the seed to create a reproducible draw
+set.seed(11142020)
+
+# Create a tibble with a single column with 100,000 draws from a normal distribution
+ranbin <- tibble(
+  rand1 = rbinom(n = 1e5, # 1e5 = 1 x 10^5 = 100,000 draws
+                size = 1, # Get results of a single coin flip each time
+                prob = 0.7)) # For fun, let's use an unfair coin with a 70% chance of "1" (tails)
+                             # and, by extension, a 30% chance of "0" (heads)
+ranbin
+
+# CHALLENGE: Check the percentage of "tails" (1s) to see if our simulation worked
+# That is, see if we can "recover" the true probability of a 1/tails from the data
+
+
+### YOUR CODE HERE
+```
+
+```{r quiz2, echo=FALSE}
+  
+quiz(
+  question("What proportion of the coin flips you simulated above came up 1/tails?",
+      answer("0.5, exactly" ),
+      answer("Close to 0.7, but not exactly", correct = TRUE,
+             message = "Remember, we're randomly flipping a bunch of coins with a 70% probability of tails. But the actual proportion is going to be a *little* bit off from that because...well, because the draws are random, so there's a little bit of noise. This is exactly what we want to see."),
+      answer("0.7, exactly"),
+      answer("Could not tell"),
+      type = "learnr_radio",
+      allow_retry = TRUE)
+)
+```
+
+We use `rbinom()` because the **binomial** distribution is used to describe 0/1 outcomes. You may have also learned the **Bernoulli** distribution, which is just a special case of the binomial. While the binomial can describe, for example, the number of heads in any number of coin flips, the Bernoulli describes the results of a single coin flip.
+
+### Other Distributions
+
+Simulating data from other distributions - like Poisson or beta or gamma distributions - follows a largely similar process. We won't go into details here, but hopefully you get the basic idea.
+
+### Sampling
+
+The last thing you may want to do is take a sample from some existing data. Let's recreate our single random normal variable (this time as a vector rather than a data frame) and see what we can do.
+
+```{r norm_single_vec, exercise = TRUE}
+# Set the seed to create a reproducible draw
+set.seed(11142020)
+
+# Create a vector of 100,000 draws from a normal distribution
+rannorm <- rnorm(n = 1e5, # 1e5 = 1 x 10^5 = 100,000 draws
+                mean = 1, # Mean of the normal distribution
+                sd = 2) # Standard Deviation of the normal distribution
+
+# Notice when we print this it's a vector rather than a column in a data frame/tibble
+head(rannorm)
+
+```
+
+#### Without Replacement
+
+Say we want to sample 10,000 observations from our 100,000 we just produced. We also want to sample them **without replacement** - meaning that we want 10,000 unique observations. Once we sample one, it can't be sampled again.
+
+```{r sample_vec_norep-setup, include = FALSE}
+# Set the seed to create a reproducible draw
+set.seed(11142020)
+
+# Create a vector with 100,000 draws from a normal distribution
+rannorm <- rnorm(n = 1e5, # 1e5 = 1 x 10^5 = 100,000 draws
+                mean = 1, # Mean of the normal distribution
+                sd = 2) # Standard Deviation of the normal distribution
+```
+
+```{r sample_vec_norep, exercise = TRUE}
+# Sample is also a pseudo-random operations, so we must set a seed to create a reproducible sample
+set.seed(11142020)
+
+# Sample 10,000 elements without replacement
+samp_norep <- sample(x = rannorm, # Vector to sample from
+       size = 1e4, # Sample 10,000 elements
+       replace = FALSE) # Without replacement
+
+# Notice the first elements are different from the original rannorm because they're a sample from the entire
+# 100,000-long vector. Also confirm the length of our sample is 10K
+head(samp_norep)
+length(samp_norep)
+```
+
+#### With Replacement
+
+Sometimes, though, you want to sample *with* replacement - that is, when you sample an element, it goes back into the sample pool and can be picked again, to possibly appear multiple times in the resulting sample. You might want to do this, for example, if you're working with the statistical technique called **bootstrapping** - you don't know what this is yet, so don't worry about it. But here's some (very similar) code to sample with replacement:
+
+```{r sample_vec_rep-setup, include = FALSE}
+# Set the seed to create a reproducible draw
+set.seed(11142020)
+
+# Create a vector with 100,000 draws from a normal distribution
+rannorm <- rnorm(n = 1e5, # 1e5 = 1 x 10^5 = 100,000 draws
+                mean = 1, # Mean of the normal distribution
+                sd = 2) # Standard Deviation of the normal distribution
+```
+
+```{r sample_vec_rep, exercise = TRUE}
+# Sample is also a pseudo-random operations, so we must set a seed to create a reproducible sample
+set.seed(11142020)
+
+# Sample 10,000 elements without replacement
+samp_rep <- sample(x = rannorm,
+       size = 1e4, 
+       replace = TRUE) # With replacement - this is our only change
+
+# Confirm this sample is of size 10,000 
+length(samp_rep)
+
+# But check that there was replacement by seeing the number of *unique* values
+length(unique(samp_rep))
+```
+Indeed we see there are only 9,530 *unique* values here - indicating some were sampled multiple times, and that our sampling with replacement worked.
+
+#### Rows From a Data Frame
+
+One last thing you may want to do is, rather than sampling from a vector, sample entire rows/observations from a data frame or tibble. In fact, if you remember way way back in one of our earlier Tutorials we did this for the `diamonds` data frame to make plotting easier.
+
+Anyway, here's how it's done with the `penguins` data:
+
+```{r sample_rows, exercise = TRUE}
+# Sample is also a pseudo-random operations, so we must set a seed to create a reproducible sample
+set.seed(11142020)
+
+# Sample 100 rows without replacement
+penguins_sample <- slice_sample(.data = penguins,
+                                n = 100,
+                                replace = FALSE) # Could also do with replacement by setting to TRUE
+
+penguins_sample
+```
+
+You can also sample a proportion of observations instead of a set number. This comes in handy if you want to, for example, set aside 20% of your data for out-of-sample testing of a machine learning model.
+
+```{r sample_rows_prop, exercise = TRUE}
+# Sample is also a pseudo-random operations, so we must set a seed to create a reproducible sample
+set.seed(11142020)
+
+
+# Sample 50% of a data frame/tibble instead
+penguins_prop <- slice_sample(.data = penguins,
+                                prop = 0.5,
+                                replace = FALSE) # Could also do with replacement by setting to TRUE
+
+penguins_prop
+```
+
+## Summary
+
+Today we briefly covered how and when to write your own functions to call to do common but idiosyncratic tasks you need multiple times without copy-pasting code. We also covered some basic techniques for simulating your own data to test out regression models or other statistical techniques.
+
+In our next Tutorial...well, that's it, actually! Thanks for joining me on this QTM 150 journey. I hope it was as fun for you as it was for me. Or at least not terrifically miserable. Or if it was terrifically miserable, you at least got some skills out of it that may help you land a job or do some cool data analysis later on. Gotta stay realistic.
+
+Thanks again, everyone. See some (many?) of you in QTM 151!
