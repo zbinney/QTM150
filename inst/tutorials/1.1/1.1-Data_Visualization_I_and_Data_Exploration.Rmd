@@ -211,6 +211,12 @@ knitr::include_graphics("images/Viewing_Dataset.png")
 
 This can be more intuitive for those of you just transitioning over from Excel. If you hover over each column name it will tell you whether the data is numeric, character, or factor. You can also run `View(penguins)` in the Console to get the same result.
 
+#### Help Pages and Data Dictionaries
+
+Since this data is part of a package in R, run `?penguins` to get to the help page for the data frame while looking at everything else. This provides a sort of **Data Dictionary** to help you decode what you're seeing and what each variable means. 
+
+(Note if the data you're using isn't part of a package you may need some other external data dictionary to explain what you're seeing.)
+
 #### Structure
 
 Third, you can use `str()`, short for structure.
@@ -293,7 +299,14 @@ Note in order to get this to show properly in the Tutorial you may need to hover
 
 You don't have to use `skimr::skim()` or `summarytools::dfSummary()`. There are tons of other options out there. Find one you like and work with it!
 
-But even with something like `skimr` or `summarytools`...just looking at tables of numbers and data types, it can be hard to really get a good feel for your data. What if we tried creating some pretty graphs and looking at things visually? That often tells us a lot more.
+
+### My Process
+
+I usually go with some combination of `head()`, `str()`, and the help page or an external data dictionary when I meet an unfamiliar data frame. I also usually "View" it by clicking on it in my Environment pane. Then I may use `summary()` if I want to know more about the values in the data frame.
+
+I find this combination helps me get oriented to most new data frames.
+
+But even with this process...just looking at tables of numbers and data types, it can be hard to really get a good feel for your data. What if we tried creating some pretty graphs and looking at things visually? That often tells us a lot more.
 
 But first, we should discuss...
 
