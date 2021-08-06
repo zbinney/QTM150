@@ -141,7 +141,7 @@ You should see something *like* this (but not exactly this, as you'll have more 
 
 If you have some **Warnings**, too, that's probably OK. Hopefully you won't have any **Errors**. If you see something that says error, maybe send me a screenshot.
 
-Now, run `install.packages(c("DT", "rmarkdown", "unvotes", "devtools", "remotes", "learnr", "shiny", "tinytex"))`.
+Now, run `install.packages(c("DT", "rmarkdown", "unvotes", "devtools", "remotes", "learnr", "shiny", "tinytex", "pacman"))`.
 
 Finally, run `remotes::install_github("allisonhorst/palmerpenguins")`. Don't worry about what this code means for now.
 
@@ -150,8 +150,6 @@ We now need to make sure these installs ran OK. Try to *load* some of these the 
 `library(tidyverse)`
 
 `library(DT)`
-
-`library(unvotes)`
 
 `library(rmarkdown)`
 
