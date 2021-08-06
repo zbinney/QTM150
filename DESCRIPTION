@@ -1,5 +1,5 @@
-Package: Tutorials_QTM150_151
-Title: Tutorials for QTM 150 at Oxford College of Emory University
+Package: TutorialsQTM150151
+Title: Tutorials for QTM 150 and 151 at Oxford College of Emory University
 Version: 0.0.0.1000
 Authors@R: 
     person(given = "Zachary",
@@ -7,7 +7,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "zbinney@emory.edu",
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: This is a package to contain the R coding tutorials for QTM 150 at Oxford College of Emory University.
+Description: This is a package to contain the R coding tutorials for QTM 150 and QTM 151 at Oxford College of Emory University.
 License: `use_gpl3_license()`
 Encoding: UTF-8
 LazyData: true
