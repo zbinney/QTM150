@@ -1,0 +1,223 @@
+---
+title: "Tutorial 9.2 - Tidy Data II"
+
+author: "Zachary Binney, PhD"
+date: "March 2021"
+
+output: 
+  learnr::tutorial:
+    css: css/zb_style.css
+    progressive: TRUE
+runtime: shiny_prerendered
+description: "Tidy Data II"
+---
+
+```{r hidden, include = FALSE}
+pacman::p_load(learnr)
+
+```
+
+
+## Intro
+
+This Tutorial continues our work on **data cleaning** - but we will once again focus on getting *somewhat* pre-cleaned data into a tidy format.
+
+In this one we will focus on how to **reshape** data by switching between long and wide format. This is a very common task because different analyses may be more easily conducted and different questions more easily answered in either long or wide format. Some of you may have already needed to learn these to process data in your QTM 150 Final Project (for example, if you worked with the marijuana data).
+
+Future Tutorials will expand our cleaning skill set. They will cover how to take messy real-world data and do the other parts of data cleaning beyond tidying how it's stored and reshaping: fixing incorrect or missing or implausible or corrupted or incomplete values; dealing with duplicate observations; changing variable formats; fixing variable names; and so on.
+
+### Packages
+
+As usual we need to load packages. This time we only need `tidyverse` because one of the packages it loads is `tidyr` - our main function source for this and the prior Tutorial. We're also going to read in a few data frames we can use later.
+
+```{r setup, message = FALSE}
+# Load (and, if necessary, first install) packages
+pacman::p_load(tidyverse)
+
+# Econ data from the World Bank
+real_econ <- read.csv("./datasets/real_econ.csv", fileEncoding = 'UTF-8-BOM') #Required to avoid odd character on first column name
+tidy_econ <- read.csv("./datasets/tidy_econ.csv")
+
+```
+
+## Make Long Data With `pivot_longer()`
+
+Let's return to one of our basic toy example of un-tidy data (cases of a disease in various countries):
+
+```{r pivot_longer1}
+table4a <- table4a %>% 
+  mutate(`2001` = c(1700, 51000, 213000)) # Adding a third column so going to long format
+                                          # will actually result in fewer columns
+table4a
+
+```
+``` {r quiz1, echo = FALSE}
+
+quiz(
+  question("Is `table4a` in long or wide format?",
+      answer("long"),
+      answer("wide", correct = TRUE, message = "That's right! One variable (number of cases) is split across three columns (`1999`, `2000`, and `2001`). As a result, each row implicitly contains *three* observations on each country: cases in the year 1999, cases in the year 2000, and cases in the year 2001. This format adds columns - thus creating a 'wider' data frame - to save rows."),
+      type = "learnr_radio",
+      allow_retry = TRUE)
+)
+```
+
+This data frame exhibits a *very* common issue where the columns are not separate variables in and of themselves, but rather *values of some of other implicit (unnamed) variable* - in this case `year`. That is, a single variable is split across multiple columns. Hold that thought.
+
+<mark>Challenge:</mark> Before proceeding, can you articulate in words (or perhaps draw in a diagram) what a long version of this data frame would look like? How many rows and how many columns would it have?
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+We are going to **reshape** this wide data frame into long (tidy) format by ensuring there is only *one* (1) observation - defined as data from a single country in a singe year - in each row. This will add rows to our data frame, making it **longer** (or taller, and narrower). We accomplish this with a new function, pivot_longer()`. Here's the general format for a basic call:
+
+```{r pivot_longer_form, eval = FALSE}
+<WIDE DATA FRAME> %>% 
+  pivot_longer(cols = <NAMES OF COLUMNS ACROSS WHICH SINGLE OBSERVATION IS SPLIT, CHOSEN USING `select()` SYNTAX>,
+               names_to = <QUOTED STRING OF THE IMPLICIT VARIABLE REPRESENTED IN THE NAMES OF cols>,
+               values_to = <QUOTED STRING OF THE VARIABLE REPRESENTED BY THE VALUES STORED IN cols>)
+
+```
+
+This probably doesn't make a ton of sense right now. Let's see it in action:
+
+```{r pivot_longer2, exercise = TRUE}
+# Change `table4a` from wide to long format
+table4a %>% 
+  pivot_longer(cols = `1999`:`2001`, # Note the select() style syntax
+               names_to = "year",
+               values_to = "cases")
+
+               
+```
+
+Previously our data was 3 x 4. Now it's 9 x 3. We exchanged the three columns `1999`, `2000`, and `2001` for two new columns: `year` (to indicate what year's data a row contains) and `cases` (the actual variable represented by the values in the "wide" columns). Fewer columns, more rows! And now each row contains a single observation for one country in one year - tidy! Here's a graphical depiction of what happened:
+
+```{r img0, echo = FALSE, out.width = "100%", fig.align = "center", fig.cap = "Graphical depiction of the `pivot_longer()` function from [Chapter 12.3 of *R for Data Science*](https://r4ds.had.co.nz/tidy-data.html#pivoting)."}
+knitr::include_graphics("images/pivot_longer.png")
+```
+
+<mark>Challenge:</mark> What if I hadn't added the third year column `2001` above? What would have happened to the dimensions of our wide and long data frames? Do you notice anything interesting about that? 
+
+<mark>Challenge:</mark> Duplicate and modify the code above to turn `table4b` from wide to long. It should require several minor modifications.
+
+### `select()` Syntax?
+
+Let's discuss briefly what I mean by using `select()` syntax for the `cols =` argument. Briefly, anything you can do with `select()` you can do here. So in `table4a` I wanted to select the columns `1999`, `2000`, and `2001`. Here are two ways I could have done that:
+
+```{r pivot_longer_select}
+# Change `table4a` from wide to long format
+table4a %>% 
+  pivot_longer(cols = `1999`:`2001`,
+               names_to = "year",
+               values_to = "cases")
+
+# Change `table4a` from wide to long format
+table4a %>% 
+  pivot_longer(cols = -country,
+               names_to = "year",
+               values_to = "cases")
+               
+```
+
+<mark>Challenge:</mark> Can you think of at least one other way I could have chosen those columns?
+
+### `gather()`
+
+`pivot_longer()` was previously known as `gather()`, but that is now deprecated - and for good reason. It was confusing as hell. `pivot_longer()` is way better. Learn it and use it. Just note you'll probably still see `gather()` in a lot of old answers and examples you might Google.
+
+Also note this was a *very* simple example of how to use `pivot_longer()`. For many more details, see `?pivot_longer`.
+
+## Make Wide Data With `pivot_wider()`
+
+Remember Newton's third law? Here it is again. For (some) actions in R we want an equal and opposite reaction. The `pivot_longer()` function took us from wide-to-long...but what if we want to go in reverse from long-to-wide? Let me introduce `pivot_wider()`:
+
+```{r pivot_wider_form, eval = FALSE}
+<LONG DATA FRAME> %>% 
+  pivot_wider(names_from = <QUOTED STRING OF COLUMN TO TAKE NEW COLUMN NAMES FROM>,
+              values_from = <QUOTED STRING OF THE COLUMN THAT HOLDS THE VALUES FOR THE NEW COLUMNS>)
+
+```
+
+Let's look at an example. We'll work with our toy case and population data again, but starting with a long data frame.
+
+```{r pivot_wider1}
+# A long data frame
+table2
+
+```
+
+Here, if we conceive of an observation as data from a single country and year, the data is un-tidy: a single observation is split across multiple rows (one with data on cases, and the other on population, as indicated by the `type` variable). So while this is long data, it's arguably *too* long to be considered tidy! See how complicated this stuff can get? 
+
+Anyway, maybe we'd like to reshape this to put each observation in a single row. To do that we actually need to make `table2` wider:
+
+```{r pivot_wider2, exercise = TRUE}
+# Tidy table2 by widening it
+table2 %>% 
+  pivot_wider(names_from = "type", # Will create two new columns, one for each value of "type"
+              values_from = "count") # Will place values from count into those two new columns
+
+```
+
+Here's a graphical depiction of what just happened:
+
+```{r img1, echo = FALSE, out.width = "100%", fig.align = "center", fig.cap = "Graphical depiction of the `pivot_wider()` function from [Chapter 12.3 of *R for Data Science*](https://r4ds.had.co.nz/tidy-data.html#pivoting)."}
+knitr::include_graphics("images/pivot_wider.png")
+```
+
+<mark>Challenge:</mark> How many rows did we lose? How many columns did we add? Is there anything surprising about the latter? HINT: What if instead of just cases and population, we also had data on the number of deaths from the disease in each country-year?
+
+### `spread()`
+
+`pivot_wider()` was previously known as `spread()`, but that is now deprecated - and for good reason. It was confusing as hell. `pivot_wider()` is way better. Learn it and use it. Just note you'll probably still see `spread()` in a lot of old answers and examples you might Google.
+
+Also note this was a *very* simple example of how to use `pivot_wider()`. For many more details, see `?pivot_wider`.
+
+## Practice
+
+Recall our tidy (`tidy_econ`) and un-tidy (`real_econ`) data frames from the World Bank:
+
+```{r wb}
+real_econ
+
+tidy_econ
+
+```
+As we established in the prior Tutorial, this is data on 4 economic indicators (unemployment, inflation, per capita GDP, and growth in per capita GDP) measured annually from 2000-2018 for each of 3 countries (India, China, and the U.S.).
+
+Currently `real_econ` has two distinct un-tidy aspects: each variable (e.g. unemployment) is split across multiple columns; and each observation (a country and year) is split across multiple rows (one for each economic indicator).
+
+Your boss at a hedge fund, Bobby Axelrod, plans to make a few billion dollars shorting one country's currency. He'll make his choice based on an analysis of their underlying economic indicators, but the analysis he wants you to run requires the data to be tidy - organized with each country-year in a single row. 
+
+He likes to play mind games with his analysts, so he gives you two hints before sending you out on your own. The task will require using both `pivot_longer()` and `pivot_wider()`, and it will require splitting things into two distinct steps:
+
+1. Moving the data for each year to its own row so a single economic indicator isn't split across multiple columns
+
+2. Putting each economic metric in its own column so all the economic data for a single country-year is held in *one* row
+
+<mark>Challenge:</mark> Your first task is to see if you can solve problem #1 using an appropriate function. Note there is a problem here you haven't encountered before - the values don't represent a *single* variable like `cases`, but can be any one of 4 indicators. You should choose an appropriate column name to note that fact. Fortunately, after your pivot the data frame will still show clearly which value refers to which indicator. 
+
+HINT (Bobby's chief analyst, Taylor, takes pity on you): a correct answer at this stage will have the dimensions 228 x 4.
+
+```{r pivot_longer_prac, exercise = TRUE}
+
+
+```
+
+<mark>Challenge:</mark> Once you've accomplished the above, add to the code block above to accomplish our second task - put each economic metric in its own column rather than having all the economic data for a single country-year scattered across multiple rows.
+
+HINT (Bobby's chief analyst Taylor continues to take pity on you): a correct final answer will have the dimensions 57 x 6 (that is, the same as `tidy_econ`).
+
+### Need for Further Cleaning
+
+One more thing. If you did this the way I expect, one of your columns likely has values like `yr_2001`. That's bad, because this column represents years, which we'd typically want to treat as numeric. So we need to **clean** this column further to make it into numeric years. We'll learn how to do that in upcoming Tutorials, but major bonus points (not actually, it's just a phrase) if you can figure out how to do it on your own now.
+
+## Summary
+
+In this Tutorial we covered how to reshape data using `pivot_longer()` and `pivot_wider()`.
+
+In the next 4 Tutorials or so we will cover how to take messy real-world data and do the other parts of data cleaning beyond tidying how it's stored and reshaping: fixing incorrect or missing or implausible or corrupted or incomplete values; dealing with duplicate observations; changing variable formats; fixing variable names; and so on. We'll begin with a general introduction and then dig into the specifics of dealing with strings, factors, and dates.
