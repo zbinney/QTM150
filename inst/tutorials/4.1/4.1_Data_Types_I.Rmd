@@ -116,6 +116,7 @@ logic <- c(TRUE, TRUE, FALSE)
   ## Write your own code to check its properties
 
 ```
+
 ### Vector Types
 
 #### Logical
@@ -184,6 +185,7 @@ double**2 - 2
 double**2 - 2 == 0
 near(double**2 - 2, 0)
 ```
+
 ##### **Special Numeric Values: `NA` vs. `NaN` vs. `Inf` vs. `-Inf`**
 
 Integer vectors have just one special value if an element isn't an integer number: `NA`.
@@ -317,7 +319,7 @@ bday[1]
 # Get the first element twice, then all but the last element
 bday[c(1, 1, 2:5)]
 
-# Get the 3rd, then the 5th element
+# Get the 5th, then the 3rd element
 bday[c(5, 3)]
 
 # Get everything but the 2nd and 4th elements
@@ -329,9 +331,49 @@ Hopefully some of this is reminiscent of `select()` for you.
 
 You can't mix positive and negative numbers when subsetting. And if you use `0` you'll simply get an empty vector.
 
+#### Subset Using Values
+
+Another useful way of subsetting vectors is to find the location of certain elements that meet various criteria. To do this you use `which()`:
+
+```{r vec_sub_which, exercise = TRUE}
+
+# Create a vector
+bday <- c("Happy", "Happy", "Birthday", "!", "It's", "Your", "Birthday", "Baby!")
+
+# Find locations of element "Birthday"
+which(bday == "Birthday") # Returns a numeric vector of locations of elements meeting the indicated criterion
+
+# Use this to extract all instances of "Birthday" from our vector
+bday[which(bday == "Birthday")]
+
+```
+
+You may need to think for a moment about what that last line is doing. Instead of writing `bday[3,7]` explicitly to get the third and seventh elements, we: 
+
+1. First use `which()` to return the locations of all elements that are "Birthday". These happen to be elements 3 and 7.
+
+2. These then get fed into our brackets for subsetting, so the code *becomes* `bday[3,7]`, but 3 and 7 are output by `which()` rather than input by us manually.
+
+This may seem arbitrary now, but I assure you it's actually quite useful (just wait until HW 4)!
+
+One last thing here. What if we only want *one* instance of "Birthday?" That's no problem once we remember `which()` returns a vector itself.
+
+```{r vec_sub_which_first, exercise = TRUE}
+
+# Create a vector
+bday <- c("Happy", "Happy", "Birthday", "!", "It's", "Your", "Birthday", "Baby!")
+
+# Find just FIRST locations of element "Birthday"
+which(bday == "Birthday")[1] # This returns just 3 (the first location) and not 7 (the second)
+
+# Use this to extract ONE instance of "Birthday" from our vector
+bday[which(bday == "Birthday")[1]]
+
+```
+
 #### Subset Using Names
 
-If you have a named factor, you can subset it using the names.
+If you have a named vector, you can subset it using the names.
 
 ```{r vec_sub2, exercise.setup = "vec_names", exercise = TRUE}
 # Subset using names
@@ -339,6 +381,7 @@ named_vector <- c(Happy = "Birthday", Good = "Morning", Smell = "Ya Later!")
 named_vector["Smell"]
 
 ```
+
 #### Subset Using Logical Comparisons
 
 Finally, you can subset using logical comparisons that will loop through a vector, assign a value of `TRUE` or `FALSE` to each element based on some comparison you indicate, and only return those where the value is `TRUE`. This is an incredibly powerful technique that powers, among other things, `filter()`.
@@ -646,6 +689,7 @@ bday_list <- list("Happy Birthday to You!", "How Old Are You?", 34L, TRUE)
 str(bday_list)
 
 ```
+
 Notice two things:
 
 * The list has a length of 4 because there are 4 elements
@@ -663,11 +707,12 @@ bday_list_recur <- list(list("Happy Birthday to You!", "How Old Are You?"), 34L,
 str(bday_list_recur)
 
 ```
+
 This shows us we have a list of length *3* now, rather than *4*. That's because we collapsed our first two elements into a single list that now serves as `bday_list_recur`'s first element.
 
 Our first element is itself a list of length *2*, with both its elements character strings. Our second element is the integer 34, and the third is our logical `TRUE` value.
 
-This may seem odd, but this functionality makes lists very appropriate for creating hierarchical, or tree-like, data structures, which are really useful for storing, accessing, and distributing data. These data structures are not intuitive at all, mind you - they're not like an Excel spreadsheet or even an R tibble or SQL relational database - and you'll need much more programming than what you get in this course to make them feel intuitive. But computer scientists and data engineers swear to me they're great and the way to go if you can.
+This may seem odd, but this functionality makes lists very appropriate for creating hierarchical, or tree-like, data structures, which are really useful for storing, accessing, and distributing data. These data structures are not intuitive at all, mind you - they're not like an Excel spreadsheet or even an R tibble or SQL relational database - and you'll need much more programming than what you get in this course to make them feel natural. But computer scientists and data engineers swear to me they're great and the way to go if you can.
 
 ### Investigating Lists
 
@@ -679,6 +724,7 @@ bday_list_recur <- list(list("Happy Birthday to You!", "How Old Are You?"), 34L,
 bday_list_recur
 
 ```
+
 * The first element of our overall list, [[1]]
     + The first element of the list that comprises the first element of our overall list, [[1]][[1]]
         - The first (and only) element contained there is "Happy Birthday to You!"
@@ -758,6 +804,7 @@ str(extract5)
 
 
 ```
+
 Note in our last example we used a pair of double brackets because we had to dive down two levels into a list. We had to first pluck the actual list of strings out of our bigger list, then pluck the actual element "How Old Are You?" from that list.
 
 This illustrated example from [Chapter 20.5.2 of *R for Data Science*](https://r4ds.had.co.nz/vectors.html#subsetting-1) may help further.
@@ -770,6 +817,7 @@ a <- list(a = 1:3, b = "a string", c = pi, d = list(-1, -5))
 ```{r img2, echo = FALSE, out.width = "70%", fig.align = "center", fig.cap = "A visualization of subsetting lists."}
 knitr::include_graphics("images/lists-subsetting.png")
 ```
+
 Notice how any subsetting command that ends with a single bracket `[]` returns a list that itself contains whatever you asked for.
 
 If you use double brackets `[[]]` you will get the element itself, not contained in a broader list. Note, though, that you'll still get a list if the element itself was a list, as with `a[[4]]`. In other cases, though, like `a[[4]][[1]]`, you'll just get a vector or something else, with no surrounding list at all.

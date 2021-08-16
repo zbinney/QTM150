@@ -217,6 +217,7 @@ mpg[[31,5]] # This will extract the element as a vector of length 1
 mpg[31,5] # This will extract the element as a 1 x 1 data frame
 
 ```
+
 The format here is always `[[ROW_NUMBER(S), COLUMN_NUMBER(S)]]`. If you leave either of these blank R returns *all* the columns or rows of the blank element. Speaking of which...
 
 #### Getting Single Rows
@@ -227,6 +228,7 @@ Say you want just the 31st row of `mpg`:
 # Give me all columns of the 31st row
 mpg[31,]
 ```
+
 ##### **How Does `filter()` Really Work?**
 
 Here's a weird way to get the 1st row of `mpg`:
@@ -235,6 +237,7 @@ Here's a weird way to get the 1st row of `mpg`:
 # Give me the 1st row
 mpg[c(TRUE, rep(FALSE, nrow(mpg)-1)),]
 ```
+
 Here's what this does:
 
 * `nrow(mpg)` returns 234, the number of observations in the data
@@ -266,8 +269,11 @@ Say you want the 5th column of `mpg`: `cyl`. You have a few different options he
 ```{r one_column, exercise = TRUE}
 # We can use numbers to index...
 mpg[,5] # Returns a data frame with one column
+mpg[5] # Returns the same thing because R interprets this as "selecting" the 5th element of the mpg list,
+       # which is the column `cyl` (remember, data frames are just lists of columns)
 
-mpg[5] # Returns a data frame with one column
+# Or column names...
+mpg["cyl"] # Returns a data frame with one column
 
   # This is essentially how select() works!
   mpg %>% 
@@ -287,6 +293,22 @@ mpg$count <- c(1:nrow(mpg))
   #Scroll over to the rightmost column to prove it
   mpg
 ```
+
+##### **Introducing `pull()`**
+
+One other way is `pull()`, like so:
+
+```{r one_column_pull, exercise = TRUE}
+
+#Use pull to access a single columns
+mpg %>% 
+  pull(cyl)
+
+```
+
+The `pull()` function is extremely similar to the `$` operator, but it works a little better and looks prettier in pipes.
+
+If you're thinking really deeply about R you might wonder what's the difference between `pull()` and `select()`? There are two main ones: `pull()` only works on a single column, and it returns a *vector* rather than a data frame with the indicated columns. As noted above, the `$` operator also returns a vector. So which one you use depends on the particular output you want.
 
 ### A Deeper Dive on `mutate()`
 
@@ -459,6 +481,7 @@ gss_cat %>%
   ggplot(aes(x = marital)) +
   geom_bar()
 ```
+
 Note these methods will NOT show any levels of the factor for which there are no values in your data. That is, there may be other defined levels that simply don't exist in what you're looking at.
 
 By the way, factors are great for a few reasons, but one major one is they help with sorting. You can specify the order of values of a categorical variable when that's important - think months. Months aren't in alphabetical order, so you want a way to set the order (Jan, Feb, Mar...). Speaking of which, let's dive a bit more into how to create a sensible order for factor levels.
@@ -478,6 +501,7 @@ gss_cat %>%
              y = relig)) + 
   geom_point()
 ```
+
 Note that R has somehow figured out how to do a scatterplot with a categorical variable. Can you articulate how?
 
 Remember factors are integers under the hood! So it simply plots the point for "No Answer" - which is assigned to the first level, or an integer value of 1 - at the y-coordinate for 1, for Protestant at y = 15, and so on!
@@ -528,6 +552,17 @@ gss_cat %>%
   ggplot(aes(x = marital)) +
   geom_bar()
 ```
+
+
+## Summary
+
+Today we covered attributes and the more complex data types they allow: factors, dates, data frames, and tibbles. That's it for the Data Types section of the course.
+
+The next and final section (briefly and superficially) covers some major statistical programming techniques you might need in your careers: if-else statements, for-loops, basic function writing, and statistical simulation. Then we're finished!
+
+## Appendix (Optional): More on Factors
+
+Here is a little more on working with factors. If you take QTM 151 we will cover factors and the useful `tidyverse` `forcats` package in greater detail. But for now here are a couple other things you might be interested in:
 
 ### Modifying Factor Levels
 
@@ -632,9 +667,3 @@ diamonds %>%
   ggplot(aes(x = clarity)) +
   geom_bar()
 ```
-
-## Summary
-
-Today we covered attributes and the more complex data types they allow: factors, dates, data frames, and tibbles. That's it for the Data Types section of the course.
-
-The next and final section (briefly and superficially) covers some major statistical programming techniques you might need in your careers: if-else statements, for-loops, basic function writing, and statistical simulation. Then we're finished!
