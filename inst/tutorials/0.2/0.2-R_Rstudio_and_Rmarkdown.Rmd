@@ -202,7 +202,7 @@ in each year. We'll pick a few countries of interest, then visualize the results
 ```{r country-list, exercise = TRUE, warning = FALSE}
 
 #Pick some countries of interest
-country_list <- c("United States of America", "Russian Federation", 
+country_list <- c("United States", "Russia", 
                   "Mexico", "Turkey")
 
 #Plot a line graph of % yes votes by year
