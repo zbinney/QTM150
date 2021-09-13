@@ -22,7 +22,7 @@ pacman::p_load(learnr)
 First we need to load a few packages using the `p_load` function from the `pacman()` package. Recall this replaces `library()`. **Make sure to run this in your own script as you follow along!**
 
 ```{r setup}
-pacman::p_load(tidyverse, palmerpenguins, knitr, skimr, summarytools)
+pacman::p_load(tidyverse, palmerpenguins, knitr, skimr)
 ```
 
 
@@ -717,16 +717,17 @@ Let's recap the major things we learned:
 * How to open and explore datasets already loaded in R
 
     + Data frames and tibbles
-    + Native tools, `skimr` and `summarytools` packages
+    + Native tools, `skimr` package
     
 * Data visualization using `ggplot()`
 
     + Geoms/Chart types for single variables:
     
-        - Histograms using `geom_histogram()`
+        - Histograms using `geom_histogram()` and frequency polygons using `geom_freqpoly()`
         - Density plots using `geom_density()`
         - Raincloud plots using `geom_density()` and `geom_jitter()`
         - Bar charts using `geom_bar()`
+        - Box plots with `geom_boxplot()`
         
     + Aesthetics/Visual properties of the plot type:
     
