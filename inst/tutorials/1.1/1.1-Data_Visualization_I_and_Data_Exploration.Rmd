@@ -276,7 +276,7 @@ So, to summarize, a good process for starting to explore a data frame is:
 
 3. Print to your Console or View by clicking on the data frame name
 
-#### The `skimr` and `summarytools` Packages
+#### The `skimr` Package
 
 The native functions for data exploration we worked through above (`head()`, `tail()`, `str()`, `summary()`) in R are *OK*. But many people have developed better, more comprehensive solutions. 
 
@@ -287,17 +287,8 @@ One such solution I like is the `skimr` package, though there many others (often
 ```{r skimr, exercise = TRUE}
 skim(penguins) 
 ```
-Another option is `summarytools::dfSummary()`. Let's see how it works:
 
-```{r dfSummary, out.width = "100%"}
-print(dfSummary(penguins, graph.magnif = 0.75), 
-      method = 'render')
-```
-The biggest benefit of `dfSummary()` is you get clearer histograms *and* horizontal frequency bar charts for categorical variables, which can be easier to scan than the mere numbers you get from `skim()`.
-
-Note in order to get this to show properly in the Tutorial you may need to hover over the table and use your arrow keys to scroll right and left. I could not figure out how to set the proper width for this interactive Tutorial, but it should work fine in the normal RMarkdown documents you'll produce.
-
-You don't have to use `skimr::skim()` or `summarytools::dfSummary()`. There are tons of other options out there. Find one you like and work with it!
+You don't have to use `skimr::skim()`. There are tons of other options out there. Find one you like and work with it!
 
 
 ### My Process
