@@ -46,8 +46,8 @@ Let's return to one of our basic toy example of un-tidy data (cases of a disease
 
 ```{r pivot_longer1}
 table4a <- table4a %>% 
-  mutate(`2001` = c(1700, 51000, 213000)) # Adding a third column so going to long format
-                                          # will actually result in fewer columns
+  mutate(`2001` = c(1700, 51000, 213000)) # Adding a fourth column so going to long format
+                                          # will actually result in fewer columns (from 4 in wide to 3 in long format)
 table4a
 
 ```
@@ -73,7 +73,7 @@ This data frame exhibits a *very* common issue where the columns are not separat
 <br>
 <br>
 
-We are going to **reshape** this wide data frame into long (tidy) format by ensuring there is only *one* (1) observation - defined as data from a single country in a singe year - in each row. This will add rows to our data frame, making it **longer** (or taller, and narrower). We accomplish this with a new function, pivot_longer()`. Here's the general format for a basic call:
+We are going to **reshape** this wide data frame into long (tidy) format by ensuring there is only *one* (1) observation - defined as data from a single country in a singe year - in each row. This will add rows to our data frame, making it **longer** (or taller, and narrower). We accomplish this with a new function, `pivot_longer()`. Here's the general format for a basic call:
 
 ```{r pivot_longer_form, eval = FALSE}
 <WIDE DATA FRAME> %>% 
