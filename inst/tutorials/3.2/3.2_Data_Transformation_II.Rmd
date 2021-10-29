@@ -28,7 +28,7 @@ We need to load a few packages today, as usual. If any of them need to also be i
 pacman::p_load(tidyverse, gapminder, nycflights13, janitor)
 
 #Creation of a couple more datasets for later use - ignore
-rush <- read_csv("datasets/rush.csv")
+rush <- read.csv("datasets/rush.csv")
 
 flights_small <- select(flights, year:day, ends_with("delay"), distance, air_time, dep_time)
 
