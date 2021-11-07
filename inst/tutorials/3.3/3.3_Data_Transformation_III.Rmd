@@ -170,7 +170,7 @@ band_instruments
 
 Fill in the code below to complete an extremely simple `left_join()` of these two data frames to add instrument information to `band_members`. HINT: You should end up with a 4 x 3 data frame if you've done it correctly.
 
-```{r left_join_simpledata2, exercise = TRUE}
+```{r left_join_simpledata2, exercise = TRUE, exercise.setup = "left_join_simpledata"}
 #Join the data frames
 band_members %>% 
   left_join(__________, by = _______)
