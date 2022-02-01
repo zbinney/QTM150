@@ -94,7 +94,7 @@ One problem with just using colors to differentiate groups of interest is colorb
 
 How can you make your graphs more accessible to these people? How about using **shapes** instead of or in addition to colors? Simply add the `shape =` aesthetic to the code below:
 
-```{r scatter_shape}
+```{r scatter_shape, exercise = TRUE}
 #Scatterplot colored and shaped by species - need to modify code
 ggplot(data = penguins) +
   geom_point(mapping = aes(x = body_mass_g, y = flipper_length_mm, color = species))

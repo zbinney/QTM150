@@ -630,9 +630,10 @@ Notice that one nice result of this is nothing ever gets annihilated in the coer
 The other time you've encountered implicit coercion so far is when importing data. Consider the below code where I import the diabobes data:
 
 ```{r import_work_sub}
-diabobes <- read_csv("./datasets/obesity-diabetes.csv")
+diabobes <- read.csv("./datasets/obesity-diabetes.csv")
 
 ```
+
 Notice the message printed below - it indicates the type of vector it's treating each column as. In fact, each column in a data frame is a vector! (Though technically they can also be lists, but we're not covering that in this course.)
 
 Sometimes R doesn't correctly identify the type of vector/column you want - most often turning numbers into strings. This will help you know where and when it does that so you can correct it. You do that through explicit coercion by specifying a vector of column types you want R to use in the `col_types =` argument in `read_csv()`. See `?read_csv` for more.

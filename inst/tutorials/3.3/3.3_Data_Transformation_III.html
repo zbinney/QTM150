@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="Zachary Binney, PhD" />
+
+
+<meta name="progressive" content="true" />
+<meta name="allow-skip" content="false" />
+
+<title>Tutorial 3.3 - Data Transformation III</title>
+
+
+<!-- highlightjs -->
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+<!-- taken from https://github.com/rstudio/rmarkdown/blob/67b7f5fc779e4cfdfd0f021d3d7745b6b6e17149/inst/rmd/h/default.html#L296-L362 -->
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("section-TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+<!-- end tabsets -->
+
+
+<link rel="stylesheet" href="css\zb_style.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="pageContent band">
+<div class="bandContent page">
+
+<div class="topics">
+
+<div id="section-intro-and-setup" class="section level2">
+<h2>Intro and Setup</h2>
+<p>This week is some more entrees. So far we’ve learned how to manipulate data in a single data frame - now we’re going to talk about what happens when you have multiple data frames, and how to link between them!</p>
+<p>We need to load a couple packages and data frames today, as usual. If any of them need to also be installed, remember <code>p_load()</code> should take care of that for you. <strong>Just remember to run this code in your own script before proceeding.</strong></p>
+<pre class="r"><code>pacman::p_load(tidyverse, nycflights13)
+
+data(flights)
+data(airlines)
+data(planes)
+data(weather)</code></pre>
+</div>
+<div id="section-relational-data-intro" class="section level2">
+<h2>Relational Data Intro</h2>
+<p>Before we get into this, I just want to say I’m going to try and keep this whole Tutorial short because we’re already covering a lot in this course, but as a result it will be a bit of a superficial treatment of all this. Still, I think it’s important you at least get some introduction to it. For a more detailed treatment, see <a href="https://r4ds.had.co.nz/relational-data.html">Chapter 13 of <em>R for Data Science.</em></a>.</p>
+<p>So far we’ve worked with single, isolated data frames. But often a more efficient way to store data is in what are called <strong>relational databases</strong>, where the information you want may be scattered across several data sets. If you’ve ever worked with SQL (Structured Query Language) or Microsoft Access in any form you’ve worked with a relational database.</p>
+<p>These data sets are linked to one another in pairs through one or more shared variable(s) called <strong>keys</strong>.</p>
+<p>Let’s look at a “simple” example. The <code>nycflights13</code> package actually contains multiple data frames:</p>
+<ul>
+<li><code>flights</code>, which you’re already familiar with, lists data for each flight that departed NYC in 2013</li>
+<li><code>airlines</code> has data on the abbreviations and full names of the <code>carrier</code>s listed in flights</li>
+<li><code>planes</code> has more data on the actual physical planes used for each flight, organized by <code>tailnum</code> (tail numbers are unique to individual) - which is also a variable in <code>flights</code></li>
+</ul>
+<p>Let’s take a brief look at each of these.</p>
+<div class="tutorial-exercise" data-label="data" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>head(flights)
+head(airlines)
+head(planes)</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>There are others, too, but let’s not worry about them right now.</p>
+<p><div class="panel-heading tutorial-quiz-title">Quiz</div><div class="panel panel-default">
+<div data-label="quiz1-1" class="tutorial-question panel-body">
+<div id="quiz1-1-answer_container" class="shiny-html-output"></div>
+<div id="quiz1-1-message_container" class="shiny-html-output"></div>
+<div id="quiz1-1-action_button_container" class="shiny-html-output"></div>
+<script>if (Tutorial.triggerMathJax) Tutorial.triggerMathJax()</script>
+</div>
+</div></p>
+<div id="section-keys" class="section level3">
+<h3>Keys</h3>
+<p>As noted above, <strong>keys</strong> are variables used to link between two data frames. There are two types:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Primary keys</strong>: these are <em>one or more variables</em> that together uniquely identify a single observation in a table. In <code>planes</code>, for example, <code>tailnum</code> is a primary key because there is only one single entry for each <code>tailnum</code>, which corresponds to an individual aircraft.</p></li>
+<li><p><strong>Foreign keys</strong>: these are <em>one or more variables</em> that together uniquely identify a single observation in another table of interest. For example, <code>tailnum</code> is a foreign key <em>in <code>flights</code></em> since, while it doesn’t identify a unique observation in <code>flights</code>, it does in <code>planes</code>.</p></li>
+</ol>
+<p>Variables can be primary keys, foreign keys, both, or neither.</p>
+<p>You can check if something is a primary key by counting how many observations appear for each value of it, like so:</p>
+<div class="tutorial-exercise" data-label="pk" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code># Check if something is a primary key
+planes %&gt;% 
+  count(tailnum) %&gt;% # count() creates a new variable, n, that is the number of times each value of tailnum appears
+  filter(n &gt; 1) # because this returns 0 records, we conclude tailnum 
+                # uniquely IDs each observation and is a primary key
+
+planes %&gt;% 
+  count(manufacturer) %&gt;% 
+  filter(n &gt; 1) # manufacturer is not a primary key; multiple observations have the same manufacturer since
+                # most companies make more than 1 individual airplane</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>Note that <code>flights</code> doesn’t actually have a primary key! None of its variables is unique to a single observation. There are multiple flights per day, multiple flights with the same tail number, multiple flights with the same scheduled departure time, and so forth. You could create a primary key either by finding some combination of variables that uniquely identifies an observation, or by simply creating a new variable for each observation’s row number - it doesn’t mean anything, but it will be a unique primary key, which is still useful for identifying specific flights.</p>
+</div>
+<div id="section-relations" class="section level3">
+<h3>Relations</h3>
+<p>A primary key in one data frame and a foreign key in another form a <strong>relation</strong>. For example, <code>flights</code> and <code>planes</code> are related through the <strong>key</strong> <code>tailnum</code>. This is a <strong>primary key</strong> for <code>planes</code> and a <strong>foreign key</strong> for <code>flights</code>.</p>
+<p><strong>Relations</strong> can be:</p>
+<ul>
+<li><p>1-to-1: there are single records that match the key in each data frame you’re working with</p></li>
+<li><p>1-to-many: there are single records that match the key in one data frame, but many records that match it in another. For example, there’s only one record for each <code>tailnum</code> in <code>planes</code>, but many such records in <code>flights</code>. In other words, each plane only has one <code>tailnum</code> but takes many flights.</p></li>
+<li><p>Many-to-many: there are multiple records that match the key in each data frame. For example, every airline flies to multiple airports, and every airport has multiple airlines departing it.</p></li>
+</ul>
+</div>
+<div id="section-the-nycflights13-data" class="section level3">
+<h3>The <code>nycflights13</code> Data</h3>
+<p>Here is a graphic showing how the various data frames in <code>nycflights13</code> relate to one another:</p>
+<div class="figure">
+<img src="images/relational-nycflights.png" alt="*Overview of `nycflights13` structure, taken from [Chapter 13 of R for Data Science](https://r4ds.had.co.nz/relational-data.html).*" width="70%" />
+<p class="caption">
+<em>Overview of <code>nycflights13</code> structure, taken from <a href="https://r4ds.had.co.nz/relational-data.html">Chapter 13 of R for Data Science</a>.</em>
+</p>
+</div>
+<p>The arrows show the key variable(s) that link one data frame to another.</p>
+</div>
+</div>
+<div id="section-joining-relational-data-mutating-joins" class="section level2">
+<h2>Joining Relational Data: Mutating Joins</h2>
+<p>Relational databases are used to efficiently store large amounts of data by reducing repetitions. For example, does <code>flights</code> really need to contain the full name of every carrier for every flight, or can we get away with just the abbreviation while we hold the full names in the other, much smaller table <code>airlines</code>?</p>
+<p>The downside, of course, is that data isn’t readily available from other tables. So we have to join it in using something we’ll call a <strong>mutating join</strong>. Remember we use <code>mutate()</code> to add new variables to a data frame, and that’s basically what we’re doing here.</p>
+<div id="section-left-joins" class="section level3">
+<h3>Left Joins</h3>
+<p>The most basic and common type of <strong>mutating join</strong> you’ll use is a <strong>left join</strong>. You use it when you have some data in a table but need to pull in more from another. For example, say you had <code>flights</code>. You have the <code>carrier</code> abbreviations, but it’s hard to tell what airline exactly they refer to. Let’s bring that information into the <code>flights</code> table so it’s easier.</p>
+<p>If we’re joining two data frames, <code>x</code> and <code>y</code>, left joins keep all records in <code>x</code> (the “left” data frame) and adds the data from <code>y</code> (the “right” data frame), matching on the variables you indicate in the <code>by =</code> argument.</p>
+<p>Let’s look at an example:</p>
+<div class="tutorial-exercise" data-label="left_join1" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code># Simple left join adding full airline name
+flights %&gt;% # 1.
+  select(month:dep_time, carrier:dest) %&gt;% # 2.
+  left_join(airlines, by = &quot;carrier&quot;) %&gt;% # 3.
+  head()</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>This code 1. takes <code>flights</code> as our left-hand data frame, 2. <code>select()</code>s just a few variables to create a smaller data frame that contains the data we really need from it, and, 3. for each observation in <code>flights</code>, pulls in all information from the <code>airlines</code> data frame, matching the records <code>by =</code> the key variable <code>carrier</code>.</p>
+<p>What we get is <code>flights</code> but with a new column, <code>name</code>, representing the full name of the airline. This came from <code>airlines</code>.</p>
+<p>More generally, left joins do the following:</p>
+<ul>
+<li>Take <em>all</em> rows in the left data frame</li>
+<li>Add new columns from the right hand data frame to it, except those used to match the two data frames in <code>by =</code></li>
+<li>Then, for each observation in the left hand data frame:
+<ul>
+<li>If it can find <em>exactly one</em> match for the specified key(s) in the right hand data set, fill the new columns with the values from the match in the right hand data frame</li>
+<li>If it finds no match in the right hand data frame, fill in the new columns with <code>NA</code>s</li>
+<li>If it finds <em>multiple</em> matches in the right hand data frame, it will duplicate the left hand observation to the number of matches it finds, and then fill in the new columns with those values from the matches in order</li>
+</ul></li>
+</ul>
+<p>To dig into this process a little more, let’s look at some (slightly modified) simple data frames included in R for this purpose:</p>
+<pre class="r"><code>#Print band_members
+band_members</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["name"],"name":[1],"type":["chr"],"align":["left"]},{"label":["band"],"name":[2],"type":["chr"],"align":["left"]}],"data":[{"1":"Mick","2":"Stones"},{"1":"John","2":"Beatles"},{"1":"Paul","2":"Beatles"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code>#Print band_instruments, but with one extra row (r) bound (bind) to it
+band_instruments &lt;- rbind(band_instruments, c(&quot;Paul&quot;, &quot;keyboard&quot;)) # Paul McCartney played over 40 instruments, but we&#39;ll just pick two
+band_instruments</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["name"],"name":[1],"type":["chr"],"align":["left"]},{"label":["plays"],"name":[2],"type":["chr"],"align":["left"]}],"data":[{"1":"John","2":"guitar"},{"1":"Paul","2":"bass"},{"1":"Keith","2":"guitar"},{"1":"Paul","2":"keyboard"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Fill in the code below to complete an extremely simple <code>left_join()</code> of these two data frames to add instrument information to <code>band_members</code>. HINT: You should end up with a 4 x 3 data frame if you’ve done it correctly.</p>
+<div class="tutorial-exercise" data-label="left_join_simpledata2" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>#Join the data frames
+band_members %&gt;% 
+  left_join(__________, by = _______)
+
+band_members %&gt;% 
+  left_join(band_instruments, by = &quot;name&quot;)</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>Let’s break down what happened using our step-by-step outline from above.</p>
+<ul>
+<li>Take <em>all</em> 3 rows in <code>band_members</code> (Mick, John, and Paul)</li>
+<li>Add new columns from the right hand data frame (<code>band_instruments</code>) to it, except those used to match the two data frames in <code>by =</code> (<code>plays</code>)</li>
+<li>Then, for each observation in the left hand data frame:
+<ul>
+<li>If it can find <em>exactly one</em> match for the specified key(s) in the right hand data set, fill the new columns with the values from the match in the right hand data frame - John</li>
+<li>If it finds no match in the right hand data frame, fill in the new columns with <code>NA</code>s - Mick, who does vocals (that is, he doesn’t play an instrument)</li>
+<li>If it finds <em>multiple</em> matches in the right hand data frame, it will duplicate the left hand observation to the number of matches it finds, and then fill in the new columns with those values from the matches in order - Paul, it duplicated his row in the left hand data frame, creating two total rows (one for each instrument he plays in <code>band_instruments</code>)</li>
+</ul></li>
+</ul>
+<p>This last step - which often comes from an <strong>under-specified key</strong> that doesn’t identify unique observations in both data frames - can accidentally create <em>very</em> (intractably) large data frames that can freeze R. To see how this might happen, here’s a small example where we try to add some <code>weather</code> data to the first 6 observations of <code>flights</code>:</p>
+<div class="tutorial-exercise" data-label="left_join_underspecify" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code># Left join adding weather data with an underspecified key
+flights %&gt;%
+  head() %&gt;% # Only take the first 6 observations
+  select(month:sched_dep_time, hour, carrier, origin:dest) %&gt;% 
+  # Try to pull weather data by matching on airport and day
+  left_join(weather, by = c(&quot;origin&quot;, &quot;month&quot;, &quot;day&quot;))</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>How many rows <em>should</em> we have ended up with? 6 - one for each flight we tried to link weather data to, as there should probably only be one set of weather data for each flight.</p>
+<p>And how many did we end up with? 134.</p>
+<p><mark>Challenge:</mark> Can you figure out why?</p>
+<p><div class="panel-heading tutorial-quiz-title">Quiz</div><div class="panel panel-default">
+<div data-label="quiz2-1" class="tutorial-question panel-body">
+<div id="quiz2-1-answer_container" class="shiny-html-output"></div>
+<div id="quiz2-1-message_container" class="shiny-html-output"></div>
+<div id="quiz2-1-action_button_container" class="shiny-html-output"></div>
+<script>if (Tutorial.triggerMathJax) Tutorial.triggerMathJax()</script>
+</div>
+</div></p>
+</div>
+<div id="section-a-more-general-discussion-of-mutating-joins" class="section level3">
+<h3>A More General Discussion of Mutating Joins</h3>
+<p>There are 4 basic kinds of mutating joins:</p>
+<ol style="list-style-type: decimal">
+<li><p><code>inner_join()</code> - this returns only observations for which there is a key match in both tables. In other words, it functions like a <code>left_join()</code> <em>except</em> rather than keeping unmatched rows from the left hand data frame and filling in the new columns with <code>NA</code>s, it just drops those observations entirely.</p>
+<p>Note in our first <code>left_join()</code> above, an <code>inner_join()</code> would produce the same results since there are no unmatched <code>carriers()</code>. But you can’t generalize that to less-clean data - or if you, say, filtered only for big airlines first! It also wouldn’t produce the same results for our <code>band_XX</code> joins.</p></li>
+<li><p><strong>Outer Joins</strong> - these return all observations that appear in at least one of the tables. There are several kinds:</p>
+<ol style="list-style-type: lower-roman">
+<li><code>left_join()</code> - we discussed this above. It takes all records from <code>x</code> and adds data from <code>y</code> when there’s a key value match.</li>
+<li><code>right_join()</code> - this is just the inverse. It takes all records from <code>y</code> and adds data from <code>x</code> when there’s a key value match.</li>
+<li><code>full_join()</code> - keeps all observations from <code>x</code> and <code>y</code>, regardless of whether one matches any data in the other or not. It will have a row for <em>every</em> matched left and right pair, and one row for each unmatched left and right observation.</li>
+</ol></li>
+</ol>
+<p>Here is a basic summary, again taken from <em>R for Data Science</em>.</p>
+<div class="figure">
+<img src="images/join-venn.png" alt="*Overview of mutating joins.*" width="70%" />
+<p class="caption">
+<em>Overview of mutating joins.</em>
+</p>
+</div>
+<p>As noted above, one key thing to understand about outer joins is if an observation is unmatched it will be filled in with <code>NA</code>s.</p>
+<p>Take our <code>left_join()</code>, for example:</p>
+<div class="tutorial-exercise" data-label="left_join2" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>#First delete United from airlines
+airlines2 &lt;- airlines %&gt;%
+  filter(carrier != &quot;UA&quot;)
+
+# Simple left join adding full airline name
+flights %&gt;%
+  select(month:dep_time, carrier:dest) %&gt;% 
+  left_join(airlines2, by = &quot;carrier&quot;) %&gt;% 
+  head()</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>Because we used a <code>left_join()</code>, all the observations in <code>flights</code> were kept. But because <code>airlines2</code> no longer contains data for the <code>carrier</code> value <code>"UA"</code>, observations in <code>flights</code> with that value simply have the full airline <code>name</code> filled in with <code>NA</code>.</p>
+<p>There is a lot more to learn about mutating joins. If you’re interested, please review <a href="https://r4ds.had.co.nz/relational-data.html#mutating-joins">Chapter 13.4 of <em>R for Data Science</em></a>.</p>
+</div>
+<div id="section-joining-on-multiple-columns" class="section level3">
+<h3>Joining on Multiple Columns</h3>
+<p>You can also join data frames using multiple keys at once. Consider, for example, the new data frame <code>weather</code>, which has weather data from NYC for every airport and every hour of every day in 2013. Maybe you want to get the weather at the scheduled departure time for each flight to investigate how that is associated with delays. Here’s how you would do that:</p>
+<div class="tutorial-exercise" data-label="left_join_mult" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code># Left join adding weather data
+flights %&gt;%
+  select(month:sched_dep_time, hour, carrier, origin:dest) %&gt;% 
+  left_join(weather, by = c(&quot;origin&quot;, &quot;month&quot;, &quot;day&quot;, &quot;hour&quot;)) %&gt;% 
+  head()</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>This asks R to join by matching the <code>origin</code> airport, <code>month</code>, <code>day</code>, and <code>hour</code> across <code>flights</code> and <code>weather</code>. That is, to pull the weather data for the time and location of each flight in <code>flights</code>!</p>
+</div>
+<div id="section-what-if-key-columns-have-different-names" class="section level3">
+<h3>What if Key Columns Have Different Names?</h3>
+<p>One other point I do want to briefly discuss, though, is what happens if you have a key column like <code>carrier</code> but it has different names in the two data frames you’re trying to join?</p>
+<div class="tutorial-exercise" data-label="left_join_diff" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code># Rename the carrier column in airlines
+airlines2 &lt;- airlines %&gt;%
+  rename(abbv = carrier)
+
+# Simple left join adding full airline name
+flights %&gt;%
+  select(month:dep_time, carrier:dest) %&gt;% 
+  left_join(airlines2, by = c(&quot;carrier&quot; = &quot;abbv&quot;)) %&gt;% 
+  head()</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>This tells R to match the column <code>carrier</code> from <code>flights</code> to <code>abbv</code> from <code>airlines2</code>. You can easily extend this to multiple columns with different names, as well.</p>
+</div>
+<div id="section-avoiding-duplicated-columns-in-joins" class="section level3">
+<h3>Avoiding Duplicated Columns in Joins</h3>
+<p>Consider the following join, which adds more information about the specific plane used for each <code>flight</code>:</p>
+<pre class="r"><code># Simple left join of the flights and planes data frames
+flights %&gt;%
+  select(year:tailnum) %&gt;% 
+  left_join(planes, by = &quot;tailnum&quot;) %&gt;% 
+  head()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["year.x"],"name":[1],"type":["int"],"align":["right"]},{"label":["month"],"name":[2],"type":["int"],"align":["right"]},{"label":["day"],"name":[3],"type":["int"],"align":["right"]},{"label":["dep_time"],"name":[4],"type":["int"],"align":["right"]},{"label":["sched_dep_time"],"name":[5],"type":["int"],"align":["right"]},{"label":["dep_delay"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["arr_time"],"name":[7],"type":["int"],"align":["right"]},{"label":["sched_arr_time"],"name":[8],"type":["int"],"align":["right"]},{"label":["arr_delay"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["carrier"],"name":[10],"type":["chr"],"align":["left"]},{"label":["flight"],"name":[11],"type":["int"],"align":["right"]},{"label":["tailnum"],"name":[12],"type":["chr"],"align":["left"]},{"label":["year.y"],"name":[13],"type":["int"],"align":["right"]},{"label":["type"],"name":[14],"type":["chr"],"align":["left"]},{"label":["manufacturer"],"name":[15],"type":["chr"],"align":["left"]},{"label":["model"],"name":[16],"type":["chr"],"align":["left"]},{"label":["engines"],"name":[17],"type":["int"],"align":["right"]},{"label":["seats"],"name":[18],"type":["int"],"align":["right"]},{"label":["speed"],"name":[19],"type":["int"],"align":["right"]},{"label":["engine"],"name":[20],"type":["chr"],"align":["left"]}],"data":[{"1":"2013","2":"1","3":"1","4":"517","5":"515","6":"2","7":"830","8":"819","9":"11","10":"UA","11":"1545","12":"N14228","13":"1999","14":"Fixed wing multi engine","15":"BOEING","16":"737-824","17":"2","18":"149","19":"NA","20":"Turbo-fan"},{"1":"2013","2":"1","3":"1","4":"533","5":"529","6":"4","7":"850","8":"830","9":"20","10":"UA","11":"1714","12":"N24211","13":"1998","14":"Fixed wing multi engine","15":"BOEING","16":"737-824","17":"2","18":"149","19":"NA","20":"Turbo-fan"},{"1":"2013","2":"1","3":"1","4":"542","5":"540","6":"2","7":"923","8":"850","9":"33","10":"AA","11":"1141","12":"N619AA","13":"1990","14":"Fixed wing multi engine","15":"BOEING","16":"757-223","17":"2","18":"178","19":"NA","20":"Turbo-fan"},{"1":"2013","2":"1","3":"1","4":"544","5":"545","6":"-1","7":"1004","8":"1022","9":"-18","10":"B6","11":"725","12":"N804JB","13":"2012","14":"Fixed wing multi engine","15":"AIRBUS","16":"A320-232","17":"2","18":"200","19":"NA","20":"Turbo-fan"},{"1":"2013","2":"1","3":"1","4":"554","5":"600","6":"-6","7":"812","8":"837","9":"-25","10":"DL","11":"461","12":"N668DN","13":"1991","14":"Fixed wing multi engine","15":"BOEING","16":"757-232","17":"2","18":"178","19":"NA","20":"Turbo-fan"},{"1":"2013","2":"1","3":"1","4":"554","5":"558","6":"-4","7":"740","8":"728","9":"12","10":"UA","11":"1696","12":"N39463","13":"2012","14":"Fixed wing multi engine","15":"BOEING","16":"737-924ER","17":"2","18":"191","19":"NA","20":"Turbo-fan"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Now look at the name of the first column. It’s not <code>year</code> any more - it’s <code>year.x</code>. And if you scroll over a bit you’ll see another column called <code>year.y</code>. What the hell, man? To figure out what happened, let’s investigate both <code>flights</code> and <code>planes</code> separately:</p>
+<pre class="r"><code>str(flights)</code></pre>
+<pre><code>## tibble [336,776 x 19] (S3: tbl_df/tbl/data.frame)
+##  $ year          : int [1:336776] 2013 2013 2013 2013 2013 2013 2013 2013 2013 2013 ...
+##  $ month         : int [1:336776] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ day           : int [1:336776] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ dep_time      : int [1:336776] 517 533 542 544 554 554 555 557 557 558 ...
+##  $ sched_dep_time: int [1:336776] 515 529 540 545 600 558 600 600 600 600 ...
+##  $ dep_delay     : num [1:336776] 2 4 2 -1 -6 -4 -5 -3 -3 -2 ...
+##  $ arr_time      : int [1:336776] 830 850 923 1004 812 740 913 709 838 753 ...
+##  $ sched_arr_time: int [1:336776] 819 830 850 1022 837 728 854 723 846 745 ...
+##  $ arr_delay     : num [1:336776] 11 20 33 -18 -25 12 19 -14 -8 8 ...
+##  $ carrier       : chr [1:336776] &quot;UA&quot; &quot;UA&quot; &quot;AA&quot; &quot;B6&quot; ...
+##  $ flight        : int [1:336776] 1545 1714 1141 725 461 1696 507 5708 79 301 ...
+##  $ tailnum       : chr [1:336776] &quot;N14228&quot; &quot;N24211&quot; &quot;N619AA&quot; &quot;N804JB&quot; ...
+##  $ origin        : chr [1:336776] &quot;EWR&quot; &quot;LGA&quot; &quot;JFK&quot; &quot;JFK&quot; ...
+##  $ dest          : chr [1:336776] &quot;IAH&quot; &quot;IAH&quot; &quot;MIA&quot; &quot;BQN&quot; ...
+##  $ air_time      : num [1:336776] 227 227 160 183 116 150 158 53 140 138 ...
+##  $ distance      : num [1:336776] 1400 1416 1089 1576 762 ...
+##  $ hour          : num [1:336776] 5 5 5 5 6 5 6 6 6 6 ...
+##  $ minute        : num [1:336776] 15 29 40 45 0 58 0 0 0 0 ...
+##  $ time_hour     : POSIXct[1:336776], format: &quot;2013-01-01 05:00:00&quot; &quot;2013-01-01 05:00:00&quot; ...</code></pre>
+<pre class="r"><code>str(planes)</code></pre>
+<pre><code>## tibble [3,322 x 9] (S3: tbl_df/tbl/data.frame)
+##  $ tailnum     : chr [1:3322] &quot;N10156&quot; &quot;N102UW&quot; &quot;N103US&quot; &quot;N104UW&quot; ...
+##  $ year        : int [1:3322] 2004 1998 1999 1999 2002 1999 1999 1999 1999 1999 ...
+##  $ type        : chr [1:3322] &quot;Fixed wing multi engine&quot; &quot;Fixed wing multi engine&quot; &quot;Fixed wing multi engine&quot; &quot;Fixed wing multi engine&quot; ...
+##  $ manufacturer: chr [1:3322] &quot;EMBRAER&quot; &quot;AIRBUS INDUSTRIE&quot; &quot;AIRBUS INDUSTRIE&quot; &quot;AIRBUS INDUSTRIE&quot; ...
+##  $ model       : chr [1:3322] &quot;EMB-145XR&quot; &quot;A320-214&quot; &quot;A320-214&quot; &quot;A320-214&quot; ...
+##  $ engines     : int [1:3322] 2 2 2 2 2 2 2 2 2 2 ...
+##  $ seats       : int [1:3322] 55 182 182 182 55 182 182 182 182 182 ...
+##  $ speed       : int [1:3322] NA NA NA NA NA NA NA NA NA NA ...
+##  $ engine      : chr [1:3322] &quot;Turbo-fan&quot; &quot;Turbo-fan&quot; &quot;Turbo-fan&quot; &quot;Turbo-fan&quot; ...</code></pre>
+<p>Do you see the problem yet? There’s a variable named <code>year</code> in both data frames! But - and this is a big problem - <em>they represent completely different things.</em> In <code>flights</code> it’s the year the flight departed (2013 for everyone). In <code>planes</code> it’s the year the plane was manufactured (range: 1956-2013).</p>
+<p>We don’t want to use <code>year</code> as a key in our <code>by =</code> argument for linking the data frames, then, because the instances don’t actually represent the same underlying thing. In joining <code>flights</code> and <code>airlines</code>, <code>carrier</code> worked as a key because in both data frames it represented the abbreviation of the airline name.</p>
+<p><em>If there are any repeated columns not in your <code>by =</code> argument, they will be replaced with two versions of that column - <code>&lt;VARIABLE NAME&gt;.x</code> (the version from the left data frame), and <code>&lt;VARIABLE NAME&gt;.y</code> (the version from the right data frame).</em> Just <code>&lt;VARIABLE NAME&gt;</code> will no longer exist. You almost always want to avoid this.</p>
+<p>How do you avoid this? When specifying the data frame you want to join (in the case of a left join, the “right” data frame vs. the left one), first use <code>select()</code> on the right-hand data frame <em>within</em> the <code>left_join()</code> to choose <em>only</em>:</p>
+<ul>
+<li>The column(s) you want to match on, PLUS</li>
+<li>The column(s) you actually want to add to the left data frame</li>
+</ul>
+<p>Here’s an example, where say we only wanted to add the manufacturer and type of engine each plane has:</p>
+<div class="tutorial-exercise" data-label="avoid_dupes_works" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code># Simple left join of the flights and planes data frames
+flights %&gt;%
+  select(year:tailnum) %&gt;% 
+  left_join(select(planes, tailnum, manufacturer, engine), by = &quot;tailnum&quot;) %&gt;% 
+  head()</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>We <code>select()</code>ed <code>tailnum</code> because that’s the key we’re using the link the data frames. We also included <code>manufacturer</code> and <code>engine</code> because those are the variables we wanted to add from the right data frame (<code>planes</code>) to the left one (<code>flights</code>).</p>
+<p>I usually recommend doing this <code>select()</code>ing inside the <code>left_join()</code> for efficiency’s sake, but you could also have done it in a separate pre-processing step before the join code!</p>
+<p>If you still wanted to join the <code>year</code> value from <code>planes</code> to add data on the year the plane was manufactured, the best thing to do would be to first re-name the <code>year</code> variable in <code>planes</code> to something like <code>year_manufactured</code>. <mark>Challenge:</mark> Can you modify the above code to do that?</p>
+</div>
+</div>
+<div id="section-joining-relational-data-filtering-joins" class="section level2">
+<h2>Joining Relational Data: Filtering Joins</h2>
+<p><strong>Filtering joins</strong> don’t add variables from one data frame to another. Instead, they’re used to select observations - like the <code>dplyr</code> verb <code>filter()</code>!</p>
+<p>There are two types:</p>
+<ol style="list-style-type: decimal">
+<li><code>semi_join()</code> - keeps all observations in <code>x</code> with a match in <code>y</code></li>
+<li><code>anti_join()</code> - <em>drops</em> all observations in <code>x</code> with a match in <code>y</code></li>
+</ol>
+<p>Easiest will be to look at a couple examples. Say we want to filter <code>flights</code> to contain only flights to the top 10 most common destinations from NYC.</p>
+<div class="tutorial-exercise" data-label="semi_join" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code># What are the top 10 destinations from NYC?
+top_dest &lt;- flights %&gt;%
+  count(dest, sort = TRUE) %&gt;%
+  head(10)
+top_dest
+
+# Keep only the flights that match one of these top 10 destinations
+flights %&gt;% 
+  select(dest, everything()) %&gt;% 
+  semi_join(top_dest, by = &quot;dest&quot;) # Only returns 141,145 flights to top destinations</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>Here, instead of all 336,776 flights, we only get the 141,145 where <code>dest</code> matched the <code>dest</code> variable in <code>top_dest</code>.</p>
+<p>An <code>anti_join()</code> is really just the inverse. What if we only wanted flights to less common destinations?</p>
+<div class="tutorial-exercise" data-label="anti_join" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code># What are the top 10 destinations from NYC?
+top_dest &lt;- flights %&gt;%
+  count(dest, sort = TRUE) %&gt;%
+  head(10)
+top_dest
+
+# Keep only the flights that DON&#39;T match one of these top 10 destinations
+flights %&gt;% 
+  select(dest, everything()) %&gt;% 
+  anti_join(top_dest, by = &quot;dest&quot;)</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>This returns the other 195,631 rows.</p>
+<p>A more sensible use of <code>anti_join()</code> is to find mismatches when you try to execute a join. For example, are there any aircraft that appear in <code>flights</code> that don’t have a corresponding entry in <code>planes</code>?</p>
+<div class="tutorial-exercise" data-label="anti_join2" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code># Find flights whose aircraft don&#39;t appear in planes
+flights %&gt;% 
+  anti_join(planes, by = &quot;tailnum&quot;) %&gt;%
+  count(tailnum, sort = TRUE)</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>Looks like there are in fact 721 distinct aircraft that don’t appear in <code>planes</code> for some reason. Maybe these are typos? Maybe <code>planes</code> accidentally excludes the tail numbers of some specific kinds of aircraft or for one specific airline? I don’t know the answer, but this is the sort of thing that should cue you to investigate further. There are also 2,512 entries in <code>flights</code> that simply don’t have a <code>tailnum</code>, so obviously we can’t match those.</p>
+<p><mark>Challenge:</mark>: Using just a slightly modified version of the code above I can find there are 52,606 flights without a corresponding <code>tailnum</code> plane entry in <code>planes</code>. Can you figure out how I got that?</p>
+</div>
+<div id="section-relational-data-in-the-real-world" class="section level2">
+<h2>Relational Data in the Real World</h2>
+<p>I’ve walked you through a very simple example where hours and hours of data cleaning and careful, well-thought-out structuring has been done. Keys were already chosen, none of them was missing, and there were no data entry errors that led keys not to match when they should have. All of these are situations you’ll likely encounter when working with data in the real world. So just don’t take too rosy a picture from all this.</p>
+<p><a href="https://r4ds.had.co.nz/relational-data.html#join-problems">Chapter 13.6 of <em>R for Data Science</em></a> discusses just a few of the more common problems you might encounter.</p>
+</div>
+<div id="section-binding-rows-and-columns" class="section level2">
+<h2>Binding Rows and Columns</h2>
+<p>There’s one other way to join data frames we should talk about. It has nothing to do with relational databases, but it doesn’t really fit anywhere else so we’re talking about it here.</p>
+<div id="section-binding-rows" class="section level3">
+<h3>Binding Rows</h3>
+<p>Say you have 2 (or 3, or 30) data frames with the same columns that you simply want to append (bind) to one another. We see this all the time in sports analytics with, for example, multiple different datasets for individual games or seasons that need to be put together into a single larger data frame before we analyze it.</p>
+<pre class="r"><code># tribble() creates a tibble using easy to read row-wise data
+band1&lt;- tribble(
+  ~name, ~surname,
+  &quot;John&quot;, &quot;Lennon&quot;,
+  &quot;Paul&quot;, &quot;McCartney&quot;,
+  &quot;George&quot;, &quot;Harrison&quot;,
+  &quot;Ringo&quot;, &quot;Starr&quot;
+)
+
+band2&lt;- tribble(
+   ~name,     ~surname,
+  &quot;Mick&quot;,  &quot;Jagger&quot;,
+  &quot;Keith&quot;, &quot;Richards&quot;,
+  &quot;Charlie&quot;, &quot;Watts&quot;,
+  &quot;Ronnie&quot;, &quot;Wood&quot;
+)</code></pre>
+<p>To bind these data frames “one of top of the other”, use either <code>rbind()</code> or the <code>dplyr</code> verb <code>bind_rows()</code>!</p>
+<div class="tutorial-exercise" data-label="rbinding" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>bind_rows(band1, band2)</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>Easy! To extend this to an arbitrary number of data frames, just add them in additional arguments.</p>
+</div>
+<div id="section-binding-columns" class="section level3">
+<h3>Binding Columns</h3>
+<p>This is a less common situation, but what if you had two separate data frames that pertain to the same observations but have different columns? For example:</p>
+<pre class="r"><code>names&lt;- tribble(
+  ~name, 
+  &quot;John&quot;,
+  &quot;Paul&quot;, 
+  &quot;George&quot;, 
+  &quot;Ringo&quot;
+)
+
+surnames&lt;- tribble(
+   ~surname,
+   &quot;Lennon&quot;,
+  &quot;McCartney&quot;,
+  &quot;Harrison&quot;,
+  &quot;Starr&quot;
+)</code></pre>
+<p>Can you figure out how to bind these two data frames “side-by-side” (that is, by column)? I bet you can. I’ll leave that as an exercise for you (your final data frame should be 4 x 2):</p>
+<div class="tutorial-exercise" data-label="cbinding" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+</div>
+</div>
+<div id="section-summary" class="section level2">
+<h2>Summary</h2>
+<p>Today we had a very superficial overview of relational databases - like those used in various SQL implementations - and how to link data across multiple data frames from them to get what you actually want. If you pursue a career as a data scientist you will see these everywhere.</p>
+Next up we have to get back into our vegetables and take a deeper dive into how R actually works by talking about data types and how R treats and does operations on them. You’ll hopefully come out of that with a greater understanding of what exactly all these functions do, how they work, why and when they break, and how to fix them when they do. 
+<script type="application/shiny-prerendered" data-context="server">
+learnr:::register_http_handlers(session, metadata = NULL)
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+session$onSessionEnded(function() {
+        learnr:::session_stop_event(session)
+      })
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server-start">
+pacman::p_load(tidyverse, nycflights13)
+
+data(flights)
+data(airlines)
+data(planes)
+data(weather)
+
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-data-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-data-code-editor`)), session)
+output$`tutorial-exercise-data-output` <- renderUI({
+  `tutorial-exercise-data-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "quiz1-1", question = structure("Can you figure out how, say, <code>flights<\u002fcode> and <code>airlines<\u002fcode> might link together?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_18b7095",     option = "through `carrier`", value = "through `carrier`",     label = structure("through <code>carrier<\u002fcode>", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_237fc23",     option = "through `name`", value = "through `name`", label = structure("through <code>name<\u002fcode>", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_9ea983d",     option = "they share no common variables", value = "they share no common variables",     label = structure("they share no common variables", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_48aa642",     option = "through both `carrier` and `name`", value = "through both `carrier` and `name`",     label = structure("through both <code>carrier<\u002fcode> and <code>name<\u002fcode>", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Incorrect", html = TRUE, class = c("html", "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "quiz1-1-answer", question = "quiz1-1"), loading = structure("<strong>Loading:<\u002fstrong> \nCan you figure out how, say, <code>flights<\u002fcode> and <code>airlines<\u002fcode> might link together?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = TRUE,     seed = 2070336277.03592, options = list()), class = c("learnr_radio", "tutorial_question")))
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-pk-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-pk-code-editor`)), session)
+output$`tutorial-exercise-pk-output` <- renderUI({
+  `tutorial-exercise-pk-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-left_join1-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-left_join1-code-editor`)), session)
+output$`tutorial-exercise-left_join1-output` <- renderUI({
+  `tutorial-exercise-left_join1-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-left_join_simpledata2-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-left_join_simpledata2-code-editor`)), session)
+output$`tutorial-exercise-left_join_simpledata2-output` <- renderUI({
+  `tutorial-exercise-left_join_simpledata2-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-left_join_underspecify-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-left_join_underspecify-code-editor`)), session)
+output$`tutorial-exercise-left_join_underspecify-output` <- renderUI({
+  `tutorial-exercise-left_join_underspecify-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "quiz2-1", question = structure("Have you tried to figure out why?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_4df3b57",     option = "Yes", value = "Yes", label = structure("Yes", html = TRUE, class = c("html",     "character")), correct = TRUE, message = structure("Hopefully you guessed that the <code>weather<\u002fcode> data frame actually measures the weather every <em>hour<\u002fem> (actually most but not all of them), not every <em>day<\u002fem>. So when you asked R to just search for matches on airport and day, it created a new record in <code>flights<\u002fcode> for every matching weather measurement it could find (usually 22 or 23 per day). Imagine if we did this for all 336,776 flights rather than just 6 of them. Yikes!", html = TRUE, class = c("html",     "character"))), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_a40624", option = "No", value = "No",     label = structure("No", html = TRUE, class = c("html", "character"    )), correct = FALSE, message = structure("Keep trying, then when you have a guess (or have tried for a little bit and have nothing) click Yes.", html = TRUE, class = c("html",     "character"))), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Incorrect", html = TRUE, class = c("html", "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "quiz2-1-answer", question = "quiz2-1"), loading = structure("<strong>Loading:<\u002fstrong> \nHave you tried to figure out why?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = TRUE,     seed = 1343598040.37434, options = list()), class = c("learnr_radio", "tutorial_question")))
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-left_join2-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-left_join2-code-editor`)), session)
+output$`tutorial-exercise-left_join2-output` <- renderUI({
+  `tutorial-exercise-left_join2-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-left_join_mult-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-left_join_mult-code-editor`)), session)
+output$`tutorial-exercise-left_join_mult-output` <- renderUI({
+  `tutorial-exercise-left_join_mult-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-left_join_diff-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-left_join_diff-code-editor`)), session)
+output$`tutorial-exercise-left_join_diff-output` <- renderUI({
+  `tutorial-exercise-left_join_diff-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-avoid_dupes_works-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-avoid_dupes_works-code-editor`)), session)
+output$`tutorial-exercise-avoid_dupes_works-output` <- renderUI({
+  `tutorial-exercise-avoid_dupes_works-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-semi_join-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-semi_join-code-editor`)), session)
+output$`tutorial-exercise-semi_join-output` <- renderUI({
+  `tutorial-exercise-semi_join-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-anti_join-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-anti_join-code-editor`)), session)
+output$`tutorial-exercise-anti_join-output` <- renderUI({
+  `tutorial-exercise-anti_join-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-anti_join2-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-anti_join2-code-editor`)), session)
+output$`tutorial-exercise-anti_join2-output` <- renderUI({
+  `tutorial-exercise-anti_join2-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-rbinding-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-rbinding-code-editor`)), session)
+output$`tutorial-exercise-rbinding-output` <- renderUI({
+  `tutorial-exercise-rbinding-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-cbinding-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-cbinding-code-editor`)), session)
+output$`tutorial-exercise-cbinding-output` <- renderUI({
+  `tutorial-exercise-cbinding-result`()
+})
+</script>
+ <!--html_preserve-->
+<script type="application/shiny-prerendered" data-context="dependencies">
+{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["jquery"]},{"type":"character","attributes":{},"value":["1.11.3"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/jquery"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquery.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.3"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["bootstrap"]},{"type":"character","attributes":{},"value":["3.3.5"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/bootstrap"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["viewport"]}},"value":[{"type":"character","attributes":{},"value":["width=device-width, initial-scale=1"]}]},{"type":"character","attributes":{},"value":["js/bootstrap.min.js","shim/html5shiv.min.js","shim/respond.min.js"]},{"type":"character","attributes":{},"value":["css/cerulean.min.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.3"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["pagedtable"]},{"type":"character","attributes":{},"value":["1.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/pagedtable-1.1"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["js/pagedtable.js"]},{"type":"character","attributes":{},"value":["css/pagedtable.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.3"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["highlightjs"]},{"type":"character","attributes":{},"value":["9.12.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/highlightjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["highlight.js"]},{"type":"character","attributes":{},"value":["textmate.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.3"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial"]},{"type":"character","attributes":{},"value":["0.10.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial.js"]},{"type":"character","attributes":{},"value":["tutorial.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-autocompletion"]},{"type":"character","attributes":{},"value":["0.10.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-autocompletion.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-diagnostics"]},{"type":"character","attributes":{},"value":["0.10.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-diagnostics.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-format"]},{"type":"character","attributes":{},"value":["0.10.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmarkdown/templates/tutorial/resources"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-format.js"]},{"type":"character","attributes":{},"value":["tutorial-format.css","rstudio-theme.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["jquery"]},{"type":"character","attributes":{},"value":["1.11.3"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/jquery"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquery.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.3"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["navigation"]},{"type":"character","attributes":{},"value":["1.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/navigation-1.1"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tabsets.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.3"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["highlightjs"]},{"type":"character","attributes":{},"value":["9.12.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/highlightjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["highlight.js"]},{"type":"character","attributes":{},"value":["default.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.3"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["jquery"]},{"type":"character","attributes":{},"value":["1.11.3"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/jquery"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquery.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.3"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["font-awesome"]},{"type":"character","attributes":{},"value":["5.1.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/fontawesome"]}]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["css/all.css","css/v4-shims.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.3"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["bootbox"]},{"type":"character","attributes":{},"value":["4.4.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/bootbox"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["bootbox.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["idb-keyvalue"]},{"type":"character","attributes":{},"value":["3.2.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/idb-keyval"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["idb-keyval-iife-compat.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[false]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial"]},{"type":"character","attributes":{},"value":["0.10.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial.js"]},{"type":"character","attributes":{},"value":["tutorial.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-autocompletion"]},{"type":"character","attributes":{},"value":["0.10.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-autocompletion.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-diagnostics"]},{"type":"character","attributes":{},"value":["0.10.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-diagnostics.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]}]}
+</script>
+<!--/html_preserve-->
+<!--html_preserve-->
+<script type="application/shiny-prerendered" data-context="execution_dependencies">
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages","version"]},"class":{"type":"character","attributes":{},"value":["data.frame"]},"row.names":{"type":"integer","attributes":{},"value":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82]}},"value":[{"type":"character","attributes":{},"value":["assertthat","backports","base","broom","cellranger","checkmate","cli","colorspace","compiler","crayon","datasets","DBI","dbplyr","digest","dplyr","ellipsis","evaluate","fansi","fastmap","forcats","fs","generics","ggplot2","glue","graphics","grDevices","grid","gtable","haven","highr","hms","htmltools","htmlwidgets","httpuv","httr","jsonlite","knitr","later","learnr","lifecycle","lubridate","magrittr","markdown","methods","mime","modelr","munsell","nycflights13","pacman","pillar","pkgconfig","promises","purrr","R6","Rcpp","readr","readxl","reprex","rlang","rmarkdown","rprojroot","rstudioapi","rvest","scales","shiny","stats","stringi","stringr","tibble","tidyr","tidyselect","tidyverse","tools","tzdb","utf8","utils","vctrs","withr","xfun","xml2","xtable","yaml"]},{"type":"character","attributes":{},"value":["0.2.1","1.1.7","4.0.2","0.7.9","1.1.0","2.0.0","3.1.0","1.4-1","4.0.2","1.4.2","4.0.2","1.1.0","2.1.1","0.6.25","1.0.7","0.3.2","0.14","0.5.0","1.0.1","0.5.1","1.5.0","0.1.1","3.3.5","1.4.2","4.0.2","4.0.2","4.0.2","0.3.0","2.3.1","0.8","1.1.0","0.5.0","1.5.3","1.5.4","1.4.2","1.7.2","1.29","1.1.0.1","0.10.1","1.0.1","1.7.10","2.0.1","1.1","4.0.2","0.12","0.1.8","0.5.0","1.0.1","0.5.1","1.6.4","2.0.3","1.1.1","0.3.4","2.5.1","1.0.7","2.0.0","1.3.1","2.0.0","0.4.11","2.3","2.0.2","0.13","1.0.2","1.1.1","1.5.0","4.0.2","1.7.5","1.4.0","3.1.5","1.1.4","1.1.1","1.3.1","4.0.2","0.1.2","1.2.2","4.0.2","0.3.8","2.4.2","0.22","1.3.2","1.8-4","2.2.1"]}]}]}
+</script>
+<!--/html_preserve-->
+</div>
+
+</div> <!-- topics -->
+
+<div class="topicsContainer">
+<div class="topicsPositioner">
+<div class="band">
+<div class="bandContent topicsListContainer">
+
+<!-- begin doc-metadata -->
+<div id="doc-metadata">
+<h2 class="title toc-ignore" style="display:none;">Tutorial 3.3 - Data Transformation III</h2>
+<h4 class="author"><em>Zachary Binney, PhD</em></h4>
+<h4 class="date"><em>October 2020</em></h4>
+</div>
+<!-- end doc-metadata -->
+
+</div> <!-- bandContent.topicsListContainer -->
+</div> <!-- band -->
+</div> <!-- topicsPositioner -->
+</div> <!-- topicsContainer -->
+
+
+</div> <!-- bandContent page -->
+</div> <!-- pageContent band -->
+
+
+
+
+<script>
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+
+</body>
+
+</html>
