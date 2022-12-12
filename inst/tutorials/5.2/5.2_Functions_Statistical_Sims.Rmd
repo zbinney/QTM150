@@ -1,5 +1,5 @@
 ---
-title: "Tutorial 5.1 - If-Else Blocks, For-Loops"
+title: "Tutorial 5.2 - Functions, Statistical Simulations"
 
 author: "Zachary Binney, PhD"
 date: "November 2020"

@@ -34,7 +34,7 @@ As usual we need to load packages. This time we need `tidyverse` because we pret
 
 We also need to install `tidyimpute` to give us some options for replacing missing values. That we have to install separately from Github, the code for which I've included below but commented out. **Please be sure to run it on your own machines.** 
 
-*Some students have had difficulty installing `tidyimpute` - if you are one of them, don't worry about it - simply remove `tidyimpute` from out `p_load()` call, and comment out lines 693-4 and 724-5. Then proceed with the Tutorial without needing to actually run `tidyimpute`.*
+*Some students have had difficulty installing `tidyimpute` - if you are one of them, don't worry about it - simply remove `tidyimpute` from our `p_load()` call, and comment out lines 693-4 and 724-5. Then proceed with the Tutorial without needing to actually run `tidyimpute`.*
 
 ```{r setup, message = FALSE}
 

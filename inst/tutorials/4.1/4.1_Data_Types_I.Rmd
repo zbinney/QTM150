@@ -217,6 +217,7 @@ sum(c("a", "b", "e"))
 
 "happy" + "birthday"
 ```
+
 But you *can* actually compare them. This is because R treats them alphabetically, with later letters having higher values:
 
 ```{r vec_comp_char, exercise = TRUE}
@@ -224,6 +225,7 @@ But you *can* actually compare them. This is because R treats them alphabeticall
 "happy" > "birthday"
 
 ```
+
 What exactly is bigger than what - for example, capital vs. lower case letters, and letters vs. numbers vs. punctuation marks - is called the "collating sequence", and it gets extremely complicated and can vary a lot from computer to computer based on what R treats as your "locale". For example, my locale is U.S. English ("en_US"), but others of you may be different. You can learn what your locale is with `Sys.getlocale()` if you're curious. You can also fool around and run some tests yourself to figure out what R treats as bigger than what. In other languages like C the [standard ASCII table](https://ascii.cl/) is used, and R - in English, at least - is *close* but not the same. For example, rather than all lower case letters being "bigger" than all capital letters, en_US appears to use a "collating sequence" where the letters go "a A b B c C ...", and all letters are bigger than all numbers and punctuation marks.
 
 So all that is to say there's lots more to explore here, but we'll save that for a later course.
