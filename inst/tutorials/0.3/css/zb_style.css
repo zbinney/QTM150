@@ -1,0 +1,43 @@
+.caption {
+      font-size: smaller;
+           }
+
+pre {
+  overflow-x: auto;
+}
+      
+figure {
+          text-align: center;
+	  float: left;
+  	  width: 30%;
+  	  padding: 20px;
+	  vertical-align: bottom;
+      }
+
+figure img {
+	  vertical-align: bottom;
+          text-align: center;
+          display: inline;
+          margin-left: auto;
+          margin-right: auto;
+      }
+
+figure figcaption {
+	  text-align: center;
+          color: grey;
+      }
+
+
+div.imggroup figure {
+    vertical-align: bottom;
+    float: left;
+    width: 30%;
+    padding: 20px;
+}
+
+div.imggroup {
+    position: relative;
+    height: 300px;
+}
+
+

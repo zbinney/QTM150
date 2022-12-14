@@ -1,0 +1,89 @@
+---
+title: "Tutorial 0.3 - Files, Folders, and Directories"
+
+author: "Zachary Binney, PhD"
+date: "December 2022"
+
+output:
+  learnr::tutorial:
+    css: css/zb_style.css
+    progressive: TRUE
+runtime: shiny_prerendered
+description: "Intro to files and folders"
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+#knitr::opts_chunk$set(fig.height=4)
+```
+
+## How Does Your Computer Store Files?
+
+My apologies in advance if this Tutorial feels simple or remedial for some of you. But many of you in an era of phones and Google docs and iPads have never had to deal with computer folders and directories. Files just sort of appear where you need them, or you can navigate to them without understanding what a computer is doing under the hood. This brief (but admittedly kind of boring) Tutorial is designed to simply ensure everyone is on the same page. The fun stuff is coming *very* soon, I promise.
+
+OK, let's get going!
+
+To keep things organized, your computer has a system for storing data.
+
+Every piece of data on a computer is stored in a **file**. 
+
+Each file is located in a **folder**, which is just a collection of files. Folders can contain several "sub-folders," and all except the highest main drive folder are themselves contained in a **parent folder**.
+
+The location of those folders - and thus of any given file - is defined by a **directory** or **file path**. (This may not be the exact computer science definition, but it's accurate for our purposes.)
+
+The easiest way to think of files and folders may be as an analog for your location in the physical world. Imagine your computer is the planet earth, and each person is a single file:
+
+* There's a folder for each continent
+* Then a sub-folder under every continent for each country
+* Then a sub-sub-sub-folder for each city
+* ...and each street
+* ...and each house
+
+Each house contains one or more people/files. You "live" inside the folder for your house, which is inside the folder for your street, which is inside the folder for your city, and so on.
+
+### Directories/File Paths: How Your Computer Finds and Accesses a File
+
+Now imagine you're a police detective, and you've been tasked with finding a particular person (file) - say, Homer Simpson after he stole a pig from Springfield A&M. How do you know where to look? It wouldn't be very efficient to just run around shouting for him. Nor would it be a very good idea to grab a random person and treat them as Homer Simpson. Instead, hopefully Homer has an address! You go to that address, and you find him.
+
+Homer Simpson indeed has an address. You might write it on an envelope like this: 
+
+Homer Simpson <br>
+742 Evergreen Terrace <br>
+Springfield (STATE UNKNOWN, it's a long-running joke from the show), USA
+
+On a computer an address serves the same purpose, it would just look a little different. The file `Homer_Simpson.dude` might live at: `Earth:/North_America/USA/Springfield/Evergreen_Terrace/House_742/Homer_Simpson.dude`. Same idea!
+
+Just like the detective looking for Homer Simpson, if you want your computer to look up and access a file - an R package it needs to run, for example, or some data you want to open - you can't (usually) just give it the file name and expect it to run it automatically. *You have to tell it where to look first.* 
+
+An important thing to realize is computers are kind of dumb. Imagine we're sitting in the living room and you tell me "go get me the spoon." I instinctively know I have to go the kitchen first to get the spoon. A computer doesn't. If by dumb luck you're already in the kitchen with the computer it might successfully get you the spoon. But if you're in the living room it's going to spin around the room, burst into flames and scream in a tone that plumbs the darkest depths of cosmic horror and sends the most stouthearted men descending recklessly into madness "ERROR: SPOON NOT FOUND." You have to tell it something more like "go to the kitchen and get me the spoon" - then it will happily do so.
+
+But instead of  the instructions I wrote above or an address like you might write on an envelope, though, it needs a **file path**.
+
+For example, if I want to run this Tutorial I have to tell my laptop its location, which is: `C:\Users\zbinney\OneDrive - Emory University\QTM_150\Tutorials\QTM150Tutorials\inst\tutorials\0.3\0.3-Files_and_Folders.Rmd`.  Then it will go to that folder and open and run the file. Otherwise it'll get lost and angry. And then I'll be angry. No fun.
+
+
+### File, Folder, and Directory Example
+
+Here's a screenshot of what the **folder** for this Tutorial **file** looks like on my laptop:
+
+```{r, echo = FALSE, out.width = "100%", fig.cap = "*Tutorial 0.3 file and folder.*"}
+knitr::include_graphics("images/Screenshot_File.png")
+```
+
+The **file** itself is highlighted in GREEN.
+
+You can see some of the **file path** highlighted in YELLOW. You can see, for example, all the way at the right that the **folder** containing this file is named `0.3` - this is like the house number on an address. The folder above that, called the **parent folder**, is `tutorials` - this is like the street number. *Its* parent is `inst` - this is like the city. And so on and so on up the chain, all the way to my main drive folder `C:/`.
+
+This folder also has two **sub-folders**, highlighted in orange - `css` and `images`. In our analogy maybe this would be like separate sub-folders for people and pets in the house. Or maybe the analogy is breaking down here. But you get the idea.
+
+You can get more details on the location of a file in Windows by right-clicking on the file and selecting `Properties`. This is an example of what comes up, with the file's location highlighted in BLUE:
+
+```{r, echo = FALSE, out.width = "100%", fig.cap = "*Tutorial 0.3 file and folder details via Properties.*"}
+knitr::include_graphics("images/Screenshot_File_Properties.png")
+```
+
+The equivalent on a Mac is to command-click on the file and then select `Get Info`.
+
+If you're using Linux, you already know better than I how to do this.
+
+OK, I think that's it for now. I hope this gets everyone on the same page with regards to how files are stored on a computer and how it looks for them when you ask it to.
