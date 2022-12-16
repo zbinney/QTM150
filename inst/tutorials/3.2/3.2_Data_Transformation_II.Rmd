@@ -345,6 +345,82 @@ mutate(gap_filt,
 ```
 
 
+## Data Transformation and Visualization Workflows With the Pipe
+
+Let's go through a few more examples of how useful the pipe can be in day-to-day data analysis.
+
+Here's another relatively simple one. What if we wanted to calculate and plot the log of per capita GDP for all countries in 1952 from `gapminder`?
+
+```{r pipe_ex1, exercise = TRUE}
+#Take your data and pass it as the first argument to...
+gapminder %>%
+  
+  #Filter to only data from 1952...
+  filter(year == 1952) %>%
+  
+  #Within that dataset, create a new variable for log of per capita GDP
+  mutate(log_gdpPercap = log(gdpPercap)) %>% 
+  
+  #And feed this transformed dataset as the first argument to ggplot() for a scatterplot, all in one block!
+  ggplot() +
+  geom_point(aes(x = log_gdpPercap, y = lifeExp))
+
+```
+Another example: have you ever watched sports on TV and seen a graphic with a weirdly specific fact? 
+
+```{r img2, echo = FALSE, out.width = "70%", fig.align = "center", fig.cap = "*This is an oddly specific record.*"}
+knitr::include_graphics("images/very_specific_record.png")
+```
+
+Somebody - a data scientist, like some of you might become! - has to be producing those, and they might be doing it with R!
+
+Using a dataset I just sneakily imported without you knowing, let's find the top NFL (American football) rushers who...
+
+1. Rushed for the most yards in a single year
+2. Post-2000
+3. And attempted <5 rushes per game on average
+
+```{r pipe_ex2, exercise = TRUE}
+rush %>%
+  filter(Year >= 2000 &
+        `Rushing Attempts Per Game` <= 5) %>%
+  select(Name, Team, Year,`Rushing Yards`) %>% 
+  arrange(desc(as.numeric(`Rushing Yards`)))
+
+```
+
+If you had **domain knowledge** about the subject you're studying - in this case football - you might look at this list and notice some interesting things. Like, for example, that many (though not all) of these players are quarterbacks (e.g. Bortles, Kaepernick, Garcia). Tavon Austin is a wide receiver who is sometimes asked to run the ball on trick plays, which helps explain why he has few rushes (<5 per game) but many yards. 
+
+Without **domain knowledge** you might not know what to make of this list. Consider this an important lesson in not thinking *just* knowing the data science or math or programming is enough. Work with subject-matter experts to get the most out of your data.
+
+As a sidenote, we had to use backticks (``) around variable names that are written as multiple words with spaces in between. **Try not to use variables with spaces so we don't have to do this.** Use snake_case, camelCase, or hyphenated-variable-names.
+
+One final example. What if we wanted to plot each country's average years of life expectancy above or below the world average in 2007?
+
+```{r pipe_ex3, exercise = TRUE}
+gapminder %>% 
+  filter(year == 2007) %>% 
+  mutate(LE_minus_mean_2007 = lifeExp - weighted.mean(lifeExp, pop)) %>% 
+  ggplot() +
+  geom_point(aes(x = continent, y = LE_minus_mean_2007))
+
+```
+
+Notice we used a new function here - `weighted.mean()`. Why didn't we just use mean? Can you figure it out?
+
+The issue is each observation in `gapminder` is a single country (after we filter for only 2007). So just taking `mean()` of those observations isn't really meaningful - it doesn't give us worldwide life expectancy. To get that we have to weight each country's life expectancy by its population, which is what `weighted.mean(lifeExp, pop)` does.
+
+To show you the difference, here's the mean calculated both ways:
+
+```{r pipe_ex4}
+#Unweighted mean, acting as if each country has the same population
+mean(gapminder$lifeExp)
+
+#Weighted mean accounting for population
+weighted.mean(gapminder$lifeExp, gapminder$pop)
+```
+The weighted mean is a bit higher because some of the countries with the largest populations also have the highest life expectancies.
+
 ## Summarizing and Grouped Summaries Using `summarize()` and `group_by()`
 
 The last verb we need to introduce is `summarize()`, which quite simply collapses a whole bunch of rows of data to one or more summary measures. For example, say we wanted to know the total number of flights and the mean departure delay in `flights`. One way we could accomplish it is:
@@ -364,6 +440,7 @@ summarize(flights_small,
           n_flights_in_summary = sum(!is.na(dep_delay)))
 
 ```
+
 In the code above we asked for the number of observations using `n()`, and the number of observations *with non-missing `dep_delay`* using some slightly more complicated code. The latter is actually more important as it's the number of observations we used to calculate our summary mean. I strongly recommend you do this whenever you calculate summary statistics. Why? You want to know how many data points your summary is based off of. This is especially useful for helping diagnose why you might see a very weird summary value, like an extremely high or low average. Maybe it's only based off a couple data points, but you wouldn't know that unless you also print the number of observations used to compute your summary!
 
 That's not really all that useful, though. Let's look at a case where it is: combining `summarize()` with `group_by()` to get grouped summaries.
@@ -545,122 +622,46 @@ Recreate the categorical distance variable from a previous exercise, and find th
 
 
 
-## Data Transformation and Visualization Workflows With the Pipe
+<!-- ## A Word on Data Cleaning -->
 
-Hopefully the above sections gave you a feel for how you use the pipe. I want to close today with just a few more examples of how useful it can be in day-to-day data analysis.
+<!-- So far in this course I've handed you mostly **clean** datasets to work with. **Data cleaning** is what happens after you get data from a source and you go through to check for and possibly correct: -->
 
-Here's another relatively simple one. What if we wanted to calculate and plot the log of per capita GDP for all countries in 1952 from `gapminder`?
+<!-- * Incorrect data: Weird values that *might* be errors -->
+<!-- * Incomplete data: missing values -->
+<!-- * Mis-formatted data: for example, something that is mostly numbers or dates but with a few character values you have to deal with before converting everything to the proper format -->
+<!-- * Duplicate data -->
 
-```{r pipe_ex1, exercise = TRUE}
-#Take your data and pass it as the first argument to...
-gapminder %>%
-  
-  #Filter to only data from 1952...
-  filter(year == 1952) %>%
-  
-  #Within that dataset, create a new variable for log of per capita GDP
-  mutate(log_gdpPercap = log(gdpPercap)) %>% 
-  
-  #And feed this transformed dataset as the first argument to ggplot() for a scatterplot, all in one block!
-  ggplot() +
-  geom_point(aes(x = log_gdpPercap, y = lifeExp))
+<!-- And more. Usually data you get will be a messy mix of formats (is it "10/17/20", "17/10/20", "October 17 2020", "October 17th, 2020"...), riddled with possible or clear errors, implausible values, and potentially lots of missing data. I've skipped all of this by providing you data that people have already spent hours and hours and hours cleaning to be ready for your immediate analysis. -->
 
-```
-Another example: have you ever watched sports on TV and seen a graphic with a weirdly specific fact? 
+<!-- We spend a lot of time teaching you statistics and programming, but a *lot* - [likely even a majority!](https://twitter.com/kjhealy/status/1317163345514987531?s=20) - of your time as a data scientist will be spent on figuring out how to *get* and then *clean* data. Most businesses, for example, still don't know how to properly store data. When I work for sports teams their data is usually a mess - sometimes on paper (!), sometimes in messy 30-sheet Excel workbooks with data coded by colors (colors aren't readable by computers!). Did you see the UK government's delay in reporting COVID cases because they stored one per column in an Excel sheet and literally ran out of space without knowing it? There are hundreds of stories like that every day we don't hear about. -->
 
-```{r img2, echo = FALSE, out.width = "70%", fig.align = "center", fig.cap = "*This is an oddly specific record.*"}
-knitr::include_graphics("images/very_specific_record.png")
-```
+<!-- In fact there's a whole specialty of data scientists, called "data engineers," who just specialize in helping organizations store and organize their data so others can actually analyze it. -->
 
-Somebody - a data scientist, like some of you might become! - has to be producing those, and they might be doing it with R!
+<!-- As a data scientist, clean and easily-updated data you can work with over and over again for a bunch of analyses is worth its weight in platinum. It requires a huge upfront investment in time but will pay off easily in the long run. Just be prepared to spend quite a bit of your time doing it. -->
 
-Using a dataset I just sneakily imported without you knowing, let's find the top NFL (American football) rushers who...
+<!-- Many of these techniques that we're learned so far - particularly exploring data sets and manipulating and transforming data, are useful for data cleaning, though to try to keep the examples more interesting I haven't assigned you a lot of these sorts of tasks. But you *will* experience them in the real world, and hopefully you'll be able to apply these techniques to help! -->
 
-1. Rushed for the most yards in a single year
-2. Post-2000
-3. And attempted <5 rushes per game on average
-
-```{r pipe_ex2, exercise = TRUE}
-rush %>%
-  filter(Year >= 2000 &
-        `Rushing Attempts Per Game` <= 5) %>%
-  select(Name, Team, Year,`Rushing Yards`) %>% 
-  arrange(desc(as.numeric(`Rushing Yards`)))
-
-```
-
-If you had **domain knowledge** about the subject you're studying - in this case football - you might look at this list and notice some interesting things. Like, for example, that many (though not all) of these players are quarterbacks (e.g. Bortles, Kaepernick, Garcia). Tavon Austin is a wide receiver who is sometimes asked to run the ball on trick plays, which helps explain why he has few rushes (<5 per game) but many yards. 
-
-Without **domain knowledge** you might not know what to make of this list. Consider this an important lesson in not thinking *just* knowing the data science or math or programming is enough. Work with subject-matter experts to get the most out of your data.
-
-As a sidenote, we had to use backticks (``) around variable names that are written as multiple words with spaces in between. **Try not to use variables with spaces so we don't have to do this.** Use snake_case, camelCase, or hyphenated-variable-names.
-
-One final example. What if we wanted to plot each country's average years of life expectancy above or below the world average in 2007?
-
-```{r pipe_ex3, exercise = TRUE}
-gapminder %>% 
-  filter(year == 2007) %>% 
-  mutate(LE_minus_mean_2007 = lifeExp - weighted.mean(lifeExp, pop)) %>% 
-  ggplot() +
-  geom_point(aes(x = continent, y = LE_minus_mean_2007))
-
-```
-
-Notice we used a new function here - `weighted.mean()`. Why didn't we just use mean? Can you figure it out?
-
-The issue is each observation in `gapminder` is a single country (after we filter for only 2007). So just taking `mean()` of those observations isn't really meaningful - it doesn't give us worldwide life expectancy. To get that we have to weight each country's life expectancy by its population, which is what `weighted.mean(lifeExp, pop)` does.
-
-To show you the difference, here's the mean calculated both ways:
-
-```{r pipe_ex4}
-#Unweighted mean, acting as if each country has the same population
-mean(gapminder$lifeExp)
-
-#Weighted mean accounting for population
-weighted.mean(gapminder$lifeExp, gapminder$pop)
-```
-The weighted mean is a bit higher because some of the countries with the largest populations also have the highest life expectancies.
-
-## A Word on Data Cleaning
-
-So far in this course I've handed you mostly **clean** datasets to work with. **Data cleaning** is what happens after you get data from a source and you go through to check for and possibly correct:
-
-* Incorrect data: Weird values that *might* be errors
-* Incomplete data: missing values
-* Mis-formatted data: for example, something that is mostly numbers or dates but with a few character values you have to deal with before converting everything to the proper format
-* Duplicate data
-
-And more. Usually data you get will be a messy mix of formats (is it "10/17/20", "17/10/20", "October 17 2020", "October 17th, 2020"...), riddled with possible or clear errors, implausible values, and potentially lots of missing data. I've skipped all of this by providing you data that people have already spent hours and hours and hours cleaning to be ready for your immediate analysis.
-
-We spend a lot of time teaching you statistics and programming, but a *lot* - [likely even a majority!](https://twitter.com/kjhealy/status/1317163345514987531?s=20) - of your time as a data scientist will be spent on figuring out how to *get* and then *clean* data. Most businesses, for example, still don't know how to properly store data. When I work for sports teams their data is usually a mess - sometimes on paper (!), sometimes in messy 30-sheet Excel workbooks with data coded by colors (colors aren't readable by computers!). Did you see the UK government's delay in reporting COVID cases because they stored one per column in an Excel sheet and literally ran out of space without knowing it? There are hundreds of stories like that every day we don't hear about.
-
-In fact there's a whole specialty of data scientists, called "data engineers," who just specialize in helping organizations store and organize their data so others can actually analyze it.
-
-As a data scientist, clean and easily-updated data you can work with over and over again for a bunch of analyses is worth its weight in platinum. It requires a huge upfront investment in time but will pay off easily in the long run. Just be prepared to spend quite a bit of your time doing it.
-
-Many of these techniques that we're learned so far - particularly exploring data sets and manipulating and transforming data, are useful for data cleaning, though to try to keep the examples more interesting I haven't assigned you a lot of these sorts of tasks. But you *will* experience them in the real world, and hopefully you'll be able to apply these techniques to help!
-
-The `janitor()` package has [a lot of really useful tools](https://cran.r-project.org/web/packages/janitor/vignettes/janitor.html) for the more tedious but critical data cleaning tasks, like fixing variable names. I'd like to briefly talk through just one in more detail...
+<!-- The `janitor()` package has [a lot of really useful tools](https://cran.r-project.org/web/packages/janitor/vignettes/janitor.html) for the more tedious but critical data cleaning tasks, like fixing variable names. I'd like to briefly talk through just one in more detail... -->
 
 
-### Identifying Duplicate Observations
+<!-- ### Identifying Duplicate Observations -->
 
-Often real-world messy data contains duplicate observations/records/rows. R actually doesn't have any easy abilities natively to identify these observations, and it can be a real tedious process. Unless you know `janitor`'s `get_dupes()` function, that is! Consider the following contrived example below, where someone accidentally entered the widgets row twice. 
+<!-- Often real-world messy data contains duplicate observations/records/rows. R actually doesn't have any easy abilities natively to identify these observations, and it can be a real tedious process. Unless you know `janitor`'s `get_dupes()` function, that is! Consider the following contrived example below, where someone accidentally entered the widgets row twice.  -->
 
-```{r get_dupes, exercise = TRUE}
-(biz <- tibble(product_line = c("Widgets", "Gizmos", "Doohickys", "Widgets"),
-              revenue = c(1000, 1000, 2000, 1000)))
+<!-- ```{r get_dupes, exercise = TRUE} -->
+<!-- (biz <- tibble(product_line = c("Widgets", "Gizmos", "Doohickys", "Widgets"), -->
+<!--               revenue = c(1000, 1000, 2000, 1000))) -->
 
-biz %>%
-  get_dupes(product_line)
+<!-- biz %>% -->
+<!--   get_dupes(product_line) -->
 
-```
+<!-- ``` -->
 
-`get_dupes()` returned all potentially duplicate records based on the variable `product_line`, *and* the number of duplicates for each duplicated value. You can then quickly scan the duplicates, determine if they're a problem, and - if so - what to do about them (e.g. delete, merge, etc.). You may not appreciate this now, but when you get out into the real world you'll quickly realize how useful this is.
+<!-- `get_dupes()` returned all potentially duplicate records based on the variable `product_line`, *and* the number of duplicates for each duplicated value. You can then quickly scan the duplicates, determine if they're a problem, and - if so - what to do about them (e.g. delete, merge, etc.). You may not appreciate this now, but when you get out into the real world you'll quickly realize how useful this is. -->
 
-Note `get_dupes()` chooses columns like `select()`. If you want to check for duplicates on *every* column, for example, simply use `get_dupes(everything())`.
+<!-- Note `get_dupes()` chooses columns like `select()`. If you want to check for duplicates on *every* column, for example, simply use `get_dupes(everything())`. -->
 
-`get_dupes()` may feel like overkill. After all, our duplicate was easy to just see above. But what if instead of 4 rows you actually had 4,000 and this duplicate was buried around row 2,500? Now it sounds pretty good, right?
+<!-- `get_dupes()` may feel like overkill. After all, our duplicate was easy to just see above. But what if instead of 4 rows you actually had 4,000 and this duplicate was buried around row 2,500? Now it sounds pretty good, right? -->
 
 ## Summary
 

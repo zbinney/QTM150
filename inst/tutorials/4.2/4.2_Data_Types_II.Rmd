@@ -354,6 +354,8 @@ At your level you don't need to know more about the difference, so we'll leave i
 
 Factors represent categorical data, but they're actually integer vectors with a **levels attribute**. That attribute assigns a character name to each integer value. Let's take a deeper look at how that works.
 
+Some of the functions below come from the `forcats` package, which is part of the `tidyverse` and makes working with factors easier than in base R.
+
 ### Creating Factors
 
 Here's some code for how to manually create and explore a factor; run the below code in your own script to see what appears in the Environment pane:
@@ -554,16 +556,6 @@ gss_cat %>%
 ```
 
 
-## Summary
-
-Today we covered attributes and the more complex data types they allow: factors, dates, data frames, and tibbles. That's it for the Data Types section of the course.
-
-The next and final section (briefly and superficially) covers some major statistical programming techniques you might need in your careers: if-else statements, for-loops, basic function writing, and statistical simulation. Then we're finished!
-
-## Appendix (Optional): More on Factors
-
-Here is a little more on working with factors. If you take QTM 151 we will cover factors and the useful `tidyverse` `forcats` package in greater detail. But for now here are a couple other things you might be interested in:
-
 ### Modifying Factor Levels
 
 Say you have levels of a factor that are too long or you don't like, such as `partyid` in `gss_cat`. `fct_recode()` can help you change them in a principled, reproducible way:
@@ -660,6 +652,7 @@ shirts_ord <- factor(c("Small", "Small", "Medium", "Large", "Large"), levels = c
   
   shirts_ord[5] > shirts_ord[3] # "Large" is now > "Medium"!
 ```
+
 One other important thing to note about ordered factors is they'll plot by default in the order specified by their levels.
 
 ```{r fct_order3, exercise = TRUE}
@@ -667,3 +660,11 @@ diamonds %>%
   ggplot(aes(x = clarity)) +
   geom_bar()
 ```
+
+## Summary
+
+Today we covered attributes and the more complex data types they allow: factors, dates, data frames, and tibbles. That's it for the Data Types section of the course.
+
+The next and final section (briefly and superficially) covers some major statistical programming techniques you might need in your careers: if-else statements, for-loops, basic function writing, and statistical simulation. Then we're finished!
+
+

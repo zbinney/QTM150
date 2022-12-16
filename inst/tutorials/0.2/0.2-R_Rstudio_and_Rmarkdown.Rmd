@@ -21,9 +21,11 @@ library(learnr)
 
 This document - and all the other future ones in this course - are interactive tutorials, built using RMarkdown the `learnr` **package** in R (we'll talk more about what RMarkdown and "package" mean in a moment). You have the opportunity to actually run R code in this document itself in "Exercises." There are also sometimes "Questions" for you to answer and test your knowledge.
 
-On the left hand side you'll see a Table of Contents menu that lets you navigate from section to section. Within each section, there are *sub-sections* that are revealed one-by-one by clicking the "Continue" button at the bottom of the page. Make sure you keep going until you exhaust each section before moving on to the next one - you'll know you're done when "Continue" sends you to a new page - the next section on the left hand side - rather than just adding more text to the existing page (which indicates you've revealed a new sub-section).
+On the left hand side you'll see a Table of Contents menu that lets you navigate from section to section. Within each section, there are *sub-sections* that are revealed one-by-one by clicking the "Continue" button at the bottom of the page. Make sure you keep going until you exhaust each section before moving on to the next one. You'll know you're done when "Continue" sends you to a new page - the next section on the left hand side - rather than just adding more text to the existing page (which indicates you've revealed a new sub-section).
 
 Although you can run interactive code here, my advice is for you to also re-type the code over in your own R **script** - you'll learn what that means below - on the side. This helps for the same reason taking notes is better than just sitting there listening to me talk. Writing things down helps with memory and understanding.
+
+WARNING: if you try to do this while running a Tutorial, you may notice it won't seem to run. That's because you can't run both at the same time in the same RStudio "session." RStudio has to dedicate all its attention in one session to watching the interactive tutorial. But there's a super easy fix to do both at the same time: in the top menu go to Session > New Session. This will open up a second RStudio window. You should be able to run any code you want in that second window while the first one keeps an eye on your tutorial. (Note you can run code in the tutorial without a second session, this is only for if you want to follow along and code in your own script as you go.)
 
 You can walk away and come back to these documents as many times as you like - R magically saves your place and the work you've done, as long as you're using the same machine. No need to do it all in one sitting.
 
@@ -382,139 +384,6 @@ Before we move on I want to introduce you to R [Cheatsheets](https://rstudio.com
 
 <mark>Challenge:</mark> Try opening the one for RMarkdown now!
 
-### RMarkdown Overview
-
-I can't show you the full capabilities of RMarkdown in an interactive tutorial. Instead, I want you to open up your own file. To do that while viewing this tutorial you need to:
-
-1. Create a new **Session** (open a new RStudio window). Click `Session` > `New Session`.
-    
-2. Create a new Rmarkdown file. Click `File`, then `New file`, then `Rmarkdown...`. When a window pops up, just click "OK" for now.
-
-You should now have something that looks like this in your script area:
-
-```{r, echo = FALSE, out.width = "100%", fig.cap = "*New RMarkdown document.*"}
-knitr::include_graphics("images/RStudio_RMarkdown.png")
-```
-
-Let's walk through the document, top to bottom. But first...
-
-<mark>Challenge:</mark> **Knit** your first RMarkdown document! Knit the default raw `.Rmd` file into an HTML document by hitting the `Knit` button on the top ribbon. It should pop up in a new window. Now you can start to compare parts of the raw RMarkdown with what it prints in a finished document!
-
-* The **You Ain't a Markup Language (YAML) Header**. This is always the first thing in an RMarkdown document, and it'll look something like this:
-
-    ```{r eval=F}
-    ---
-    title: "RMd Example"
-    author: "Zach"
-    date: "June 26, 2020"
-    output: html_document
-    ---
-    ```
-
-    + Title: the title on the final knitted document. Note what it looks like in your knitted document.
-  
-    + Author: the author on the final knitted document. Note what it looks like in your knitted document.
-      
-    + Output: the *default* format of knitted document when you click on the "Knit" button (you can always choose another format manually, or change the text here to change the default). In this case it produces an HTML document that you can open and view in any web browser. It'll look like a web page. Note this isn't explicitly printed anywhere in the finished document; it tells the finished document what format to take.
-      
-    + Date: hopefully self-explanatory at this point. Note what it looks like in your knitted document.
-  
-    + There are plenty of other things you can add to your header. SEE the RMarkdown cheat sheet for some examples, but most of them probably look like gibberish to you right now. And that's OK!
-
-<mark>Challenge:</mark> Change the title and add an author name to your HTML document. Re-knit it to see the change reflected.
-
-* A **setup chunk** that allows you to set certain **global options** (things that apply and will be used throughout the entire document). Don't worry about this for now. Note it doesn't appear in the finished document.
-
-* A **Header** followed by some text. Compare how it's written in the raw RMarkdown to the finished document. We'll discuss this more below. 
-
-* A **Code Chunk** that looks like this:
-
-    ```{r, echo = FALSE, out.width = "100%", fig.cap = "*A code chunk.*"}
-    knitr::include_graphics("images/Code_Chunk.png")
-    ```
-    
-    + Notice how the chunk appears in the raw RMarkdown versus how it's rendered and printed in the final document. You see the code *and the output*. The output is identical to what you'd see in the **console** if you just ran the code there or in a script (try it if you don't believe me!). 
-    
-Below this is just another header, text, and code chunk that demonstrates how you can embed plots as well as the summary table from the first chunk.
-
-#### Code Chunks
-    
-As we've already seen you can weave in chunks of R code between blocks of explanatory text.
-
-To create a new chunk place the cursor where you want it and either: 
-
-* Click on the `Insert` button in the ribbon menu then `R`, or
-
-* Press `Ctrl + Alt + i` on a PC or `Command + Option + i` on a Mac.
-
-
-To run code chunks, you can either:
-
-* Run a *full single* chunk by clicking on the green triangle at the top-right of the chunk (red circle in the picture below).
-
-* Run *part of a chunk* with `Ctrl/Command + Enter` just as you would in a normal script.
-
-* Run *all chunks up to this point in the document* by clicking on triangle with the line below it (blue circle in the picture below)
-
-```{r, echo = FALSE, out.width = "100%", fig.cap = "*Running code chunks.*"}
-knitr::include_graphics("images/RStudio_RMarkdown_RunChunk.jpg")
-```
-
-In any case, R's output appears right under the chunk in the raw RMarkdown `.Rmd` file.
-
-To run *all chunks* in a document you simply **knit** the document. As you've already seen, this exports the text, code chunks, and output into a pretty and portable format like HTML or PDF.
-
-<mark>Challenge:</mark> Try adding a new code chunk to the default RMarkdown document that adds your favorite five numbers and returns the sum. Add a new heading and some narrative text to explain what the chunk is doing, as well. Re-knit the document to see the results.
-
-The last thing we need to talk about with chunks are the **chunk options**. An R chunk might look like this:
-
-```{r, echo = FALSE, out.width = "100%", fig.cap = "*Another code chunk.*"}
-knitr::include_graphics("images/Code_Chunk2.png")
-```
-
-Notice that first line. That tells us three things: 
-
-1. RMarkdown should evaluate this block as `r` code (rather than, say, Python code, which it can also handle).
-
-2. The name of this chunk (`cars`). This always appears after the language name and a single space. This helps with navigating between chunks in the document (otherwise it'll just be listed as something like "Unnamed Chunk 1" so it can be hard to find your way back to it quickly). Use descriptive names where possible.
-
-3. Chunk options, which always appear after the language, the optional name, and a comma `,`. These serve as instructions for the knitting process around specific chunks of code. The most common options include:
-
-    i) `{r [CHUNK-NAME], include=FALSE}`. This causes RMarkdown not to print the code *or* any output.
-    
-    ii) `{r [CHUNK-NAME], echo=FALSE}`. This causes RMarkdown not to print the code, but it will print any output.
-    
-    iii) `{r [CHUNK-NAME], eval=FALSE}`. This causes RMarkdown to print the code, but *not* any output.
-    
-You can list multiple options for a chunk, all separated by commas. The RMarkdown cheat sheet has a list of more chunk options.
-
-
-<mark>Challenge:</mark> Suppress the code chunk you wrote above from being printed or showing its output when you re-knit the document.
-
-
-
-#### Text Formatting in RMarkdown
-
-There are many ways to format text in RMarkdown. You can also use LaTeX to expand this, but that's beyond the scope of this course so don't worry about it. Here are some of the more common formats you might want to have in a knitted document:
-
-* `*Text surrounded by single asterisks*` will be *italicized*
-  
-* `**Text surrounded by double asterisks**` will be **bold**
-  
-* `[This is how you add a hyperlink to Google](www.google.com)`
-  
-* You create headers using between one `#` and six `######` pound signs (fun fact: they're technically called octothorps!). Fewer pound signs are bigger headings.
-
-
-<mark>Challenge:</mark> Make some text of your choice italic, add a hyperlink, change one of the heading sizes, and re-knit the document.
-
-
-#### Other RMarkdown Tips
-
-Here's a [great post](https://ryanpeek.org/2020-02-20-10-tips-to-souping-up-rmarkdown/#S7) with some other tips on how to do some other cool, common things in RMarkdown.
-
-
-
 
 
 ## Packages
@@ -646,6 +515,172 @@ love_this_class
 **Pro-tip**: `<-` is a pain to type manually. Instead, use the shortcut Alt + Minus Sign.
 
 <mark>Challenge:</mark> Add your own object to R, then ask R to return its value.
+
+
+
+
+
+## RMarkdown Overview
+
+I can't show you the full capabilities of RMarkdown in an interactive tutorial. Instead, I want you to open up your own file. To do that while viewing this tutorial you need to:
+
+1. Create a new **Session** (open a new RStudio window). Click `Session` > `New Session`.
+    
+2. Create a new Rmarkdown file. Click `File`, then `New file`, then `Rmarkdown...`. When a window pops up, just click "OK" for now.
+
+You should now have something that looks like this in your script area:
+
+```{r, echo = FALSE, out.width = "100%", fig.cap = "*New RMarkdown document.*"}
+knitr::include_graphics("images/RStudio_RMarkdown.png")
+```
+
+Let's walk through the document, top to bottom. But first...
+
+<mark>Challenge:</mark> **Knit** your first RMarkdown document! Knit the default raw `.Rmd` file into an HTML document by hitting the `Knit` button on the top ribbon. It should pop up in a new window. Now you can start to compare parts of the raw RMarkdown with what it prints in a finished document!
+
+* The **You Ain't a Markup Language (YAML) Header**. This is always the first thing in an RMarkdown document, and it'll look something like this:
+
+    ```{r eval=F}
+    ---
+    title: "RMd Example"
+    author: "Zach"
+    date: "June 26, 2020"
+    output: html_document
+    ---
+    ```
+
+    + Title: the title on the final knitted document. Note what it looks like in your knitted document.
+  
+    + Author: the author on the final knitted document. Note what it looks like in your knitted document.
+      
+    + Output: the *default* format of knitted document when you click on the "Knit" button (you can always choose another format manually, or change the text here to change the default). In this case it produces an HTML document that you can open and view in any web browser. It'll look like a web page. Note this isn't explicitly printed anywhere in the finished document; it tells the finished document what format to take.
+      
+    + Date: hopefully self-explanatory at this point. Note what it looks like in your knitted document.
+  
+    + There are plenty of other things you can add to your header. SEE the RMarkdown cheat sheet for some examples, but most of them probably look like gibberish to you right now. And that's OK!
+
+<mark>Challenge:</mark> Change the title and add an author name to your HTML document. Re-knit it to see the change reflected.
+
+* A **setup chunk** that allows you to set certain **global options** (things that apply and will be used throughout the entire document). Don't worry about this for now. Note it doesn't appear in the finished document.
+
+* A **Header** followed by some text. Compare how it's written in the raw RMarkdown to the finished document. We'll discuss this more below. 
+
+* A **Code Chunk** that looks like this:
+
+    ```{r, echo = FALSE, out.width = "100%", fig.cap = "*A code chunk.*"}
+    knitr::include_graphics("images/Code_Chunk.png")
+    ```
+    
+    + Notice how the chunk appears in the raw RMarkdown versus how it's rendered and printed in the final document. You see the code *and the output*. The output is identical to what you'd see in the **console** if you just ran the code there or in a script (try it if you don't believe me!). 
+    
+Below this is just another header, text, and code chunk that demonstrates how you can embed plots as well as the summary table from the first chunk.
+
+### Code Chunks
+    
+As we've already seen you can weave in chunks of R code between blocks of explanatory text.
+
+To create a new chunk place the cursor where you want it and either: 
+
+* Click on the `Insert` button in the ribbon menu then `R`, or
+
+* Press `Ctrl + Alt + i` on a PC or `Command + Option + i` on a Mac.
+
+
+To run code chunks, you can either:
+
+* Run a *full single* chunk by clicking on the green triangle at the top-right of the chunk (red circle in the picture below).
+
+* Run *part of a chunk* with `Ctrl/Command + Enter` just as you would in a normal script.
+
+* Run *all chunks up to this point in the document* by clicking on triangle with the line below it (blue circle in the picture below)
+
+```{r, echo = FALSE, out.width = "100%", fig.cap = "*Running code chunks.*"}
+knitr::include_graphics("images/RStudio_RMarkdown_RunChunk.jpg")
+```
+
+In any case, R's output appears right under the chunk in the raw RMarkdown `.Rmd` file.
+
+To run *all chunks* in a document you simply **knit** the document. As you've already seen, this exports the text, code chunks, and output into a pretty and portable format like HTML or PDF.
+
+<mark>Challenge:</mark> Try adding a new code chunk to the default RMarkdown document that adds your favorite five numbers and returns the sum. Add a new heading and some narrative text to explain what the chunk is doing, as well. Re-knit the document to see the results.
+
+The last thing we need to talk about with chunks are the **chunk options**. An R chunk might look like this:
+
+```{r, echo = FALSE, out.width = "100%", fig.cap = "*Another code chunk.*"}
+knitr::include_graphics("images/Code_Chunk2.png")
+```
+
+Notice that first line. That tells us three things: 
+
+1. RMarkdown should evaluate this block as `r` code (rather than, say, Python code, which it can also handle).
+
+2. The name of this chunk (`cars`). This always appears after the language name and a single space. This helps with navigating between chunks in the document (otherwise it'll just be listed as something like "Unnamed Chunk 1" so it can be hard to find your way back to it quickly). Use descriptive names where possible.
+
+3. Chunk options, which always appear after the language, the optional name, and a comma `,`. These serve as instructions for the knitting process around specific chunks of code. The most common options include:
+
+    i) `{r [CHUNK-NAME], include=FALSE}`. This causes RMarkdown not to print the code *or* any output.
+    
+    ii) `{r [CHUNK-NAME], echo=FALSE}`. This causes RMarkdown not to print the code, but it will print any output.
+    
+    iii) `{r [CHUNK-NAME], eval=FALSE}`. This causes RMarkdown to print the code, but *not* any output.
+    
+You can list multiple options for a chunk, all separated by commas. The RMarkdown cheat sheet has a list of more chunk options.
+
+
+<mark>Challenge:</mark> Suppress the code chunk you wrote above from being printed or showing its output when you re-knit the document.
+
+
+
+### Text Formatting in RMarkdown
+
+There are many ways to format text in RMarkdown. You can also use LaTeX to expand this, but that's beyond the scope of this course so don't worry about it. Here are some of the more common formats you might want to have in a knitted document:
+
+* `*Text surrounded by single asterisks*` will be *italicized*
+  
+* `**Text surrounded by double asterisks**` will be **bold**
+  
+* `[This is how you add a hyperlink to Google](www.google.com)`
+  
+* You create headers using between one `#` and six `######` pound signs (fun fact: they're technically called octothorps!). Fewer pound signs are bigger headings.
+
+
+<mark>Challenge:</mark> Make some text of your choice italic, add a hyperlink, change one of the heading sizes, and re-knit the document.
+
+
+### My RMarkdown Formatting Expectations: A Manifesto
+
+Part of learning how to use R as a data analyst is learning how to cleanly and professionally communicate your findings, not just how to code. To that end a substantial portion of your grade is going to depend not just on getting the correct solution, but in presenting it in an easy-to-digest way.
+
+On Canvas, if you click on "Modules", you'll see a section titled "RMarkdown Organization Example." My advice is to download the HW1 Example file and edit it for your first assignment. Then when another assignment comes around open the previous finished assignment, save it to a different name, delete *most* things except for one example of each main component (e.g. a heading, a code chunk), and then create the next assignment in it. This should start you from a good template each time. But the key things I'm looking for are:
+
+* **Headings**. Use them to orient and walk readers through your document. Note how I use them in my Tutorials and try to mimic that. 
+
+    + They should be brief (usually one line) but clear so the reader knows what to expect in a given section (e.g. Loading Data and Packages, Analysis of Flight Departure Delays).
+
+    + Start big with a title, then go smaller and smaller for sub-sections as needed. If you get to the 4th level (`####`) or smaller I recommend bolding so it stands out from the normal text.
+    
+* All code should be in **code chunks** (i.e. when writing it should be in a box with a gray background). It should not be simply written into the document outside of a chunk except in very specific cases such as pulling a single number into a paragraph of written text that will auto-update (none of which I'll be asking you to do in this course).
+
+* Code chunks should be interweaved with explanatory text before and/or after.
+
+    + I favor the following pattern: 
+    
+        1) If needed (i.e. not self-explanatory or made clear elsewhere like in a heading), 1-2 sentences of text before a chunk (depending on its length) explaining what the code is doing. 
+        
+        2) The code chunk itself.
+        
+        3) If needed (i.e. it produces output like a plot or table that isn't self-explanatory), a brief analysis of the output after the chunk.
+        
+    Repeat as you move through the document. 
+    
+    Use your judgement as to whether 1/3 are needed in any particular case, but keep in mind you shouldn't assume your audience can quickly figure out what your code is doing by looking at the code itself and, if the output was produced to answer a specific question, highlight that answer in an analysis of the output.
+    
+If you're confused about what I mean by any of this, refer to the HW1 Example file. I've designed it to reflect the level of detail and effort I want to see on your assignments.
+    
+    
+### Other RMarkdown Tips
+
+Here's a [great post](https://ryanpeek.org/2020-02-20-10-tips-to-souping-up-rmarkdown/#S7) with some other tips on how to do some other cool, common things in RMarkdown.
 
 ### Done
 
