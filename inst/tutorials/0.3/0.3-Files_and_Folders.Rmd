@@ -25,7 +25,7 @@ OK, let's get going!
 
 To keep things organized, your computer has a system for storing data.
 
-Every piece of data on a computer is stored in a **file**. 
+Every piece of data on a computer is stored in a **file**. A file could contain a program that runs, a spreadsheet with data, a written document with words - anything, really.
 
 Each file is located in a **folder**, which is just a collection of files. Folders can contain several "sub-folders," and all except the highest main drive folder are themselves contained in a **parent folder**.
 
@@ -86,4 +86,34 @@ The equivalent on a Mac is to command-click on the file and then select `Get Inf
 
 If you're using Linux, you already know better than I how to do this.
 
-OK, I think that's it for now. I hope this gets everyone on the same page with regards to how files are stored on a computer and how it looks for them when you ask it to.
+### Where Does My File Go When I...
+
+#### ...Save It?
+
+If you select "Save As" for a file, you both give it a name *and* place it into a folder of your choosing.
+
+A folder will likely be chosen by default (usually the last place you saved a file to when using that same program), but you can always change it to another folder or even create an entirely new folder or sub-folder in which to save the file. That file will then be located in that folder until it is removed and will always be accessible through that folder's file path.
+
+#### ...Download It?
+
+When you download a file, it will often go to a folder on your computer labeled "Downloads." The file will be accessible there through that folder's file path (for example, on my laptop that's `C:\Users\zbinney\Downloads`).
+
+### Where Should I Store My Files: Best Practices for Staying Organized
+
+You really should take the time (a couple hours at most) to create a sensible organization system for your files.
+
+* For example, you might have one big folder on your desktop or (better and safer - it'll save your ass in case your computer crashes!) your Emory Shared Drive or another area that's automatically backed up for your `Personal` documents, and another for your `School` or `Class` or `Oxford` documents.
+
+    + Inside that `School` or `Class` or `Oxford` folder, you could have sub-folders for each `Class`.
+    
+        - Inside each `Class` folder you could have a sub-folder for each assignment, like `HW1`. Or for each type of assignment, like `HW`, and then sub-folders within that for each assignment like `HW1`, `HW2`, etc. You simply create these sub-folders as needed.
+        
+This may seem like a lot of work to put in, and you'll be tempted to skip it with all the other demands on your time. But the cost is minimal - an hour or two at most upfront and a few thoughtful seconds each time you create or download a new file to decide where to put it. And I promise it will save you *many hours* of frustration later when you can't figure out where the hell you put the latest version of that assignment that you procrastinated on and have to upload in the next 4 minutes. Trust me.
+
+#### The Last Temptation of the Downloads Folder
+
+One temptation you'll need to avoid is just keeping everything you download in the Downloads folder in one huge pile. Sometimes keeping a file there is OK if it's a file you're only going to access once or a few times, like the takeout menu for a restaurant or some sort of form you need to sign and then forget about.
+
+But for important files you'll want to access over and over again - like, say, THE FILES YOU DOWNLOAD FROM CANVAS FOR THIS COURSE - saving them separate from everything else in their own bespoke folder will save you hours of frustrated scrolling through your Downloads folder trying to find the right version of that homework to turn in, or the Tutorial where you filled out all the code rather an old version, or that handy cheatsheet of common R errors I sent you. You can either do this right when you download the file(s) by telling it to save to its proper folder, or just after by simply moving the file(s) (through copy-paste or drag-and-drop) from the Downloads folder to its new home.
+
+OK, I think that's it for now. I hope this gets everyone on the same page with regards to how files are stored on a computer, how it looks for them when you ask it to, and some best practices for storing them on your own machines.
