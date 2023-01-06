@@ -1,0 +1,359 @@
+---
+title: "Tutorial 5.2 - Data Types II (Data Frames and Tibbles)"
+
+author: "Zachary Binney, PhD"
+date: "October 2020"
+
+output: 
+  learnr::tutorial:
+    css: css/zb_style.css
+    progressive: TRUE
+runtime: shiny_prerendered
+description: "Data Types II"
+---
+
+```{r hidden, include = FALSE}
+pacman::p_load(learnr)
+
+```
+
+
+## Intro and Setup
+
+Today we build upon our previous tutorial - which covered **vectors** and **lists** - to learn about the underlying structure of **data frames/tibbles**.
+
+Once again we don't need much from packages today - just `lubridate` for dates and the `tidyverse` to provide a range of data transformation functions. **Just remember to run this code in your own script before proceeding.**
+
+```{r setup, message = FALSE}
+pacman::p_load(tidyverse, lubridate)
+
+```
+
+
+
+## Augmented Vectors
+
+At this point you might be thinking, "OK, we've seen vectors and lists, but they don't look anything like the **data frames** and **tibbles** we've been working with. I'm so confused." Fret not, everyone! We've just been building up to it. Data frames and tibbles are really just vectors and lists under the hood. 
+
+To understand how we need to talk about **augmented vectors** - which are just vectors with some additional **attributes**.
+
+### Attributes
+
+**Attributes** are additional **metadata** (that is, information) that's attached to a vector or list that alters its behavior. You can always check an object's attributes with `attributes()`. 
+
+There are 3 main types we need to learn, and you've actually already learned one:
+
+#### 1. Names
+
+These allow you to name elements of a vector (SEE Tutorial 4.1)
+
+#### 2. Dimensions
+
+**Dimensions**, or **dims**, turn a vector into a **matrix/array**.
+
+**Vectors** by default only have a length - but you can also specify a height via dimension attributes.
+
+```{r dims, exercise = TRUE}
+# A vector
+nums <- c(1:10)
+
+  # Check its attributes
+  attributes(nums) # No attributes (beyond being a vector, which doesn't show here)
+
+# A matrix with dimension attributes
+num_mat <- matrix(c(1:10), ncol = 5, nrow = 2)
+
+  #Check its attributes
+  attributes(num_mat) #This now has two dimensions: 2 (rows), and 5 (columns), or 2 x 5
+  
+  #Note this matrix is still a vector!
+  is.numeric(num_mat)
+  is.atomic(num_mat)
+  is.list(num_mat) # And not a list
+```
+
+#### 3. Classes
+
+These are used to specify how objects like vectors and data frames interact with various functions in the S3 object oriented system. Do not worry about this right now beyond being able to recognize what a **class** is.
+
+Here's an analogy that may help: let's say there's a function for humans called `eat()`. We can eat various things but not other things. Consider two objects, like vectors: `rock` and `rice`. 
+
+The object `rock` is not food - that is, it lacks an **attribute** that makes it food. So if I, a human, tried to run the function `eat(rock)`, the "function" would likely break and throw an error along the lines of `Hey idiot, you can't eat a rock.` The same thing happens in R if you try to feed a function an object type it isn't expecting and can't deal with - for example, feeding a **vector** to `select()`. Try eating a rock below:
+
+```{r eat_rock, exercise = TRUE}
+#Eat a rock
+x <- c(1:10)
+
+x %>% select(everything())
+```
+But the object `rice` *does* have the food **attribute**. So when our body encounters it and we run `eat(rice)`, the function `eat()` works. Try eating rice by feeding a **tibble** to `select()`:
+
+```{r eat_rice, exercise = TRUE}
+#Eat rice
+midwest
+
+midwest %>% select(everything())
+```
+
+Often functions can take multiple types of input but may do different things depending on what the **class** of that input is. For example, `print()`, `str()`, and `as.Date()` will try to do different things depending on whether you feed it a vector or list, and what `typeof` vector or list it is.
+
+### Types of Augmented Vectors
+
+There are also 3 main types of augmented vectors we need to cover. 
+
+#### Dates and Date-Times
+
+We're not going to cover these in detail here since we get into them more in a later Tutorial, but here's a brief overview. You can look to [Chapter 16 of *R for Data Science* for more.](https://r4ds.had.co.nz/dates-and-times.html)
+
+R stores **dates** as an integer number of days since January 1, 1970. Why? Don't ask.
+
+R stores **date-times** as an integer number of *seconds* since midnight on January 1, 1970.
+
+For example, here's how R stores my birthday. We use `as.Date()` to create a date so R doesn't simply store it as a character string:
+
+```{r date, exercise = TRUE}
+# My birthdate
+bday <- as.Date("1986-08-29")
+
+  #Print it - it looks like a character string, doesn't it?
+  bday
+
+  # Check its type
+  typeof(bday) # But R tells us it's numeric (specifically, a double)! What!?
+  
+  # Check its attributes
+  attributes(bday) # Here R tells us it has the class attribute "Date", which explains why it prints as it does
+  
+  #Here's how we print its underlying numeric value
+  unclass(bday) # I was born 6,084 days after January 1, 1970
+```
+
+And here's how R stores my (approximate, I don't remember exactly) birth time:
+
+```{r datetime, exercise = TRUE}
+# My birthdate and time
+bday <- ymd_hms("1986-08-29 10:19:52 AM") #ymd_hms tells R we're giving it data in the order Year, Month, Day, Hours, Minutes, Seconds
+
+  #Print it - it looks like a character string, doesn't it?
+  bday
+
+  # Check its type
+  typeof(bday) # But R tells us it's numeric (specifically, a double)! What!?
+  
+  # Check its attributes
+  attributes(bday) # Here R tells us it has the class attributes "POSIXCt" and "POSIXt", which indicate date-times
+  
+  #Here's how we print its underlying numeric value
+  unclass(bday) # I was born 525,694,792 seconds after midnight on January 1, 1970
+```
+R only knows how to deal with these as dates and date-times because of attributes - otherwise it would treat these as character vectors!
+
+#### Data Frames and Tibbles
+
+We're going to cover these in their own section shortly.
+
+#### Factors
+
+Same.
+
+Speaking of...
+
+## Data Frames and Tibbles
+
+**Data frames/tibbles** are actually augmented lists. More specifically, they're lists with:
+
+* 3 new class attributes: `tbl`, `tbl_df`, and `data.frame`
+* 2 new name attributes: 
+
+    - `names` for column (variable) names 
+    - `row.names` to identify observation numbers
+
+Let's take a look at the `mpg` tibble:
+
+```{r tbl, exercise = TRUE}
+# Our old friend mpg
+mpg
+
+  # Under the hood, it's a list
+  typeof(mpg)
+  
+    #What's the first "element" of the list?
+    mpg[[1]]
+    
+    #What about the third "element"?
+    mpg[[3]]
+
+  # Check its type
+  typeof(traffic_light) # But R tells us it's an integer! What!?
+  
+  # Check its attributes
+  attributes(mpg) # Here R tells us it has the 3 classes we expect
+                  # names, which lists the column/variable names
+                  # and row.names, which lists observation numbers
+```
+Let's orient you to what we're seeing above:
+
+The `mpg` tibble is a list. 
+
+Each element of that list is a column of the tibble - the first is `manufacturer`, the third is `displ` (engine size), and so on. Each of these elements/columns is a vector, and *all of these vectors must be of the same length* - the number of observations in the data frame/tibble! For example, the 3rd column (`displ`) is a double vector of engine sizes of length 234. 
+
+The i'th row is comprised of the i'th elements of each column/vector that comprises the data frame/tibble. Consider, for example, the third observation when we print the tibble: the 2008 Audi A4 2.0L. It's manufacturer is the 3rd element of the `manufacturer` column/vector, its engine size is the 3rd element of the `displ` column/vector, and so on.
+
+If this feels a bit confusing to you, that's OK. Just move on. Happily when actually interfacing with data frames/tibbles R feels much more like a spreadsheet program, so everything you need is fairly intuitive. The key conceptual thing to understand is that underneath everything, a data frame/tibble is actually just an augmented list of columns, where each column is a vector. So it's lists, vectors, and attributes all the way down, even in seemingly more complex structures!
+
+### Subsetting Data Frames and Tibbles
+
+How do you grab single rows, columns, or elements from a data frame/tibble?
+
+#### Getting single elements
+
+Say I want the value of the 5th column (`cyl`, or number of cylinders in the engine) for the 31st observation:
+
+```{r one_element, exercise = TRUE}
+# Give me the value from the 5th column of the 31st row
+mpg[[31,5]] # This will extract the element as a vector of length 1
+            # outside the context of a data frame
+
+mpg[31,5] # This will extract the element as a 1 x 1 data frame
+
+```
+
+The format here is always `[[ROW_NUMBER(S), COLUMN_NUMBER(S)]]`. If you leave either of these blank R returns *all* the columns or rows of the blank element. Speaking of which...
+
+#### Getting Single Rows
+
+Say you want just the 31st row of `mpg`:
+
+```{r one_row, exercise = TRUE}
+# Give me all columns of the 31st row
+mpg[31,]
+```
+
+##### **How Does `filter()` Really Work?**
+
+Here's a weird way to get the 1st row of `mpg`:
+
+```{r odd_rows_1, exercise = TRUE}
+# Give me the 1st row
+mpg[c(TRUE, rep(FALSE, nrow(mpg)-1)),]
+```
+
+Here's what this does:
+
+* `nrow(mpg)` returns 234, the number of observations in the data
+
+* `c(TRUE, rep(FALSE, nrow(mpg)-1))`, then, returns a logical vector of length 234, with 1 `TRUE` followed by 233 `FALSE`s
+
+* Finally, R interprets `mpg[c(TRUE, rep(FALSE, nrow(mpg)-1)),]` to say "return all columns from the rows marked `TRUE`, and drop those marked `FALSE`
+
+It turns out this is *exactly* how `filter()` works! Consider this code:
+
+```{r filt, exercise = TRUE}
+# This returns all cars with a 4-cylinder engine
+mpg %>% 
+  filter(cyl == 4)
+
+# So does this!
+mpg[mpg$cyl == 4,]
+
+  # To see why, run this:
+  mpg$cyl == 4
+```
+
+What `filter()` is doing is creating a logical vectors of `TRUE`s and `FALSE`s depending on the specified condition - whether `cyl == 4` - and then returning those where it's `TRUE`!
+
+#### Getting Single Columns
+
+Say you want the 5th column of `mpg`: `cyl`. You have a few different options here! They can return different kinds of objects, though.
+
+```{r one_column, exercise = TRUE}
+# We can use numbers to index...
+mpg[,5] # Returns a data frame with one column
+mpg[5] # Returns the same thing because R interprets this as "selecting" the 5th element of the mpg list,
+       # which is the column `cyl` (remember, data frames are just lists of columns)
+
+# Or column names...
+mpg["cyl"] # Returns a data frame with one column
+
+  # This is essentially how select() works!
+  mpg %>% 
+    select(cyl) # Returns a data frame with one column
+
+# Or column names with this new subset operator, $
+mpg$cyl # Returns a vector
+
+```
+
+The `$` operator can also be useful for quickly creating a new column without `mutate()`. For example:
+
+```{r create_column, exercise = TRUE}
+# Create a new column called "count" that just counts observations (a repeat of row numbers, essentially)
+mpg$count <- c(1:nrow(mpg))
+
+  #Scroll over to the rightmost column to prove it
+  mpg
+```
+
+##### **Introducing `pull()`**
+
+One other way is `pull()`, like so:
+
+```{r one_column_pull, exercise = TRUE}
+
+#Use pull to access a single columns
+mpg %>% 
+  pull(cyl)
+
+```
+
+The `pull()` function is extremely similar to the `$` operator, but it works a little better and looks prettier in pipes.
+
+If you're thinking really deeply about R you might wonder what's the difference between `pull()` and `select()`? There are two main ones: `pull()` only works on a single column, and it returns a *vector* rather than a data frame with the indicated columns. As noted above, the `$` operator also returns a vector. So which one you use depends on the particular output you want.
+
+### A Deeper Dive on `mutate()`
+
+`mutate()` works by, essentially, extracting the columns you're asking R to perform operations on as vectors of equal length. Then it performs **vectorized** operations (SEE Tutorial 4.1) across columns to create a new column. Then, finally, it adds that vector onto the data frame as a new column. For example:
+
+```{r mut1, exercise = TRUE}
+# Calculate the difference between city and highway mileage for each car
+mpg %>% 
+  mutate(mile_diff = cty - hwy) %>% 
+  select(mile_diff, everything())
+```
+
+This basically subtracts each value of `hwy` from each corresponding value of `cty` and then tacks that resulting vector, which we've named `mile_diff`, back on to `mpg`.
+
+Not every function is vectorized, though. For example, you need a workaround if you want to calculate the mean city and highway mileage:
+
+```{r mut2, exercise = TRUE}
+# Mean highway and city mileage - works
+mpg %>% 
+  mutate(mile_diff = (cty+hwy)/2) %>% 
+  select(mile_diff, everything())
+
+# Mean highway and city mileage - broken
+mpg %>% 
+  mutate(mile_diff = mean(cty, hwy)) %>%
+  select(mile_diff, everything())
+
+```
+Addition, subtraction, multiplication, and division are all vectorized, but `mean()` isn't, so it can't be used in `mutate()` (without some extra monkeying around I don't want to teach you). 
+
+Don't worry, though, this is a well-known issue and R and the tidyverse offer many other options for calculating means across multiple columns. Feel free to research them on your own.
+
+
+### Data Frames vs. Tibbles
+
+I'm using these terms interchangeably here, but we already talked about this back in Tutorial 1.1. Briefly, **tibbles** are **data frames** specialized for the `tidyverse` with some better default printing behaviors and other tweaks. 
+
+From your perspective, they're simply data frames with two added class attributes: `tbl` and `tbl_df`. These are in addition to the `data.frame` class attribute that both possess.
+
+At your level you don't need to know more about the difference, so we'll leave it there!
+
+
+
+## Summary
+
+Today we covered attributes and the more complex data types they allow, among them dates, data frames, and tibbles. The next few Tutorials will cover how to work with and clean various special types of data: factors, character strings, dates, and maps.
+
+

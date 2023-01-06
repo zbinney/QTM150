@@ -1,5 +1,5 @@
 ---
-title: "Tutorial 9.2 - Tidy Data II"
+title: "Tutorial 4.2 - Tidy Data II"
 
 author: "Zachary Binney, PhD"
 date: "March 2021"
@@ -220,4 +220,4 @@ One more thing. If you did this the way I expect, one of your columns likely has
 
 In this Tutorial we covered how to reshape data using `pivot_longer()` and `pivot_wider()`.
 
-In the next 4 Tutorials or so we will cover how to take messy real-world data and do the other parts of data cleaning beyond tidying how it's stored and reshaping: fixing incorrect or missing or implausible or corrupted or incomplete values; dealing with duplicate observations; changing variable formats; fixing variable names; and so on. We'll begin with a general introduction and then dig into the specifics of dealing with strings, factors, and dates.
+In the next few Tutorials we will cover how to take messy real-world data and do the other parts of data cleaning beyond tidying how it's stored and reshaping: fixing incorrect or missing or implausible or corrupted or incomplete values; dealing with duplicate observations; changing variable formats; fixing variable names; and so on. We'll begin with a general introduction and then dig into the specifics of dealing with strings, factors, and dates.

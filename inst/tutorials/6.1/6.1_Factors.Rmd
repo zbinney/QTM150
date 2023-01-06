@@ -1,0 +1,349 @@
+---
+title: "Tutorial 6.1 - Factors"
+
+author: "Zachary Binney, PhD"
+date: "January 2023"
+
+output:
+  learnr::tutorial:
+    css: css/zb_style.css
+    progressive: TRUE
+runtime: shiny_prerendered
+description: "Factors"
+---
+
+```{r hidden, include = FALSE}
+pacman::p_load(learnr)
+
+```
+
+
+## Intro and Setup
+
+Today we begin our first deep dive into particular data types in R - specifically, we'll get into much more depth on **factors**, which we'd discussed superficially before because we needed knowledge of vectors before diving deeper.
+
+Once again we don't need much from packages today - just the `forcats` package, which is part of `tidyverse`, to help us deal with factors. **Just remember to run this code in your own script before proceeding.**
+
+```{r setup, message = FALSE}
+pacman::p_load(tidyverse)
+
+```
+
+
+## Factors
+
+Factors represent categorical data, but they're actually integer vectors with a **levels attribute**. That attribute assigns a character name to each integer value. Let's take a deeper look at how that works.
+
+Some of the functions below come from the `forcats` package, which is part of the `tidyverse` and makes working with factors easier than in base R.
+
+### Creating Factors
+
+Here's some code for how to manually create and explore a factor; run the below code in your own script to see what appears in the Environment pane:
+
+```{r fct_intro}
+# Specify the levels for the factor
+traffic_light_levels <- c("Red", "Yellow", "Green")
+
+#Create a factor with 3 levels
+traffic_light <- factor(c("Red", "Yellow", "Red", "Green"), levels = traffic_light_levels)
+
+
+  #Print it - it looks like a character vector, doesn't it?
+  traffic_light
+
+  #You can print just the levels this way
+  levels(traffic_light)
+
+  # Check its type
+  typeof(traffic_light) # But R tells us it's an integer! What!?
+
+  # Check its attributes
+  attributes(traffic_light) # Here R tells us it has the class attribute "factor" - making it a factor
+                            # and lists its levels in the order we provided them
+```
+
+Look in your Environment pane, under "Values", where it says `traffic_light`. It tells you you're looking at a factor, then starts to list the levels (but probably doesn't complete them due to a lack of space). Then look all the way to the right: `1 2 1 3`. What's that? Can you figure it out before I tell you in the next section?
+
+You can also create factors from existing character or numeric variables in a dataset. For example:
+
+```{r fct_intro2}
+# Create factors from numeric and character variables
+str(mpg)
+
+mpg_fct <- mpg %>%
+  mutate(cyl = factor(cyl),
+         manufacturer = factor(manufacturer))
+
+str(mpg_fct)
+```
+
+Compare the difference in the output from the structure statements above. Do you see where the two new factors were created?
+
+If you create a factor but don't specify the levels - as we did above - they'll be automatically created in alphabetical order. **One level will be created per distinct value of the factor**.
+
+*Most* of the time R will automatically create factors for you, but sometimes you'll want to explicitly specify (or just re-name) the levels of a factor.
+
+
+### Specifying Factor Levels
+
+Notice the order that we specified the `levels =` argument with above: Red, Yellow, Green. R says, "OK, I'll make 1 = Red, 2 = Yellow, and 3 = Green." Thus `Red Yellow Red Green` becomes `1 2 1 3`. Alongside that R stores the knowledge of what you've named 1, 2, and 3! So if we sort our factor:
+
+```{r fct_sort, exercise = TRUE}
+# Specify the levels for the factor
+traffic_light_levels <- c("Red", "Yellow", "Green")
+
+#Create a factor with 3 levels
+traffic_light <- factor(c("Red", "Yellow", "Red", "Green"), levels = traffic_light_levels)
+
+  # Sort it
+  sort(traffic_light)
+```
+
+It puts the Reds first because they're coded as `1`, then Yellow as `2`, then Green as `3`.
+
+Let's practice a bit more:
+
+```{r fct_prac1, eval = FALSE}
+# Change the levels = argument below in your own code so traffic_light becomes 3 1 3 2 instead of 1 2 1 3
+traffic_light <- factor(c("Red", "Yellow", "Red", "Green"), levels = c("Red", "Yellow", "Green"))
+  #Note the underlying data is the same, you just changed how it was coded!
+```
+
+Now (hopefully) 1 = Yellow, 2 = Green, and 3 = Red, since you specified the order is Y < G < R.
+
+If you include a value in your data that isn't specified in an explicit levels list, it'll be replaced with `NA`:
+
+```{r fct_prac2, eval = FALSE}
+# What happens if you change the data to this, but don't change the levels? Look at your Environment pane.
+# What did "Blue" become? Can you figure out why?
+traffic_light2 <- factor(c("Red", "Yellow", "Red", "Blue"), levels = c("Red", "Yellow", "Green"))
+
+
+  # 2b. Change the code above so "Blue" is actually stored as 4/"Blue", rather than what happened to it above
+```
+
+As we already saw, without further specification R will create the levels from *all* values in the factor in alphabetical order. You can also ask for them to be automatically created in the order they appear in the data with `levels = unique(<FACTOR NAME>)`.
+
+If you manually create a factor but don't provide levels for all possible values, you may run into trouble!
+
+### Viewing Factors in a Tibble
+
+We're going to work with some data from the General Social Survey in the U.S., which is in the `gss_cat` tibble that comes with the `tidyverse`. Let's see what it looks like:
+
+```{r gss1, exercise = TRUE}
+head(gss_cat)
+str(gss_cat)
+```
+
+
+```{r quiz1, echo=FALSE}
+quiz(
+  question("Which of the variables in `gss_cat` are factors?",
+      answer("year"),
+      answer("marital", correct = TRUE),
+      answer("age"),
+      answer("race", correct = TRUE),
+     answer("rincome", correct = TRUE),
+     answer("partyid", correct = TRUE),
+     answer("relig", correct = TRUE),
+     answer("denom", correct = TRUE),
+     answer("tvhours"),
+      type = "learnr_checkbox",
+      allow_retry = TRUE)
+)
+```
+
+Let's take `marital`. How can we figure out what the levels are, how many people are in each level, and so on?
+
+```{r gss2, exercise = TRUE}
+# View levels and number of observations at each level of a factor
+gss_cat %>%
+  count(marital)
+
+gss_cat %>%
+  ggplot(aes(x = marital)) +
+  geom_bar()
+```
+
+Note these methods will NOT show any levels of the factor for which there are no values in your data. That is, there may be other defined levels that simply don't exist in what you're looking at.
+
+By the way, factors are great for a few reasons, but one major one is they help with sorting. You can specify the order of values of a categorical variable when that's important - think months. Months aren't in alphabetical order, so you want a way to set the order (Jan, Feb, Mar...). Speaking of which, let's dive a bit more into how to create a sensible order for factor levels.
+
+### Reordering Factor Levels
+
+Let's try to plot the number of hours of TV watched per day by religion:
+
+```{r fct_reorderlvl, exercise = TRUE}
+# Plot hours of TV per day by religion
+gss_cat %>%
+  group_by(relig) %>%
+  summarise(age = mean(age, na.rm = TRUE),
+            tvhours = mean(tvhours, na.rm = TRUE),
+            n = n()) %>%
+  ggplot(aes(x = tvhours,
+             y = relig)) +
+  geom_point()
+```
+
+Note that R has somehow figured out how to do a scatterplot with a categorical variable. Can you articulate how?
+
+Remember factors are integers under the hood! So it simply plots the point for "No Answer" - which is assigned to the first level, or an integer value of 1 - at the y-coordinate for 1, for Protestant at y = 15, and so on!
+
+This plot is a bit annoying, though. There's no clear pattern. What if we wanted to order the hours per day from highest to lowest? Well we'd actually have to modify the level order of `relig` to make them plot at the right y-values. We do this with `fct_reorder()`:
+
+```{r fct_reorderlvl2, exercise = TRUE}
+# Plot hours of TV per day by religion, ordered most to least
+gss_cat %>%
+  group_by(relig) %>%
+  summarise(age = mean(age, na.rm = TRUE),
+            tvhours = mean(tvhours, na.rm = TRUE),
+            n = n()) %>%
+  mutate(relig = fct_reorder(relig, tvhours)) %>% # This reorders "relig" by the number of TV hours, highest-to-lowest
+  ggplot(aes(x = tvhours,
+             y = relig)) +
+  geom_point()
+```
+
+We can also manually change the order of a factor. What if we wanted to put all Christian faiths at the bottom (no offense, it's just an example)! But here we have to use `fct_relevel()`:
+
+
+```{r fct_reorderlvl3, exercise = TRUE}
+# Plot hours of TV per day by religion, Christians at bottom
+gss_cat %>%
+  group_by(relig) %>%
+  summarise(age = mean(age, na.rm = TRUE),
+            tvhours = mean(tvhours, na.rm = TRUE),
+            n = n()) %>%
+  # This reorders "relig" by starting with whatever you specify, then filling in prior levels in order
+  mutate(relig = fct_relevel(relig, "Protestant", "Catholic", "Christian")) %>%
+  ggplot(aes(x = tvhours,
+             y = relig)) +
+  geom_point()
+```
+
+If you're creating a bar plot to count the number of appearances of various factor levels you can also reorder factors by their frequency. Consider the two plots below:
+
+```{r fct_reorderlvl4, exercise = TRUE}
+# Plot default bar chart - ugly
+gss_cat %>%
+  ggplot(aes(x = marital)) +
+  geom_bar()
+
+# Plot bar chart ordered by frequency - prettier!
+gss_cat %>%
+  mutate(marital = fct_infreq(marital)) %>%
+  ggplot(aes(x = marital)) +
+  geom_bar()
+```
+
+
+### Modifying Factor Levels
+
+Say you have levels of a factor that are too long or you don't like, such as `partyid` in `gss_cat`. `fct_recode()` can help you change them in a principled, reproducible way:
+
+```{r fct_recodelvl, exercise = TRUE}
+# These aren't the best values
+gss_cat %>% count(partyid)
+
+# Let's recode them to something more understandable
+gss_cat %>%
+  mutate(partyid = fct_recode(partyid,
+    "Republican, strong"    = "Strong republican",
+    "Republican, weak"      = "Not str republican",
+    "Independent, near rep" = "Ind,near rep",
+    "Independent, near dem" = "Ind,near dem",
+    "Democrat, weak"        = "Not str democrat",
+    "Democrat, strong"      = "Strong democrat"
+  )) %>%
+  count(partyid)
+```
+
+You can also collapse some categories into fewer categories using `fct_collapse`!
+
+```{r fct_recodelvl2, exercise = TRUE}
+# Let's create fewer categories of partyid
+gss_cat %>%
+  mutate(partyid = fct_collapse(partyid,
+    Other = c("No answer", "Don't know", "Other party"), # Sets these 3 levels to "Other"
+    Republican = c("Strong republican", "Not str republican"), # Sets these 3 levels to "Republican
+    Independent = c("Ind,near rep", "Independent", "Ind,near dem"),
+    Democrat = c("Not str democrat", "Strong democrat")
+  )) %>%
+  count(partyid)
+```
+
+### Factors and `ggplot`
+
+Factors play an important role in plotting. What if we wanted to plot the number of TV hours watched by political persuasion by year (it's a weird idea, but bear with me)?
+
+```{r fct_plot, exercise = TRUE}
+# Year is treated as continuous
+gss_cat %>%
+  mutate(partyid = fct_collapse(partyid,
+                                Other = c("No answer", "Don't know", "Other party"), # Sets these 3 levels to "Other"
+                                Republican = c("Strong republican", "Not str republican"), # Sets these 3 levels to "Republican
+                                Independent = c("Ind,near rep", "Independent", "Ind,near dem"),
+                                Democrat = c("Not str democrat", "Strong democrat"))) %>%
+  group_by(partyid, year) %>%
+  summarize(tvhours = mean(tvhours, na.rm = TRUE)) %>%
+  ggplot(aes(x = tvhours, y = partyid, color = year)) +
+  geom_point()
+```
+
+Here it's treating year as a continuous variable, so when you assign it a color it gives you a continuous, graded scale. What if you want more distinct colors for each year, though? How about we make `year` a factor so R treats it as categorical?
+
+```{r fct_plot2, exercise = TRUE}
+# Year is treated as categorical
+gss_cat %>%
+  mutate(partyid = fct_collapse(partyid,
+                                Other = c("No answer", "Don't know", "Other party"), # Sets these 3 levels to "Other"
+                                Republican = c("Strong republican", "Not str republican"), # Sets these 3 levels to "Republican
+                                Independent = c("Ind,near rep", "Independent", "Ind,near dem"),
+                                Democrat = c("Not str democrat", "Strong democrat")),
+         year = factor(year)) %>%
+  group_by(partyid, year) %>%
+  summarize(tvhours = mean(tvhours, na.rm = TRUE)) %>%
+  ggplot(aes(x = tvhours, y = partyid, color = year)) +
+  geom_point()
+```
+
+Now R assigns a discrete color scale for each year, since now `year` is a categorical factor.
+
+### Ordered Factors
+
+You can also create **ordered factors** by adding the `ordered = TRUE` argument to the end of your creation command. While we won't do that, let's take a look at some already-ordered factors in the `diamonds` data:
+
+```{r fct_order, exercise = TRUE}
+head(diamonds)
+str(diamonds)
+```
+
+Ordered factors explicitly treat each subsequent level as bigger than the ones below it. This is important for making comparisons. Even though an unordered (default) factor assigns levels to integers so you might *think* the value assigned to 2 is bigger than the value assigned to 1, R doesn't treat them that way. Only in an ordered factor will it make explicit comparisons.
+
+If you have values like "small, medium, large," (or diamond cut qualities), it makes sense to make them into an ordered factor. "Red, Yellow, Green" - not as much.
+
+```{r fct_order2, exercise = TRUE}
+#Create an unordered factor
+shirts <- factor(c("Small", "Small", "Medium", "Large", "Large"), levels = c("Small", "Medium", "Large"))
+
+  shirts[5] > shirts[3] # Asking if "Large" is > "Medium" has no meaning
+
+  #Create an ordered factor
+shirts_ord <- factor(c("Small", "Small", "Medium", "Large", "Large"), levels = c("Small", "Medium", "Large"), ordered = TRUE)
+
+  shirts_ord[5] > shirts_ord[3] # "Large" is now > "Medium"!
+```
+
+One other important thing to note about ordered factors is they'll plot by default in the order specified by their levels.
+
+```{r fct_order3, exercise = TRUE}
+diamonds %>%
+  ggplot(aes(x = clarity)) +
+  geom_bar()
+```
+
+## Summary
+
+Today we covered factors. The next few "Tutorials" - some of which are not actual interactive `learnr` Tutorials, but collections of other materials on Canvas - cover some other special data types: character strings, dates, and maps.
+
+

@@ -14,7 +14,7 @@
 <meta name="progressive" content="true" />
 <meta name="allow-skip" content="false" />
 
-<title>Tutorial 5.1 - If-Else Blocks, For-Loops</title>
+<title>Tutorial 9.4 - Statistical Simulations</title>
 
 
 <!-- highlightjs -->
@@ -120,517 +120,431 @@ $(document).ready(function () {
 
 <div id="section-intro-and-setup" class="section level2">
 <h2>Intro and Setup</h2>
-<p>Today we enter our final chapter, where we superficially cover some
-major statistical programming techniques you might need in your careers:
-if-else statements, for-loops, basic function writing, and statistical
-simulation. Today we cover the first two of these.</p>
-<p>Once again we don’t need much from packages today - just
-<code>lubridate</code> for dates and the <code>tidyverse</code>.
-<strong>Just remember to run this code in your own script before
-proceeding.</strong></p>
-<pre class="r"><code>pacman::p_load(tidyverse, lubridate, palmerpenguins)
+<p>Today is our <em>final</em> Tutorial - yay? yay! - where we briefly
+cover some basic techniques for simulating your own data to test out
+regression models or other statistical techniques.</p>
+<p>Once again we don’t need much from packages today - just the
+<code>tidyverse</code> and the <code>palmerpenguins</code> data, as well
+as a new package, <code>MASS</code>, to produce some of the statistical
+simulations we’ll need. <strong>Just remember to run this code in your
+own script before proceeding.</strong></p>
+<pre class="r"><code>pacman::p_load(tidyverse, palmerpenguins, MASS)
 data(penguins)</code></pre>
 </div>
-<div id="section-conditional-execution" class="section level2">
-<h2>Conditional Execution</h2>
-<p>So far you’ve written code that runs when you run it - either by
-selecting specific lines or running a whole script or RMarkdown
-document.</p>
-<p>But what if sometimes you want code to run, and other times you
-don’t?</p>
-<p>Or what if sometimes you want your code to do one thing, but other
-times another thing?</p>
-<p>Enter the idea of <strong>conditional execution</strong> - code
-should run (“execute”) different ways depending on whether certain
-conditions are met. We’ll look at two fundamental methods for
-conditional execution, common across many programming languages besides
-R: <strong>if-else statements</strong> and
-<strong>for-loops</strong>.</p>
-<p>Every time I write for-loops I think of Froot Loops. Now I want some
-Froot Loops. Is that everybody or just me? Go have some Froot Loops,
-then come back. I’ll wait.</p>
-</div>
-<div id="section-if-else-statements" class="section level2">
-<h2>If-Else Statements</h2>
-<p>The first structure we’re going to discuss is <strong>if-else
-statements</strong>. Here’s the basic structure:</p>
-<pre class="r"><code>if (condition) {
-  # code executed when condition is TRUE
-} else {
-  # code executed when condition is FALSE
-}</code></pre>
-<p>Let’s have a little fun to introduce if-else statements. Say you want
-R to offer you some sort of greeting when you start a script, but that
-greeting should depend on the time of day: “Good Morning!”, “Good
-Afternoon!”, “Good Evening!”, or “Go To Sleep, Dummy.”</p>
-<div id="section-a-single-if-statement" class="section level3">
-<h3>A Single If Statement</h3>
-<p>The simplest if-else statement actually just involves a single
-<code>if</code> condition. The code below will print “Good Morning” if
-it’s between the hours of 5:00am and 11:59 am.</p>
-<div class="tutorial-exercise" data-label="if" data-caption="Code"
-data-completion="1" data-diagnostics="1" data-startover="1"
-data-lines="0">
-<pre class="text"><code>if (hour(Sys.time()) %&gt;% # Extract the hour from your computer clock
-    between(5, 11)) { # Check if it&#39;s between 5am and 11am
-  
-  print(&quot;Good Morning!&quot;)
-
-} </code></pre>
-<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
-</div>
-<p>Did the above code print anything? It should have printed “Good
-Morning!” <strong>if</strong> it’s between 5:00am and 11:59am per your
-computer clock.</p>
-<p>If it isn’t, it should have done…nothing. R simply skips this code
-block. Printing “Good Morning!” was conditional on it actually being
-morning; since it wasn’t, R doesn’t execute the command.</p>
-<p>Note we also introduced three new functions here.</p>
-<ol style="list-style-type: decimal">
-<li><p><code>Sys.time()</code> is a base R function that extracts the
-date and time from your system (computer) clock at that instant; it
-stores it as a date-time object of type POSIXct.</p></li>
-<li><p><code>hour()</code> is a function from the <code>lubridate</code>
-package that extracts the integer hour value from that date-time
-(e.g. “14” from “2020-11-08 14:08:08 EST”)</p></li>
-<li><p><code>between()</code> is a function from the <code>dplyr</code>
-package that takes a numeric vector (in our case, of length 1) as input
-and returns <code>TRUE</code> or <code>FALSE</code> depending on whether
-each element is between the two specified numbers, inclusive.</p></li>
-</ol>
-<p>Hopefully you can see by now how these piece together to print “Good
-Morning!” if it’s between 5:00am and 11:59am.</p>
-</div>
-<div id="section-a-simple-if-else-statement" class="section level3">
-<h3>A Simple If-Else Statement</h3>
-<p>Let’s kick up the complexity just a notch. What if we still want R to
-print something to let us know it’s not morning?</p>
-<div class="tutorial-exercise" data-label="if_else" data-caption="Code"
-data-completion="1" data-diagnostics="1" data-startover="1"
-data-lines="0">
-<pre class="text"><code>if (hour(Sys.time()) %&gt;% # If this condition is met, run the code immediately below
-    between(5, 11)) { 
-  
-  print(&quot;Good Morning!&quot;)
-
-} else { # If the condition above ISN&#39;T met, do this instead (&quot;else&quot;)
-    
-  print(&quot;Good Not-Morning!&quot;)
-  
-}</code></pre>
-<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
-</div>
-<p>If it isn’t between 5:00am and 11:59am, this code still skips the
-initial <strong>if</strong> condition.</p>
-<p>But notice now there’s an <strong>else</strong> condition right next
-to it, making this a full <strong>if-else</strong> statement. Rather
-than doing nothing and moving on, R now executes the code in the
-<strong>else</strong> block instead!</p>
-</div>
-<div id="section-if---else-if---else-statements" class="section level3">
-<h3>If - Else If - Else Statements</h3>
-<p>You can also extend <strong>if-else</strong> statements to more than
-two options using <strong>if - else if - else</strong> logic. Here R
-will</p>
-<ul>
-<li><p>Go through the conditions in order,</p></li>
-<li><p>Execute the first one that is met, and</p></li>
-<li><p>Either skip the rest, or execute the last <strong>else</strong>
-condition if none of the ones above it is met</p></li>
-</ul>
-<p>For example, what if we want R to tell us something specific no
-matter what time of day it is?</p>
-<div class="tutorial-exercise" data-label="if_elseif_else"
+<div id="section-statistical-simulations" class="section level2">
+<h2>Statistical Simulations</h2>
+<p>Usually we work with actual data. But sometimes it’s easier to
+simulate our own. For example, what if you want data with some known
+properties so you can test out some code and make sure it returns what
+you expect? Then you don’t want to rely on someone else’s data - you
+want to make your own.</p>
+<p>Below are some common tasks you may want to accomplish.</p>
+<div id="section-random-normal-data" class="section level3">
+<h3>Random Normal Data</h3>
+<p>The simplest scenario might be that you want a tibble with, say,
+100,000 draws from a random normal distribution:</p>
+<div class="tutorial-exercise" data-label="norm_single"
 data-caption="Code" data-completion="1" data-diagnostics="1"
 data-startover="1" data-lines="0">
-<pre class="text"><code># Create and save an object with the hour value separately so we can feed it to multiple conditions
-hr &lt;- hour(Sys.time())
+<pre class="text"><code># Set the seed to create a reproducible draw
+set.seed(11142020)
 
-if (between(hr, 5, 11)) { 
-  
-  print(&quot;Good Morning!&quot;)
+# Create a tibble with a single column with 100,000 draws from a normal distribution
+rannorm &lt;- tibble(
+  rand1 = rnorm(n = 1e5, # 1e5 = 1 x 10^5 = 100,000 draws
+                mean = 1, # Mean of the normal distribution
+                sd = 2)) # Standard Deviation of the normal distribution
+rannorm
 
-} else if (between(hr, 12, 16)) { # If the condition above ISN&#39;T met, check this condition instead (&quot;else if&quot;)
-    
-  print(&quot;Good Afternoon!&quot;)
-  
-} else if (between(hr,17, 23)) { # If the conditions above AREN&#39;T met, check this condition instead (&quot;else if&quot;)
-  
-  print(&quot;Good Evening!&quot;)
-  
-} else { # If all the conditions above aren&#39;t met (i.e. in any other hour), do this
-  
-  print(&quot;Go to bed, dummy!&quot;)
-  
-}</code></pre>
+# CHALLENGE: Check the mean and SD to see if the simulation worked right.
+# That is, see if we can &quot;recover&quot; the true mean and SD of the distribution from the data
+
+### YOUR CODE HERE</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
-<p>Notice here we captured the hour in a separate object above the
-entire if-else statement. We did this so we could feed that new object,
-<code>hr</code>, to the various conditions without typing
-<code>hour(Sys.time())</code> over and over again each time. It’s more
-efficient and compact this way.</p>
-<p>You can also have statements with just <strong>if</strong> and
-<strong>else if</strong> but no <strong>else</strong> - if none of the
-conditions is met, R will simply do nothing and move on.</p>
-<p>If you find yourself writing a lot of else-if statements and creating
-a very long block, consider another technique to create more compact
-code, like <code>switch()</code>. In <code>mutate()</code>,
-<code>case_when()</code> fills that same kind of role - allowing you to
-write compactly what might otherwise take a nasty string of nested
-if-else statements. We’re not going to get into these strategies in more
-detail today, though. See <a
-href="https://r4ds.had.co.nz/functions.html#multiple-conditions"><em>R
-for Data Science</em> Ch. 19.4.2 for an example, though.</a></p>
+<p><div class="panel-heading tutorial-quiz-title">Quiz</div></p>
+<div class="panel panel-default">
+<div data-label="quiz1-1" class="tutorial-question panel-body">
+<div id="quiz1-1-answer_container" class="shiny-html-output"></div>
+<div id="quiz1-1-message_container" class="shiny-html-output"></div>
+<div id="quiz1-1-action_button_container" class="shiny-html-output"></div>
+<script>if (Tutorial.triggerMathJax) Tutorial.triggerMathJax()</script>
 </div>
-<div id="section-more-on-the-conditions" class="section level3">
-<h3>More on the Conditions</h3>
-<p>When encountering an <strong>if-else statement</strong> R will first
-execute the code you put inside the <code>if()</code> or
-<code>else if()</code> functions. It will try and return a single
-logical <code>TRUE</code> or <code>FALSE</code> for each of those. For
-example, above it checks whether the hour from <code>Sys.time()</code>
-is between 5 and 11 (or 12 and 16, etc.), and returns either
-<code>TRUE</code> or <code>FALSE</code> depending on the time of day. It
-will execute the code attached to the condition if it returns
-<code>TRUE</code>.</p>
-<p>An <code>else</code> condition simply always returns
-<code>TRUE</code>, so it is executed if everything above it is
-false.</p>
-<p>If the code inside an <code>if()</code> or <code>else if()</code>
-function returns <code>NA</code>, the whole <strong>if-else</strong>
-statement will throw an error. If it returns a vector rather than a
-single <code>TRUE</code>/<code>FALSE</code> logical value, you’ll get a
-warning and R will execute or not execute the code based on the first
-value of that vector.</p>
-<p>This also means you need to be careful if you want to test for
-equality in an <code>if()</code> or <code>else if()</code> condition.
-The normal equality operator <code>==</code> is vectorized, so if you
-feed it any vector of length 2 or more on either side it will return a
-vector of length 2 or more. Instead you can use the function
-<code>identical()</code> - but be careful, as you can run into problems
-with type comparisons (e.g. <code>identical(6L, 6)</code> will return
-<code>FALSE</code> because the former is an integer and the latter a
-double) and floating point arithmetic
-(e.g. <code>identical(sqrt(2)**2, 2)</code> will return
-<code>FALSE</code> because R has to round the former so it’s not
-<em>exactly</em> 2).</p>
-<p>One other way to deal with vectors being returned is to use
-<code>any()</code> or <code>all()</code>. For example:</p>
-<div class="tutorial-exercise" data-label="any_all" data-caption="Code"
+</div>
+<p>Now we could plot the data as another gut check that our simulation
+worked correctly:</p>
+<div class="tutorial-exercise-support"
+data-label="norm_single_plot-setup" data-caption="Code"
 data-completion="1" data-diagnostics="1" data-startover="1"
 data-lines="0">
-<pre class="text"><code># == operator is vectorized
-2 == c(1:3)
+<pre class="text"><code># Set the seed to create a reproducible draw
+set.seed(11142020)
 
-# any() returns TRUE if, well, ANY element of the vector is TRUE
-any(2 == c(1:3))
-
-# all() returns TRUE if, well, ALL elements of the vector are TRUE
-all(2 == c(1:3))
-
-all(2 == c(2, 2, 2))</code></pre>
-<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+# Create a tibble with a single column with 100,000 draws from a normal distribution
+rannorm &lt;- tibble(
+  rand1 = rnorm(n = 1e5, # 1e5 = 1 x 10^5 = 100,000 draws
+                mean = 1, # Mean of the normal distribution
+                sd = 2)) # Standard Deviation of the normal distribution</code></pre>
 </div>
-</div>
-<div id="section-multiple-conditions" class="section level3">
-<h3>Multiple Conditions</h3>
-<p>If you want code to execute only if multiple conditions are met, use
-the operators <code>||</code> for “OR” and <code>&amp;&amp;</code> for
-“AND”. Don’t use a single <code>|</code> or <code>&amp;</code> as these
-functions are vectorized, and you don’t want a vector - you want to
-produce a single <code>TRUE</code> or <code>FALSE</code>.</p>
-<p>For example, what if I want my computer to only wish <em>me</em> good
-morning, and not you?</p>
-<div class="tutorial-exercise" data-label="if_mult" data-caption="Code"
-data-completion="1" data-diagnostics="1" data-startover="1"
-data-lines="0">
-<pre class="text"><code># Tell R a name
-name &lt;- &quot;Zach&quot;
-
-
-hr &lt;- 6 # Setting the hour manually to 6am for this example so you know that condition is met
-
-if (between(hr, 5, 11) &amp;&amp; name == &quot;Zach&quot;) { # Check if it&#39;s between 5am and 11am
-  
-  print(&quot;Good Morning, Zach!&quot;)
-
-} else {
-  
-  &quot;Hey, you&#39;re not Zach! Security!!!&quot;
-  
-}</code></pre>
-<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
-</div>
-<p><mark>Challenge:</mark> Make R tell <em>you</em> good morning using
-your name.</p>
-</div>
-</div>
-<div id="section-for-loops" class="section level2">
-<h2>For-Loops</h2>
-<p><strong>For-loops</strong> are another common construct in many
-programming languages. They can be used as a form of <strong>conditional
-execution</strong> where the code inside the for-loop will run as long
-as the conditions outlined are met but no longer. They simply ask the
-same code be run multiple times - “iterated” - until some condition is
-satisfied. They have 2 basic parts: I like to think of them as “FOR
-THIS” and “DO THIS.” Here’s a very trivial example:</p>
-<div class="tutorial-exercise" data-label="basic_for"
+<div class="tutorial-exercise" data-label="norm_single_plot"
 data-caption="Code" data-completion="1" data-diagnostics="1"
 data-startover="1" data-lines="0">
-<pre class="text"><code>for(i in (1:15)){   # &quot;FOR THIS&quot;: define range of iteration and iteration variable
-  
-  print(i) # &quot;DO THIS&quot;: define what to do at each iteration, commonly involving iteration variable
-}</code></pre>
+<pre class="text"><code># Plot our random normal draws
+rannorm %&gt;% 
+  ggplot(aes(x = rand1)) +
+  geom_density() +
+  scale_x_continuous(breaks = c(-10:10))</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
-<p>This just prints the numbers 1 through 15, in order. Notice this
-isn’t a length-15 vector, but 15 length-1 vectors, each one printed
-separately at each invocation of the for-loop.</p>
-<p>For-loops are our first encounter with the idea of
-<strong>iteration</strong>, where you want code to run multiple times
-rather than just once, but you only want to <em>write</em> it once -
-always a good practice when it comes to creating concise, readable
-code.</p>
-<div id="section-iteration" class="section level3">
-<h3>Iteration</h3>
-<p>It’s been awhile, so let’s revisit our penguins data.</p>
-<pre class="r"><code>str(penguins)</code></pre>
-<pre><code>## tibble [344 x 8] (S3: tbl_df/tbl/data.frame)
-##  $ species          : Factor w/ 3 levels &quot;Adelie&quot;,&quot;Chinstrap&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
-##  $ island           : Factor w/ 3 levels &quot;Biscoe&quot;,&quot;Dream&quot;,..: 3 3 3 3 3 3 3 3 3 3 ...
-##  $ bill_length_mm   : num [1:344] 39.1 39.5 40.3 NA 36.7 39.3 38.9 39.2 34.1 42 ...
-##  $ bill_depth_mm    : num [1:344] 18.7 17.4 18 NA 19.3 20.6 17.8 19.6 18.1 20.2 ...
-##  $ flipper_length_mm: int [1:344] 181 186 195 NA 193 190 181 195 193 190 ...
-##  $ body_mass_g      : int [1:344] 3750 3800 3250 NA 3450 3650 3625 4675 3475 4250 ...
-##  $ sex              : Factor w/ 2 levels &quot;female&quot;,&quot;male&quot;: 2 1 1 NA 1 2 1 2 NA NA ...
-##  $ year             : int [1:344] 2007 2007 2007 2007 2007 2007 2007 2007 2007 2007 ...</code></pre>
-<p>It looks like there are four numeric variables. Maybe we’d like to
-get the median for each of them. (Note we could just do this with
-<code>summary()</code> as well, but I’m doing it this way to make a
-point.) Here’s one way we might do that:</p>
-<div class="tutorial-exercise" data-label="iteration1"
-data-caption="Code" data-completion="1" data-diagnostics="1"
-data-startover="1" data-lines="0">
-<pre class="text"><code># One way of calculating median
-median(penguins$bill_length_mm, na.rm = TRUE)
-median(penguins$bill_depth_mm, na.rm = TRUE)
-median(penguins$flipper_length_mm, na.rm = TRUE)
-median(penguins$body_mass_g, na.rm = TRUE)</code></pre>
-<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+<p>Does the plot above look <em>approximately</em> normal, with the
+expected mean and SD?</p>
+<p>Keep in mind it won’t be <em>exact</em> because we just drew randomly
+from the actual distribution, but it should be very close.</p>
+<div id="section-a-note-on-seeds" class="section level4">
+<h4>A Note on Seeds</h4>
+<p>Note that “random” draws in a computer aren’t actually random. They
+use a pseudo-random algorithm most commonly based off the current time.
+That means that while these draws aren’t technically “random,” they’ll
+never repeat the exact same way twice. If you want reproducible results
+- say to share with someone else - you have to specify the
+<strong>seed</strong> the pseudo-random process uses (normally this seed
+is based off the current system time). You do this with
+<code>set.seed()</code>.</p>
+<p>You must run <code>set.seed()</code> <strong>immediately before the
+random draw code every time you run it</strong>. That is, in order to
+get the same results again and again below, you must run from
+<code>set.seed()</code> through the code that actually does the
+drawing.</p>
 </div>
-<p>This isn’t the best way, though. Let’s discuss why.</p>
-<div id="section-when-to-copy-paste-and-when-to-iterate"
+<div id="section-multiple-normal-random-variables"
 class="section level4">
-<h4>When to Copy-Paste and When to Iterate</h4>
-<p>Notice we’ve duplicated a <em>lot</em> of code above. We’ve
-copy-pasted <code>median()</code> 4 times. That’s not great for a few
-reasons.</p>
-<ol style="list-style-type: decimal">
-<li><p>Our code is long, messy, less compact, and harder to
-read.</p></li>
-<li><p>If we need to make a change (say, get the <code>mean()</code>
-instead), we have to make changes in <em>4</em> places. Wouldn’t it be
-great if we could just do it in <em>1</em> spot?</p></li>
-<li><p>Writing the code 4 times gives us more chances to introduce a
-bug, and makes bugs harder to find.</p></li>
-</ol>
-<p>A rule of thumb is: <strong>If you find yourself copy-pasting similar
-code <em>more than twice</em>, figure out some way to abstract it -
-either with a for-loop or other iteration method, or by abstracting it
-into a single custom function you can call over and over
-again.</strong></p>
-</div>
-</div>
-<div id="section-for-loops-for-iteration" class="section level3">
-<h3>For-Loops for Iteration</h3>
-<p>Here’s a much better way to do what we did above, using a
-<strong>for-loop</strong>:</p>
-<div class="tutorial-exercise" data-label="for_loop1"
+<h4>Multiple Normal Random Variables</h4>
+<p>Creating multiple random normal variables is a trivial extension of
+our code above:</p>
+<div class="tutorial-exercise" data-label="norm_multi"
 data-caption="Code" data-completion="1" data-diagnostics="1"
 data-startover="1" data-lines="0">
-<pre class="text"><code>output &lt;- vector(mode = &quot;double&quot;, length = 4)  # 3. Output storage space
+<pre class="text"><code># Set the seed to create a reproducible draw
+set.seed(11142020)
 
-j &lt;- 1 # Create a new index variable j to help store output
+# Create a tibble with a single column with 10,000 draws from a normal distribution
+rannorm &lt;- tibble(
+  rand1 = rnorm(n = 1e4, # 1e4 = 1 x 10^4 = 10,000 draws (so plotting easier)
+                mean = 1, # Mean of the normal distribution
+                sd = 2), # Standard Deviation of the normal distribution
+  # Create a second variable using the same process, but may change mean/SD
+  rand2 = rnorm(n = 1e4, 
+                mean = 0, 
+                sd = 0.5)) 
+rannorm
 
-for (i in c(3:6)) {              # 1. &quot;FOR THIS&quot; sequence It&#39;s 3-6 because we want columns 3-6 (not e.g. 1-4)
-
-    output[[j]] &lt;- median(penguins[[i]], na.rm = TRUE)      # 2. &quot;DO THIS&quot; body
-    names(output)[j] &lt;- colnames(penguins[i])               # Calculate median and name the resulting value the column name
-    j &lt;- j + 1                                              # Increment out output vector position by 1
-}
-
-output</code></pre>
+#Plot these data
+rannorm %&gt;% 
+  ggplot(aes(x = rand1, y = rand2)) +
+  geom_point(alpha = 0.1)</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
-<p>This for-loop has the 2 parts we’re already used to, but we also add
-a third part:</p>
-<ol style="list-style-type: decimal">
-<li><p><strong>Sequence</strong> - “FOR THIS”; what you loop over.</p>
-<p>Here we ask it to simply start i from the first element in the vector
-(1), and keep going until it reaches the last element (4). Once it
-reaches the end of the vector <code>c(1:4)</code>, it will stop and not
-run the loop again.</p></li>
-<li><p><strong>Body</strong> - “DO THIS”; the code that runs multiple
-times</p>
-<p>Here we ask R to, for each value of i, take the median of i’th column
-(ignoring <code>NA</code>s!) and save it to the i’th element in our
-vector <code>output</code>. We also ask it to name that i’th element
-using the name of the i’th column in <code>penguins</code>.</p></li>
-<li><p><strong>Output</strong> - where any results the for-loop
-generates are stored. Note in all but things like our first toy example
-where we printed the numbers 1-15, you’re probably going to want to save
-some output.</p>
-<p>Here we created a double vector of length 4 ahead of time to hold the
-medians (and names).</p></li>
-</ol>
-<div id="section-fragility-and-hard-coding" class="section level4">
-<h4>Fragility and “Hard-Coding”</h4>
-<p>Note this particular for-loop is actually very “fragile” - it will
-only work on data where we the median of exactly <em>four</em> columns
-in positions <em>3-6</em> in a data frame. I <strong>hard-coded</strong>
-both of these values into the loop above - 4 in our output vector, 3-6
-in our FOR THIS sequence. Hard-coding means specifying a fixed value for
-some parameter or argument rather than allowing it to change with
-different circumstances. <em>If we try to deal with more than 4 numeric
-columns, or columns not in positions 3-6, our for-loop will
-break!!!</em></p>
-<p>This is not good coding practice.</p>
-<p>Much better would be to modify this code to be able to accept an
-arbitrary number of numeric columns in arbitrary positions in the data.
-I didn’t want to get into this in detail above because it adds quite a
-bit more complexity and I wanted you to focus on the for-loop itself,
-but here’s one way you could do it:</p>
-<div class="tutorial-exercise" data-label="for_loop_robust"
+<p>Does there seem to be any correlation in the two variables above? No,
+right? And that makes sense - they should be completely independent, as
+we were just drawing randomly from different normal distributions. But
+what if we wanted to institute some kind of relationship? Say, rand2 =
+2*rand1 + 4. We could do something like this:</p>
+<div class="tutorial-exercise" data-label="norm_multi_line"
 data-caption="Code" data-completion="1" data-diagnostics="1"
 data-startover="1" data-lines="0">
-<pre class="text"><code># Number of numeric columns
-num_numeric_cols &lt;- ncol(select(penguins, where(is.numeric))) # Just count numeric columns
+<pre class="text"><code># Set the seed to create a reproducible draw
+set.seed(11142020)
 
-# Position of numeric columns
-pos_numeric_cols &lt;- which(sapply(penguins, is.numeric)) # sapply() applies the is.numeric() function to each element of penguins. Why does that work?
-                                                        # Recall data frames are lists, with each element corresponding to a column.
-                                                        # Thus this code is asking &quot;is each column numeric?&quot; and getting a TRUE or FALSE, leading to a logical vector
-                                                        # which() then returns the positions in that logical vector that are TRUE
+# Create a tibble with a single column with 10,000 draws from a normal distribution
+rannorm &lt;- tibble(
+  rand1 = rnorm(n = 1e4, # 1e4 = 1 x 10^4 = 10,000 draws (so plotting easier)
+                mean = 1, # Mean of the normal distribution
+                sd = 2), # Standard Deviation of the normal distribution
+  
+  # Create a second variable that is equal to 4 + 2 x rand1 + noise
+  # That is, create a linear relationship y = 2x + 4 (+ noise)
+  rand2 = 4 + 2*rand1 + rnorm(n = 1e4, 
+                              mean = 0, 
+                              sd = 0.5)) 
+rannorm
 
-output &lt;- vector(mode = &quot;double&quot;, length = num_numeric_cols)  # Creates a length-5 vector because there are 5 numeric columns
-                                                              # year is also numeric although we ignored it before
 
-j &lt;- 1 # Create a new index variable j to help store output
-
-for (i in pos_numeric_cols) {              # 1. &quot;FOR THIS&quot; sequence
-
-    output[j] &lt;- median(penguins[[i]], na.rm = TRUE)      # 2. &quot;DO THIS&quot; body
-    names(output)[j] &lt;- colnames(penguins[i])             # Calculate median and name the resulting value the column name
-    j &lt;-  j + 1                                           # Increment j by 1 before going back through the loop
-
-}
-
-output</code></pre>
+# See if we can recover the linear relationship we programmed
+# lm() is a function to fit a simple linear regression model y = mx + b (+ noise), 
+# or rand2 = slope*rand1 + intercept (+ noise)
+lm(data = rannorm, formula = rand2 ~ rand1)</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
+<p>See how we were able to recover the intercept (4) and slope (2) by
+running a simple linear model on our simulated data? That shows our
+simulation worked.</p>
+<p>You probably won’t understand this bit unless you’ve taken a
+regression class, but: if I were to show you fuller output from that
+linear model you would also see that the residual standard error is
+0.5033, which is almost exactly the 0.5 SD we programmed for the normal
+distribution for our noise. Once again, we recovered some element of our
+simulation to make sure it worked - and, if we didn’t already know it
+was good, test out the <code>lm()</code> function.</p>
 </div>
-</div>
-<div id="section-while-loops" class="section level3">
-<h3>While-Loops</h3>
-<p>A slight variation on <strong>for-loops</strong> is the
-<strong>while-loop</strong>. While loops simply run until some condition
-stops being met. It’s used when you don’t know how long the input
-sequence will be - which you need to know for a for-loop. What if, for
-example, we wanted to simulate how many coin tosses it would take until
-we get at least 13 heads?</p>
-<div class="tutorial-exercise" data-label="while_loop"
+<div id="section-multiple-variables-with-known-correlation"
+class="section level4">
+<h4>Multiple Variables With Known Correlation</h4>
+<p>One last wrinkle here. What if instead of specifying a linear (or
+other) relationship, we just wanted to specify a correlation for our two
+variables - that is, we didn’t want them to be independent/have a
+correlation of 0.</p>
+<p>This is substantially more complicated statistically, as it requires
+understanding covariance and correlation, as well as what a covariance
+matrix looks like. If those words make you start panicking, don’t worry
+about it. Just see that this code will create two correlated normal
+random variables, and that we can plot and recover that correlation.</p>
+<div class="tutorial-exercise" data-label="norm_multi_correl"
 data-caption="Code" data-completion="1" data-diagnostics="1"
 data-startover="1" data-lines="0">
-<pre class="text"><code># Custom function to flip a single coin
-flip &lt;- function() sample(c(&quot;T&quot;, &quot;H&quot;), 1)
+<pre class="text"><code># Set the seed to create a reproducible draw
+set.seed(11142020)
 
-flips &lt;- 0 # Set number of flips to start at 0
-nheads &lt;- 0 # Set number of heads to start at 0
+N &lt;- 1e4                           # Set our sample size             
+means &lt;- c(1,0)                    # Set a vector of our means - first mean 1, second mean 0
 
-while (nheads &lt; 13) {
-  
-  if (flip() == &quot;H&quot;) { # Run the flip function once and check the result
-    nheads &lt;- nheads + 1 # If its heads, increment that counter
-  } 
-  
-  flips &lt;- flips + 1 # Increment the flip counter no matter what
-  
-}
+# Induce a correlation of exactly 1/3 (0.33) between the two variables
+correl &lt;- matrix(c(9,4,   # SD of first variable is 3 --&gt; variance 9
+                   4,16), # SD of second variable is 4 --&gt; variance 16
+                          # Covariance = 4
+                          # Choose 4 because correlation = covariance/sqrt(variance1 * variance2) --&gt;
+                          # correlation = 4 / sqrt(9*16) = 4/sqrt(144) = 4/12 = 1/3
+                 2,2)  # &quot;2,2&quot; defines the number of rows (2) and columns (2) in the matrix
 
-#Print the number of flips
-flips</code></pre>
+# Simulate the data
+rannorm &lt;- mvrnorm(n=N,
+                   mu=means,
+                   Sigma=correl) %&gt;% # Sigma = correlation matrix
+  as.tibble()
+
+#Rename the columns to what we&#39;re used to
+colnames(rannorm) &lt;- c(&quot;rand1&quot;, &quot;rand2&quot;)
+
+rannorm
+  
+#Plot these data
+rannorm %&gt;% 
+  ggplot(aes(x = rand1, y = rand2)) +
+  geom_point(alpha = 0.1)
+
+# Can we recover the correlation coefficient, r?
+cor(rannorm$rand1, rannorm$rand2)</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
-<p>While loops are more general than for-loops. Any for-loop can be
-rewritten as a while loop, but not vice-versa.</p>
+<p>Notice we got a correlation coefficient very close to what we
+specified (0.333333…). Once again it’s not <em>exact</em> because we’re
+making random draws, but it indicates our simulation worked.</p>
+<p>If you want to learn a bit more about the math behind this, I
+recommend <a
+href="https://fredclavel.org/2019/04/17/simulating-correlated-multivariate-data/">this
+quick blog post!</a></p>
 </div>
 </div>
-<div id="section-other-approaches-to-iteration" class="section level2">
-<h2>Other Approaches to Iteration</h2>
-<p>There are two other ways to run the same code over and over again
-efficiently that merit a brief mention here.</p>
-<div id="section-custom-functions" class="section level3">
-<h3>Custom Functions</h3>
-<p>We will discuss these in the next Tutorial, but basically: every
-function you use has some code underlying it. Think about
-<code>mean()</code> for example - this code takes a vector, adds the
-values together, and divides by the length. You could, in theory, right
-the more basic code to do this yourself over and over again every time
-you needed it. But that would require a lot of copy-pasting and be
-<em>comically</em> inefficient.</p>
-<p>Instead, somebody long before you recognized this would be a problem
-and “abstracted” the general task into a function that could be called
-any time you want to calculate the a mean of a vector.</p>
-<p>Simply put: <strong>Common tasks should have a function.</strong> You
-should not be copying the same code over and over again if you can avoid
-it. You write individual bits of code for specific analyses and one-time
-ad hoc tasks. But once you catch yourself doing it over and over again,
-you may want to make the greater upfront investment to write a function
-to save time and code on the back end.</p>
-<p>For more on this, check out <a
-href="https://r4ds.had.co.nz/functions.html">Chapter 19 of <em>R for
-Data Science.</em></a></p>
+<div id="section-random-binary-data" class="section level3">
+<h3>Random Binary Data</h3>
+<p>What if instead of normally-distributed data we wanted a bunch of 0/1
+binary data, like simulated coin flips? There are a bunch of options,
+but here’s one for simulating 100,000 tosses of an <em>unfair</em> coin
+with a 70% chance of coming up tails:</p>
+<div class="tutorial-exercise" data-label="bin_single"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code># Set the seed to create a reproducible draw
+set.seed(11142020)
+
+# Create a tibble with a single column with 100,000 draws from a normal distribution
+ranbin &lt;- tibble(
+  rand1 = rbinom(n = 1e5, # 1e5 = 1 x 10^5 = 100,000 draws
+                size = 1, # Get results of a single coin flip each time
+                prob = 0.7)) # For fun, let&#39;s use an unfair coin with a 70% chance of &quot;1&quot; (tails)
+                             # and, by extension, a 30% chance of &quot;0&quot; (heads)
+ranbin
+
+# CHALLENGE: Check the percentage of &quot;tails&quot; (1s) to see if our simulation worked
+# That is, see if we can &quot;recover&quot; the true probability of a 1/tails from the data
+
+
+### YOUR CODE HERE</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
-<div id="section-the-map-functions-and-purrr" class="section level3">
-<h3>The <code>map()</code> functions and <code>purrr</code></h3>
-<p>The <code>purrr</code> package is another member of the
-<code>tidyverse</code>. We cover this more in QTM 151, but basically the
-<code>map_XX()</code> family of functions</p>
-<ul>
-<li>Takes a function and</li>
-<li>Applies it to every element of a vector or list, then</li>
-<li>Returns a vector (if using <code>map_xx()</code>) or list (if using
-<code>map()</code>) of the results</li>
-</ul>
-<p>Consider a very simple example:</p>
-<div class="tutorial-exercise" data-label="map" data-caption="Code"
+<p><div class="panel-heading tutorial-quiz-title">Quiz</div></p>
+<div class="panel panel-default">
+<div data-label="quiz2-1" class="tutorial-question panel-body">
+<div id="quiz2-1-answer_container" class="shiny-html-output"></div>
+<div id="quiz2-1-message_container" class="shiny-html-output"></div>
+<div id="quiz2-1-action_button_container" class="shiny-html-output"></div>
+<script>if (Tutorial.triggerMathJax) Tutorial.triggerMathJax()</script>
+</div>
+</div>
+<p>We use <code>rbinom()</code> because the <strong>binomial</strong>
+distribution is used to describe 0/1 outcomes. You may have also learned
+the <strong>Bernoulli</strong> distribution, which is just a special
+case of the binomial. While the binomial can describe, for example, the
+number of heads in any number of coin flips, the Bernoulli describes the
+results of a single coin flip.</p>
+</div>
+<div id="section-other-distributions" class="section level3">
+<h3>Other Distributions</h3>
+<p>Simulating data from other distributions - like Poisson or beta or
+gamma distributions - follows a largely similar process. We won’t go
+into details here, but hopefully you get the basic idea.</p>
+</div>
+<div id="section-sampling" class="section level3">
+<h3>Sampling</h3>
+<p>The last thing you may want to do is take a sample from some existing
+data. Let’s recreate our single random normal variable (this time as a
+vector rather than a data frame) and see what we can do.</p>
+<div class="tutorial-exercise" data-label="norm_single_vec"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code># Set the seed to create a reproducible draw
+set.seed(11142020)
+
+# Create a vector of 100,000 draws from a normal distribution
+rannorm &lt;- rnorm(n = 1e5, # 1e5 = 1 x 10^5 = 100,000 draws
+                mean = 1, # Mean of the normal distribution
+                sd = 2) # Standard Deviation of the normal distribution
+
+# Notice when we print this it&#39;s a vector rather than a column in a data frame/tibble
+head(rannorm)</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<div id="section-without-replacement" class="section level4">
+<h4>Without Replacement</h4>
+<p>Say we want to sample 10,000 observations from our 100,000 we just
+produced. We also want to sample them <strong>without
+replacement</strong> - meaning that we want 10,000 unique observations.
+Once we sample one, it can’t be sampled again.</p>
+<div class="tutorial-exercise-support"
+data-label="sample_vec_norep-setup" data-caption="Code"
 data-completion="1" data-diagnostics="1" data-startover="1"
 data-lines="0">
-<pre class="text"><code>map_dbl( # Return a double vector
-  .x = select(penguins, where(is.numeric)), # Run the function .f on all numeric columns of penguins
-  .f = median, na.rm = TRUE) # The function we want to run is median...and make sure to remove the NAs!</code></pre>
+<pre class="text"><code># Set the seed to create a reproducible draw
+set.seed(11142020)
+
+# Create a vector with 100,000 draws from a normal distribution
+rannorm &lt;- rnorm(n = 1e5, # 1e5 = 1 x 10^5 = 100,000 draws
+                mean = 1, # Mean of the normal distribution
+                sd = 2) # Standard Deviation of the normal distribution</code></pre>
+</div>
+<div class="tutorial-exercise" data-label="sample_vec_norep"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code># Sample is also a pseudo-random operations, so we must set a seed to create a reproducible sample
+set.seed(11142020)
+
+# Sample 10,000 elements without replacement
+samp_norep &lt;- sample(x = rannorm, # Vector to sample from
+       size = 1e4, # Sample 10,000 elements
+       replace = FALSE) # Without replacement
+
+# Notice the first elements are different from the original rannorm because they&#39;re a sample from the entire
+# 100,000-long vector. Also confirm the length of our sample is 10K
+head(samp_norep)
+length(samp_norep)</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
-<p>That’s it on the <code>map()</code> functions for now. I just wanted
-to show you they’re another - arguably better - way you can do
-iterations in R. They take a little bit more practice to understand well
-than for-loops, though. <a
-href="https://r4ds.had.co.nz/iteration.html#the-map-functions">Chapter
-21.5 of <em>R for Data Science.</em></a></p>
+</div>
+<div id="section-with-replacement" class="section level4">
+<h4>With Replacement</h4>
+<p>Sometimes, though, you want to sample <em>with</em> replacement -
+that is, when you sample an element, it goes back into the sample pool
+and can be picked again, to possibly appear multiple times in the
+resulting sample. You might want to do this, for example, if you’re
+working with the statistical technique called
+<strong>bootstrapping</strong> - you don’t know what this is yet, so
+don’t worry about it. But here’s some (very similar) code to sample with
+replacement:</p>
+<div class="tutorial-exercise-support" data-label="sample_vec_rep-setup"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code># Set the seed to create a reproducible draw
+set.seed(11142020)
+
+# Create a vector with 100,000 draws from a normal distribution
+rannorm &lt;- rnorm(n = 1e5, # 1e5 = 1 x 10^5 = 100,000 draws
+                mean = 1, # Mean of the normal distribution
+                sd = 2) # Standard Deviation of the normal distribution</code></pre>
+</div>
+<div class="tutorial-exercise" data-label="sample_vec_rep"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code># Sample is also a pseudo-random operations, so we must set a seed to create a reproducible sample
+set.seed(11142020)
+
+# Sample 10,000 elements without replacement
+samp_rep &lt;- sample(x = rannorm,
+       size = 1e4, 
+       replace = TRUE) # With replacement - this is our only change
+
+# Confirm this sample is of size 10,000 
+length(samp_rep)
+
+# But check that there was replacement by seeing the number of *unique* values
+length(unique(samp_rep))</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>Indeed we see there are only 9,530 <em>unique</em> values here -
+indicating some were sampled multiple times, and that our sampling with
+replacement worked.</p>
+</div>
+<div id="section-rows-from-a-data-frame" class="section level4">
+<h4>Rows From a Data Frame</h4>
+<p>One last thing you may want to do is, rather than sampling from a
+vector, sample entire rows/observations from a data frame or tibble. In
+fact, if you remember way way back in one of our earlier Tutorials we
+did this for the <code>diamonds</code> data frame to make plotting
+easier.</p>
+<p>Anyway, here’s how it’s done with the <code>penguins</code> data:</p>
+<div class="tutorial-exercise" data-label="sample_rows"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code># Sample is also a pseudo-random operations, so we must set a seed to create a reproducible sample
+set.seed(11142020)
+
+# Sample 100 rows without replacement
+penguins_sample &lt;- slice_sample(.data = penguins,
+                                n = 100,
+                                replace = FALSE) # Could also do with replacement by setting to TRUE
+
+penguins_sample</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>You can also sample a proportion of observations instead of a set
+number. This comes in handy if you want to, for example, set aside 20%
+of your data for out-of-sample testing of a machine learning model.</p>
+<div class="tutorial-exercise" data-label="sample_rows_prop"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code># Sample is also a pseudo-random operations, so we must set a seed to create a reproducible sample
+set.seed(11142020)
+
+
+# Sample 50% of a data frame/tibble instead
+penguins_prop &lt;- slice_sample(.data = penguins,
+                                prop = 0.5,
+                                replace = FALSE) # Could also do with replacement by setting to TRUE
+
+penguins_prop</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+</div>
 </div>
 </div>
 <div id="section-summary" class="section level2">
 <h2>Summary</h2>
-<p>Today we covered two fundamental building blocks of many programming
-languages: if-else statements and for-loops. They allow you to tell R to
-run code some times but not others, or do different things depending on
-certain conditions. It increases the flexibility of your scripts
-substantially.</p>
-In our next and last Tutorial we’ll briefly cover how to write your own
-basic functions, followed by a bit on how to create your own simulated
-data for statistical analyses. The latter will come in handy more often
-than you might think, both in your coursework and beyond.
+<p>Today we covered some basic techniques for simulating your own data
+to test out regression models or other statistical techniques.</p>
+<p>In our next Tutorial…well, that’s it, actually! Thanks for joining me
+on this QTM 150 journey. I hope it was as fun for you as it was for me.
+Or at least not terrifically miserable. Or if it was terrifically
+miserable, you at least got some skills out of it that may help you land
+a job or do some cool data analysis later on. Gotta stay realistic.</p>
+Thanks again, everyone! Your princess is <em>not</em> in another castle.
 
 <script type="application/shiny-prerendered" data-context="server">
 learnr:::register_http_handlers(session, metadata = NULL)
@@ -644,90 +558,99 @@ session$onSessionEnded(function() {
 
 
 <script type="application/shiny-prerendered" data-context="server-start">
-pacman::p_load(tidyverse, lubridate, palmerpenguins)
+pacman::p_load(tidyverse, palmerpenguins, MASS)
 data(penguins)
 
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-`tutorial-exercise-if-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-if-code-editor`)), session)
-output$`tutorial-exercise-if-output` <- renderUI({
-  `tutorial-exercise-if-result`()
+`tutorial-exercise-norm_single-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-norm_single-code-editor`)), session)
+output$`tutorial-exercise-norm_single-output` <- renderUI({
+  `tutorial-exercise-norm_single-result`()
 })
 </script>
 
 
 <script type="application/shiny-prerendered" data-context="server">
-`tutorial-exercise-if_else-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-if_else-code-editor`)), session)
-output$`tutorial-exercise-if_else-output` <- renderUI({
-  `tutorial-exercise-if_else-result`()
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "quiz1-1", question = structure("What were the mean and SD of the 10,000 random normal draws you conducted above?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_390c94c",     option = "1 and 2, exactly", value = "1 and 2, exactly",     label = structure("1 and 2, exactly", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_f76163d",     option = "Close to 1 and 2, but not exactly", value = "Close to 1 and 2, but not exactly",     label = structure("Close to 1 and 2, but not exactly", html = TRUE, class = c("html",     "character")), correct = TRUE, message = structure("Remember, we&#39;re drawing randomly from a normal distribution with mean 1 and SD 2. But the mean and SD of the actual draws are going to be a <em>little<\u002fem> bit off from that because...well, because the draws are random, so there&#39;s a little bit of noise. This is exactly what we want to see.", html = TRUE, class = c("html",     "character"))), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_7b07d6b", option = "0 and 1, exactly",     value = "0 and 1, exactly", label = structure("0 and 1, exactly", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_c416b92",     option = "Could not tell", value = "Could not tell", label = structure("Could not tell", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Incorrect", html = TRUE, class = c("html", "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "quiz1-1-answer", question = "quiz1-1"), loading = structure("<strong>Loading:<\u002fstrong> \nWhat were the mean and SD of the 10,000 random normal draws you conducted above?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = TRUE,     seed = 1627958411.74192, options = list()), class = c("learnr_radio", "tutorial_question")))
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-norm_single_plot-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-norm_single_plot-code-editor`)), session)
+output$`tutorial-exercise-norm_single_plot-output` <- renderUI({
+  `tutorial-exercise-norm_single_plot-result`()
+})
+</script>
+
+
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-norm_multi-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-norm_multi-code-editor`)), session)
+output$`tutorial-exercise-norm_multi-output` <- renderUI({
+  `tutorial-exercise-norm_multi-result`()
 })
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-`tutorial-exercise-if_elseif_else-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-if_elseif_else-code-editor`)), session)
-output$`tutorial-exercise-if_elseif_else-output` <- renderUI({
-  `tutorial-exercise-if_elseif_else-result`()
+`tutorial-exercise-norm_multi_line-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-norm_multi_line-code-editor`)), session)
+output$`tutorial-exercise-norm_multi_line-output` <- renderUI({
+  `tutorial-exercise-norm_multi_line-result`()
 })
 </script>
 
 
 <script type="application/shiny-prerendered" data-context="server">
-`tutorial-exercise-any_all-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-any_all-code-editor`)), session)
-output$`tutorial-exercise-any_all-output` <- renderUI({
-  `tutorial-exercise-any_all-result`()
-})
-</script>
- 
-<script type="application/shiny-prerendered" data-context="server">
-`tutorial-exercise-if_mult-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-if_mult-code-editor`)), session)
-output$`tutorial-exercise-if_mult-output` <- renderUI({
-  `tutorial-exercise-if_mult-result`()
-})
-</script>
-
-
-<script type="application/shiny-prerendered" data-context="server">
-`tutorial-exercise-basic_for-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-basic_for-code-editor`)), session)
-output$`tutorial-exercise-basic_for-output` <- renderUI({
-  `tutorial-exercise-basic_for-result`()
+`tutorial-exercise-norm_multi_correl-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-norm_multi_correl-code-editor`)), session)
+output$`tutorial-exercise-norm_multi_correl-output` <- renderUI({
+  `tutorial-exercise-norm_multi_correl-result`()
 })
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-`tutorial-exercise-iteration1-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-iteration1-code-editor`)), session)
-output$`tutorial-exercise-iteration1-output` <- renderUI({
-  `tutorial-exercise-iteration1-result`()
+`tutorial-exercise-bin_single-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-bin_single-code-editor`)), session)
+output$`tutorial-exercise-bin_single-output` <- renderUI({
+  `tutorial-exercise-bin_single-result`()
 })
 </script>
 
 
 <script type="application/shiny-prerendered" data-context="server">
-`tutorial-exercise-for_loop1-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-for_loop1-code-editor`)), session)
-output$`tutorial-exercise-for_loop1-output` <- renderUI({
-  `tutorial-exercise-for_loop1-result`()
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "quiz2-1", question = structure("What proportion of the coin flips you simulated above came up 1/tails?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_715a9e2",     option = "0.5, exactly", value = "0.5, exactly", label = structure("0.5, exactly", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_242974f",     option = "Close to 0.7, but not exactly", value = "Close to 0.7, but not exactly",     label = structure("Close to 0.7, but not exactly", html = TRUE, class = c("html",     "character")), correct = TRUE, message = structure("Remember, we&#39;re randomly flipping a bunch of coins with a 70% probability of tails. But the actual proportion is going to be a <em>little<\u002fem> bit off from that because...well, because the draws are random, so there&#39;s a little bit of noise. This is exactly what we want to see.", html = TRUE, class = c("html",     "character"))), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_c5e9663", option = "0.7, exactly",     value = "0.7, exactly", label = structure("0.7, exactly", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_59ac396",     option = "Could not tell", value = "Could not tell", label = structure("Could not tell", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Incorrect", html = TRUE, class = c("html", "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "quiz2-1-answer", question = "quiz2-1"), loading = structure("<strong>Loading:<\u002fstrong> \nWhat proportion of the coin flips you simulated above came up 1/tails?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = TRUE,     seed = 1059523576.50662, options = list()), class = c("learnr_radio", "tutorial_question")))
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-norm_single_vec-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-norm_single_vec-code-editor`)), session)
+output$`tutorial-exercise-norm_single_vec-output` <- renderUI({
+  `tutorial-exercise-norm_single_vec-result`()
+})
+</script>
+
+
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-sample_vec_norep-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-sample_vec_norep-code-editor`)), session)
+output$`tutorial-exercise-sample_vec_norep-output` <- renderUI({
+  `tutorial-exercise-sample_vec_norep-result`()
 })
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-`tutorial-exercise-for_loop_robust-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-for_loop_robust-code-editor`)), session)
-output$`tutorial-exercise-for_loop_robust-output` <- renderUI({
-  `tutorial-exercise-for_loop_robust-result`()
+`tutorial-exercise-sample_vec_rep-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-sample_vec_rep-code-editor`)), session)
+output$`tutorial-exercise-sample_vec_rep-output` <- renderUI({
+  `tutorial-exercise-sample_vec_rep-result`()
 })
 </script>
 
 
 <script type="application/shiny-prerendered" data-context="server">
-`tutorial-exercise-while_loop-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-while_loop-code-editor`)), session)
-output$`tutorial-exercise-while_loop-output` <- renderUI({
-  `tutorial-exercise-while_loop-result`()
+`tutorial-exercise-sample_rows-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-sample_rows-code-editor`)), session)
+output$`tutorial-exercise-sample_rows-output` <- renderUI({
+  `tutorial-exercise-sample_rows-result`()
 })
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-`tutorial-exercise-map-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-map-code-editor`)), session)
-output$`tutorial-exercise-map-output` <- renderUI({
-  `tutorial-exercise-map-result`()
+`tutorial-exercise-sample_rows_prop-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-sample_rows_prop-code-editor`)), session)
+output$`tutorial-exercise-sample_rows_prop-output` <- renderUI({
+  `tutorial-exercise-sample_rows_prop-result`()
 })
 </script>
  <!--html_preserve-->
@@ -737,7 +660,7 @@ output$`tutorial-exercise-map-output` <- renderUI({
 <!--/html_preserve-->
 <!--html_preserve-->
 <script type="application/shiny-prerendered" data-context="execution_dependencies">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages","version"]},"class":{"type":"character","attributes":{},"value":["data.frame"]},"row.names":{"type":"integer","attributes":{},"value":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86]}},"value":[{"type":"character","attributes":{},"value":["assertthat","backports","base","broom","bslib","cellranger","cli","colorspace","compiler","crayon","datasets","DBI","dbplyr","digest","dplyr","ellipsis","evaluate","fansi","fastmap","forcats","fs","gargle","generics","ggplot2","glue","googledrive","googlesheets4","graphics","grDevices","grid","gtable","haven","hms","htmltools","htmlwidgets","httpuv","httr","jquerylib","jsonlite","knitr","later","learnr","lifecycle","lubridate","magrittr","markdown","methods","mime","modelr","munsell","pacman","palmerpenguins","pillar","pkgconfig","promises","purrr","R6","Rcpp","readr","readxl","reprex","rlang","rmarkdown","rprojroot","rstudioapi","rvest","sass","scales","shiny","stats","stringi","stringr","tibble","tidyr","tidyselect","tidyverse","tools","tzdb","utf8","utils","vctrs","withr","xfun","xml2","xtable","yaml"]},{"type":"character","attributes":{},"value":["0.2.1","1.1.7","4.0.2","1.0.1","0.3.1","1.1.0","3.2.0","2.0-2","4.0.2","1.4.2","4.0.2","1.1.0","2.1.1","0.6.25","1.0.8","0.3.2","0.16","1.0.0","1.1.0","0.5.1","1.5.2","1.2.0","0.1.1","3.3.6","1.6.2","2.0.0","1.0.0","4.0.2","4.0.2","4.0.2","0.3.0","2.5.1","1.1.2","0.5.2","1.5.3","1.5.4","1.4.2","0.1.4","1.7.2","1.40","1.1.0.1","0.10.1","1.0.1","1.8.0","2.0.3","1.1","4.0.2","0.12","0.1.8","0.5.0","0.5.1","0.1.0","1.8.1","2.0.3","1.1.1","0.3.4","2.5.1","1.0.7","2.1.2","1.3.1","2.0.2","1.0.2","2.11","2.0.2","0.13","1.0.2","0.4.1","1.2.1","1.7.1","4.0.2","1.7.5","1.4.0","3.1.6","1.1.4","1.1.1","1.3.2","4.0.2","0.1.2","1.2.2","4.0.2","0.4.1","2.4.2","0.29","1.3.3","1.8-4","2.2.1"]}]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages","version"]},"class":{"type":"character","attributes":{},"value":["data.frame"]},"row.names":{"type":"integer","attributes":{},"value":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88]}},"value":[{"type":"character","attributes":{},"value":["assertthat","backports","base","broom","bslib","cellranger","checkmate","cli","colorspace","compiler","crayon","datasets","DBI","dbplyr","digest","dplyr","ellipsis","evaluate","fansi","fastmap","forcats","fs","gargle","generics","ggplot2","glue","googledrive","googlesheets4","graphics","grDevices","grid","gtable","haven","hms","htmltools","htmlwidgets","httpuv","httr","jquerylib","jsonlite","knitr","later","learnr","lifecycle","lubridate","magrittr","markdown","MASS","methods","mime","modelr","munsell","pacman","palmerpenguins","pillar","pkgconfig","promises","purrr","R6","Rcpp","readr","readxl","reprex","rlang","rmarkdown","rprojroot","rstudioapi","rvest","sass","scales","shiny","stats","stringi","stringr","tibble","tidyr","tidyselect","tidyverse","tools","tzdb","utf8","utils","vctrs","withr","xfun","xml2","xtable","yaml"]},{"type":"character","attributes":{},"value":["0.2.1","1.1.7","4.0.2","1.0.1","0.3.1","1.1.0","2.0.0","3.2.0","2.0-2","4.0.2","1.4.2","4.0.2","1.1.0","2.1.1","0.6.25","1.0.8","0.3.2","0.16","1.0.0","1.1.0","0.5.1","1.5.2","1.2.0","0.1.1","3.3.6","1.6.2","2.0.0","1.0.0","4.0.2","4.0.2","4.0.2","0.3.0","2.5.1","1.1.2","0.5.2","1.5.3","1.5.4","1.4.2","0.1.4","1.7.2","1.40","1.1.0.1","0.10.1","1.0.1","1.8.0","2.0.3","1.1","7.3-51.6","4.0.2","0.12","0.1.8","0.5.0","0.5.1","0.1.0","1.8.1","2.0.3","1.1.1","0.3.4","2.5.1","1.0.7","2.1.2","1.3.1","2.0.2","1.0.2","2.11","2.0.2","0.13","1.0.2","0.4.1","1.2.1","1.7.1","4.0.2","1.7.5","1.4.0","3.1.6","1.1.4","1.1.1","1.3.2","4.0.2","0.1.2","1.2.2","4.0.2","0.4.1","2.4.2","0.29","1.3.3","1.8-4","2.2.1"]}]}]}
 </script>
 <!--/html_preserve-->
 </div>
@@ -751,10 +674,10 @@ output$`tutorial-exercise-map-output` <- renderUI({
 
 <!-- begin doc-metadata -->
 <div id="doc-metadata">
-<h2 class="title toc-ignore" style="display:none;">Tutorial 5.1 -
-If-Else Blocks, For-Loops</h2>
+<h2 class="title toc-ignore" style="display:none;">Tutorial 9.4 -
+Statistical Simulations</h2>
 <h4 class="author"><em>Zachary Binney, PhD</em></h4>
-<h4 class="date"><em>November 2020</em></h4>
+<h4 class="date"><em>January 2023</em></h4>
 </div>
 <!-- end doc-metadata -->
 

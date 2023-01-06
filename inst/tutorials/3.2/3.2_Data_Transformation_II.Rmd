@@ -107,6 +107,7 @@ ggplot(gapminder_mutate, aes(x = log_gdpPercap, y = lifeExp)) +
   geom_point() +
   geom_smooth(method = "lm")
 ```
+
 The log transformation helped "unbunch" the graph. The big drawback is it's harder to interpret what's happening along the x-axis. Because we used `log10()`, a 1-unit change in `log_gdpPercap` is not a "1-unit" change in per capita GDP, but rather than 10x increase! On the x-axis, 3 corresponds to a per capita GDP of 10^3 = 1,000; 4 corresponds to a per capita GDP of 10^4 = 10,000; and so on.
 
 As a result, what might look like a linear increase is actually a logarithmic change. Raising per capita GDP *10x* seems to be associated with about a 20-year increase in life expectation (although the right side of the graph clearly shows diminishing returns in the highest-income countries due to natural limitations on the human lifespan, so a simple straight line model here probably isn't the best choice as it's unlikely to extrapolate).
@@ -291,6 +292,7 @@ Let's test your `mutate()`ing skills by creating a few new variables. Do the fol
   #air_hrs = 3.783333333
   #air_speed = 370.0441
 #And your first 10 flights should have 8 middles, 1 long (the 4th flight), and 1 short (the 8th flight)
+
   
 ```
 
@@ -366,6 +368,7 @@ gapminder %>%
   geom_point(aes(x = log_gdpPercap, y = lifeExp))
 
 ```
+
 Another example: have you ever watched sports on TV and seen a graphic with a weirdly specific fact? 
 
 ```{r img2, echo = FALSE, out.width = "70%", fig.align = "center", fig.cap = "*This is an oddly specific record.*"}
@@ -383,17 +386,15 @@ Using a dataset I just sneakily imported without you knowing, let's find the top
 ```{r pipe_ex2, exercise = TRUE}
 rush %>%
   filter(Year >= 2000 &
-        `Rushing Attempts Per Game` <= 5) %>%
-  select(Name, Team, Year,`Rushing Yards`) %>% 
-  arrange(desc(as.numeric(`Rushing Yards`)))
+        Rushing.Attempts.Per.Game <= 5) %>%
+  select(Name, Team, Year, Rushing.Yards) %>% 
+  arrange(desc(as.numeric(Rushing.Yards)))
 
 ```
 
 If you had **domain knowledge** about the subject you're studying - in this case football - you might look at this list and notice some interesting things. Like, for example, that many (though not all) of these players are quarterbacks (e.g. Bortles, Kaepernick, Garcia). Tavon Austin is a wide receiver who is sometimes asked to run the ball on trick plays, which helps explain why he has few rushes (<5 per game) but many yards. 
 
-Without **domain knowledge** you might not know what to make of this list. Consider this an important lesson in not thinking *just* knowing the data science or math or programming is enough. Work with subject-matter experts to get the most out of your data.
-
-As a sidenote, we had to use backticks (``) around variable names that are written as multiple words with spaces in between. **Try not to use variables with spaces so we don't have to do this.** Use snake_case, camelCase, or hyphenated-variable-names.
+Without **domain knowledge** you might not know what to make of this list. Consider this an important lesson in not thinking *just* knowing the data science or math or programming is enough. Work with subject matter experts to get the most out of your data.
 
 One final example. What if we wanted to plot each country's average years of life expectancy above or below the world average in 2007?
 
@@ -419,6 +420,7 @@ mean(gapminder$lifeExp)
 #Weighted mean accounting for population
 weighted.mean(gapminder$lifeExp, gapminder$pop)
 ```
+
 The weighted mean is a bit higher because some of the countries with the largest populations also have the highest life expectancies.
 
 ## Summarizing and Grouped Summaries Using `summarize()` and `group_by()`
@@ -487,6 +489,7 @@ flights %>%
           n_flights_in_summary = sum(!is.na(dep_delay)))
 
 ```
+
 That's a bit cleaner - and is also the typical way you'll see grouped summaries done in the wild.
 
 You can also group by multiple variables! Say we wanted the mean departure delay for each airport for each month:
@@ -531,9 +534,9 @@ flights %>%
 
 ```
 
-### Other Ways to Use `summarze()` and `group_by()`
+### Other Ways to Use `summarize()` and `group_by()`
 
-Means and counts are probably the most common reasons you'll use `summarze()` and `group_by()`, but there are lots of other things you can do.
+Means and counts are probably the most common reasons you'll use `summarize()` and `group_by()`, but there are lots of other things you can do.
 
 * Grouped medians and other quantiles using `median()` or `quantile()` in place of `mean()`
     
@@ -555,6 +558,7 @@ summarize(count_delayed = sum(dep_delay > 0, na.rm = TRUE),
           prop_delayed = mean(dep_delay > 0, na.rm = TRUE))
 
 ```
+
 Hey, Laguardia doesn't stink!
 
 This code probably looks a little confusing to you. Let's break it down. The argument `dep_delay > 0` basically goes through `dep_delay` and creates a new temporary column behind the scenes of whether the condition is `TRUE` or `FALSE` for each observation. 

@@ -1,0 +1,243 @@
+---
+title: "Tutorial 9.2 - Writing Functions"
+
+author: "Zachary Binney, PhD"
+date: "November 2020"
+
+output: 
+  learnr::tutorial:
+    css: css/zb_style.css
+    progressive: TRUE
+runtime: shiny_prerendered
+description: "Writing functions"
+---
+
+```{r hidden, include = FALSE}
+pacman::p_load(learnr)
+
+```
+
+
+## Intro and Setup
+
+Today we briefly cover how and when to write your own functions.
+
+Once again we don't need much from packages today - just the `tidyverse` and the `palmerpenguins` data. **Just remember to run this code in your own script before proceeding.**
+
+```{r setup, message = FALSE}
+pacman::p_load(tidyverse, palmerpenguins, MASS)
+data(penguins)
+
+```
+
+
+## Creating Your Own Functions
+
+R is a **functional programming language**, meaning...well, that it's largely based around functions. You've been using functions all along in this course, and we've already discussed a lot of things about them, like **arguments**. 
+
+Just as a brief reminder, a function is a reusable piece of code that takes some **input** (**arguments**) and returns some **output**.
+
+R has thousands of functions already that do the vast majority of tasks you'll want to accomplish regularly - think the `dplyr` verbs, `sum()`, `read.csv()`, `ggplot()`, and so on. As an open-source language, these functions come from a mix of the core group that maintains the basics of R, major development groups like RStudio - which also oversees the `tidyverse` - and individual or small groups of developers who write packages with specific functions for their own purposes. You could even contribute a function or package one day.
+
+
+### When and Why Create a Function
+
+Speaking of which, sometimes you run into a task that you want to do over and over but for which a function doesn't exist yet. Usually these will be pretty specific instances - say you want to process a large number of data sets in a way very specific to your company or research project. No one else does exactly what you want to do, but you want to do it many times.
+
+A good rule of thumb is: **if you find yourself copy-pasting the same code structure more than twice, maybe it should be a function instead**. Abstracting common but idiosyncratic (specific to you or your company or research group) tasks into your own functions has several advantages, which we've already discussed but I'll reiterate here:
+
+1. It makes our code shorter, more compact, and easier to read.
+
+2. If we need to make a change to this code we deploy over and over again, we only have to make the change in *1* spot - the function definition. This is much safer than trying to remember to make it in every spot you wrote the code.
+
+3. It makes typos less likely, since we can only introduce them in the function definition. Plus it makes typos and other bugs easier to find because you know where they probably are.
+
+### Basic Function Writing
+
+Let's say we want to re-scale every numeric column of `palmerpenguins` to be between 0 and 1 (so the minimum value is 0, and the maximum value is 1).
+
+```{r pens, message = FALSE}
+str(penguins)
+
+```
+
+First let's figure out how we might do that for one specific variable.
+
+```{r rescale_onevar, exercise = TRUE}
+
+# Re-scale a single variable and save it to a new column
+penguins$body_mass_rescale <- (penguins$body_mass_g - min(penguins$body_mass_g, na.rm = TRUE)) / 
+  (max(penguins$body_mass_g, na.rm = TRUE) - min(penguins$body_mass_g, na.rm = TRUE)) 
+
+# Let's check if the new column ranges 0 to 1
+range(penguins$body_mass_rescale, na.rm = TRUE)
+
+```
+Let's clean this code up some and try and generalize our approach. First notice we've typed `penguins$body_mass_g` over and over again. That should cue us in immediately it's something we can shorten. What if we save that to a shorter object first, then feed that into our code?
+
+```{r rescale_onevar_short, exercise = TRUE}
+
+# Re-scale a single variable and save it to a new column
+vec <- penguins$body_mass_g
+
+penguins$body_mass_rescale <- (vec - min(vec, na.rm = TRUE)) / 
+  (max(vec, na.rm = TRUE) - min(vec, na.rm = TRUE)) 
+
+# Let's check if the new column ranges 0 to 1
+range(penguins$body_mass_rescale, na.rm = TRUE)
+
+```
+But we can actually shorten this even further. Notice what else we repeated: `min()` and `max()`, which are components of `range()`.
+
+</mark>Challenge:</mark> Using `?range` and playing around with it a bit, can you figure out what `range()` returns, and how we might be able to use it before proceeding? Remember, we need the minimum and maximum values of a vector.
+
+```{r rangetest, exercise = TRUE}
+
+range_a <- range(c(1, 2, 3))
+range_a
+
+range_b <- range(c(1, 2, 3, NA))
+range_b
+
+range_c <- range(c(1, 2, 3, NA), na.rm = TRUE)
+range_c
+```
+Let's clean this code up even further by just using `range()` once, and feeding its results in.
+
+```{r rescale_onevar_shorter, exercise = TRUE}
+
+# Re-scale a single variable and save it to a new column
+vec <- penguins$body_mass_g
+rng <- range(vec, na.rm = TRUE)
+
+penguins$body_mass_rescale <- (vec - rng[1]) / 
+  (rng[2] - rng[1]) 
+
+# Let's check if the new column ranges 0 to 1
+range(penguins$body_mass_rescale, na.rm = TRUE)
+
+```
+Even better! Now we can abstract this into a function. The way you do that is with another function called...well, called `function()`. It creates **functions**.
+
+```{r func_rescale, eval = FALSE}
+
+rescale01 <- function(vec) { # Assign the function to an object with a memorable, short and evocative name
+                             # Specify the inputs for the function - in our cae, just the data vector, vec
+  
+  rng <- range(vec, na.rm = TRUE)     # Body of the function - R will execute this code
+  (vec - rng[1]) / (rng[2] - rng[1])  # using the argument(s) you supplied (vec)
+
+}
+```
+
+Run this code in your own script, then look over in the Environment Pane. Scroll down and you'll see a new heading called Functions. Look, there's your new function! It says it's called `rescale01` and takes the argument `vec` - which you know is a vector of numeric data.
+
+Take your new function for a test drive in your own script.
+
+```{r func_rescale_test, eval = FALSE}
+# Now we can use this function any time we want to calculate the range of a column. Let's use it!
+penguins_rescale <- penguins %>% 
+  mutate(body_mass_rescale = rescale01(body_mass_g), # We can use our new function right here. So compact!
+         bill_length_rescale = rescale01(bill_length_mm))
+
+
+# Let's check if the new column ranges 0 to 1
+range(penguins_rescale$body_mass_rescale, na.rm = TRUE)
+
+```
+
+</mark>Challenge:</mark> Modify the code above in your own script to apply the function to the 4 numeric data biometric columns in your data.
+
+Note this code will still be somewhat repetitive - you'll be applying your new function to the different columns 4 times. But you already know a technique for avoiding this if you want - **iteration**. You could use a **for-loop**, though better would likely be a `map_xx()` function from the `purrr` package. We won't get into that today, though.
+
+### General Approach to Writing Functions
+
+The general approach we used above to write our function works well. It was basically:
+
+* Write some code
+* Make sure it works for a specific, *simple* situation
+* Realize you want to actually make it a function
+* Try and abstract and generalize it
+
+Usually it's not a good idea to try to write a function from scratch. Get some code working for a specific and simple situation first, *then* try to make it into a function from there.
+
+### General Function Structure
+
+Here's the general function of a structure, illustrated with a trivial function that takes a single number as input and checks if it's greater than 2.
+
+```{r func_general}
+
+# 1. Name of the function
+check <- 
+# the "function" function is used to create a function  
+  function(
+    # 2. List of arguments to be fed to function body  
+    # separated by commas if more than one
+    x
+  ){
+  
+    # 3. Body: what the function will do
+  
+      if(x > 2){
+      
+      print(x)  
+      
+      } else{
+      
+      print("variable `x` is smaller or equal to 2")      
+      
+      }
+}
+```
+
+Now let's try out our new function. 
+
+</mark>Challenge:</mark> Predict what our function is going to return for each invocation below.
+
+```{r func_general_test, exercise = TRUE, exercise.setup = "func_general"}
+
+check(x = 1)
+
+check(x = 2)
+
+check(x = 3)
+
+# Now try feeding x = NA to the check function. What happens?
+
+```
+
+### Return Values
+
+One important thing we haven't covered yet is a function's **return value**. We left it implicit above, but let's make it explicit now.
+
+A function will return, by default, *the last thing it does*. That's why `check()` returns what it does above. But you can also make this explicit using `return()`:
+
+```{r func_general2, eval = FALSE}
+
+# Make our rescale function more explicit
+rescale01 <- function(vec) {
+  
+  rng <- range(vec, na.rm = TRUE)    
+  rescaled_vec <- (vec - rng[1]) / (rng[2] - rng[1]) # Save to an object you can explicitly return 
+  
+  return(rescaled_vec) # Our function already did this by default since calculating rng was the last thing it did
+
+}
+```
+
+Try changing the body of the `rescale01` function in your script to the above. Then re-run it. Hopefully it does the same thing, just a bit more explicit now.
+
+### So Much We Didn't Cover
+
+There's a *lot* about functions we didn't cover here - the specifics of specifying arguments, environments, writing style, etc. If you want more, please check out:
+
+* [Chapter 19 of *R for Data Science*.](https://r4ds.had.co.nz/functions.html)
+* [This RStudio Primer on writing functions.](https://rstudio.cloud/learn/primers/6)
+
+
+
+## Summary
+
+Today we briefly covered how and when to write your own functions to call to do common but idiosyncratic tasks you need multiple times without copy-pasting code.
+
+In our next Tutorial we'll discuss how to create your own simulated data for statistical analyses. The latter will come in handy more often than you might think, both in your coursework and beyond.

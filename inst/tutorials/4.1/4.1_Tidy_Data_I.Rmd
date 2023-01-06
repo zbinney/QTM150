@@ -1,5 +1,5 @@
 ---
-title: "Tutorial 9.1 - Tidy Data I"
+title: "Tutorial 4.1 - Tidy Data I"
 
 author: "Zachary Binney, PhD"
 date: "February 2021"
@@ -20,7 +20,7 @@ pacman::p_load(learnr)
 
 ## Intro
 
-I warned you, and it's time: it's time for the vegetables portion of the semester, where we'll remain for the next 6 Tutorials. It's time to learn techniques for helping with what **data scientists** report they spend most of their day doing: **data cleaning**. It's most of what they do - we have to teach you, no way around it.
+I warned you, and it's time: it's time for the vegetables portion of the semester, where we'll remain for the next 8 or so classes. It's time to learn techniques for helping with what **data scientists** report they spend most of their day doing: **data cleaning**. It's most of what they do - we have to teach you, no way around it.
 
 For what it's worth, I'm one of the weirdos who actually *loves* data cleaning. I find it to be an interesting challenge and puzzle on its own! And the sense of accomplishment I get when I produce a really clean data set for others to use - it's great! Maybe you'll be like me in that respect. I sure hope so! I'll do my best to get you there.
 
@@ -66,6 +66,8 @@ That data on the right from the World Bank may not *look* that hard to work with
 The answer is no.
 
 It is worth noting this data *was* already heavily cleaned by the World Bank. We can be confident there are no incorrect or inappropriately missing values or mis-named or mis-formatted variables, for example. But it's still not **tidy**.
+
+The rest of this Tutorial focuses on just *one aspect of* data cleaning: creating **tidy** data. Other aspects of data cleaning are to come in the next few Tutorials.
 
 ## "Tidy" Data
 
@@ -507,6 +509,6 @@ If you want there to be *nothing* between the values instead, simply specify `se
 
 ## Summary
 
-We covered the basics and definitions of tidy data versus un-tidy data (as well as wide vs. long data) and how we can use `separate()` and `unite()` in the `tidyr` package to help us make some un-tidy data tidy (that is, **clean the data**).
+We covered the basics and definitions of tidy data versus un-tidy data (as well as wide vs. long data) and how we can use `separate()` and `unite()` in the `tidyr` package to help us make some un-tidy data tidy (one aspect of **data cleaning**).
 
 In our next Tutorial we'll continue learning more `tidyr` functions to deal with even more un-tidy data.

@@ -1,10 +1,10 @@
 ---
-title: "Tutorial 7.2 - Advanced Visualization: Interactive Graphs and Plotly"
+title: "Tutorial 1.4 - Advanced Visualization: Interactive Graphs and Plotly"
 
 author: "Zachary Binney, PhD"
 date: "January 2021"
 
-output: 
+output:
   learnr::tutorial:
     css: css/zb_style.css
     progressive: TRUE
@@ -20,7 +20,7 @@ pacman::p_load(learnr)
 
 ## Intro
 
-You've learned a lot about how to make static plots you can show to people. These are nice because they allow you to perfectly control what people see. But their major limitation is the same: they require you to choose ahead of time exactly what people see. 
+You've learned a lot about how to make static plots you can show to people. These are nice because they allow you to perfectly control what people see. But their major limitation is the same: they require you to choose ahead of time exactly what people see.
 
 Sometimes you may want your readers to be able to interact with your data visualizations (or tables). Maybe you want, for example, to let someone scroll over a specific point or bar and get more information about it. Or [here](https://stateofchildhoodobesity.org/adult-obesity/), where hovering over a state highlights a line showing its obesity trend over time. This looks very slick and modern! Much more impressive than a simple static graph.
 
@@ -38,7 +38,7 @@ pacman::p_load(tidyverse, plotly, gapminder, RColorBrewer)
 
 ### Motivating Example
 
-Do you remember Homework 2 from QTM 150? One of the things I asked you to do with the `midwest` data frame was to identify the name of an outlier county in your scatterplot of county-level college attendance and poverty. To find the county name with the skills you had then you actually had to open the data frame and go manually searching for the counties matching the values of the outlier points. It was a massive pain! Later you learned skills like `filter()` that may have helped you do this in a script in a more automated way, but allow me to show you an even better solution with `plotly`.
+Have you at least looked at HW2 (hopefully so)? One of the things I ask you to do with the `midwest` data frame is to identify the name of an outlier county in your scatterplot of county-level college attendance and poverty. To find the county name with the skills you had then you actually had to open the data frame and go manually searching for the counties matching the values of the outlier points. It was a massive pain! Later you'll learn skills like `filter()` that will help you do this in a script in a more automated way, but allow me to show you a different solution with `plotly`.
 
 Here's a static version of our `midwest` college-poverty plot:
 
@@ -48,6 +48,7 @@ ggplot(data = midwest, mapping = aes(x = percollege, y = percbelowpoverty)) +
     geom_smooth() +
     labs(x = "Percent College Educated", y = "Percent Below Poverty Line")
 ```
+
 And here's an interactive version we could build with `plotly`:
 
 ```{r plotly_motiv2}
@@ -105,7 +106,7 @@ We could also ask for this more explicitly using the code below:
 
 ```{r plotly_one_point_explicit, exercise = TRUE}
 # Slightly less empty plotly graph
-plot_ly() %>% 
+plot_ly() %>%
   add_markers(x = 2, y = 2)
 
 ```
@@ -116,9 +117,9 @@ Let's do a more useful plot: a scatterplot of `gdpPercap` and `lifeExp` from `ga
 ```{r plotly_scatter_gap, exercise = TRUE}
 # Gapminder scatterplot
 plot_ly(data = gapminder) %>% # First specify data = <DATA FRAME NAME>
-  
+
   add_markers(x = ~ gdpPercap, # Specify the x aesthetic maps to ~ <VARIABLE NAME> (in this case, gdpPercap)
-              
+
               y = ~ lifeExp)  # Specify the y aesthetic maps to ~ <VARIABLE NAME> (in this case, lifeExp)
 
 ```
@@ -170,7 +171,7 @@ Let's try and make a line plot of how `gdpPercap` (adjusted for inflation) chang
 plot_ly(data = gapminder,
         x = ~ year,
         y = ~ gdpPercap,
-        color = ~ country) %>% 
+        color = ~ country) %>%
   add_lines() # This is what you use to make a line plot
 
 ```
@@ -201,10 +202,11 @@ In `ggplot()`, you use `geom_histogram()` to specify a histogram. In `plot_ly()`
 ```{r plotly_hist, exercise = TRUE}
 # Histogram of weight of diamonds
 plot_ly(data = diamonds,
-        x = ~ carat) %>% 
+        x = ~ carat) %>%
   add_histogram()
 
 ```
+
 ### Specifying Traces: `add_XX()` vs. `add_trace()`
 
 There are two basic ways to specify what kind of **trace** you want to add:
@@ -221,9 +223,9 @@ plot_ly(data = gapminder,
         x = ~ year,
         y = ~ gdpPercap,
         color = ~ country,
-        colors = "#1f77b4") %>% 
-  add_lines(size = I(0.3)) %>% 
-  layout(showlegend = FALSE) 
+        colors = "#1f77b4") %>%
+  add_lines(size = I(0.3)) %>%
+  layout(showlegend = FALSE)
 
 ```
 
@@ -233,11 +235,11 @@ plot_ly(data = gapminder,
         x = ~ year,
         y = ~ gdpPercap,
         color = ~ country,
-        colors = "#1f77b4") %>% 
-  add_trace(type = "scatter", # In plot_ly() speak, this line plot is actually of type "scatter" but with "lines" instead of "markers" (points) 
-            mode = "lines", 
-            size = I(0.3)) %>% 
-  layout(showlegend = FALSE) 
+        colors = "#1f77b4") %>%
+  add_trace(type = "scatter", # In plot_ly() speak, this line plot is actually of type "scatter" but with "lines" instead of "markers" (points)
+            mode = "lines",
+            size = I(0.3)) %>%
+  layout(showlegend = FALSE)
 ```
 Usually I would recommend going with method 1 (specify the desired chart type using `add_XX()`), but if you look for help online you might see things written using method 2, so I wanted you to be aware of how it might look. Some less common or more heavily customized chart types may also require you to use the more general and flexible `add_trace()`.
 
@@ -251,10 +253,10 @@ plot_ly(data = filter(gapminder, country %in% c("China", "India", "United States
         x = ~ year,
         y = ~ gdpPercap,
         color = ~ country,
-        colors = "#1f77b4") %>% 
-  add_trace(type = "scatter", # In plot_ly() speak, this line plot is actually of type "scatter" but with "lines" instead of "markers" (points) 
-            mode = "lines+markers") %>% 
-  layout(showlegend = FALSE) 
+        colors = "#1f77b4") %>%
+  add_trace(type = "scatter", # In plot_ly() speak, this line plot is actually of type "scatter" but with "lines" instead of "markers" (points)
+            mode = "lines+markers") %>%
+  layout(showlegend = FALSE)
 ```
 Note the `text` option adds text to each point instead of a marker. It doesn't really work well for this graph, but...
 
@@ -264,31 +266,31 @@ Note the `text` option adds text to each point instead of a marker. It doesn't r
 
 Here is where there are some differences between `ggplot()` and `plot_ly()`. In `ggplot()`, if you use `geom_bar()` R will by default also try and count the number of observations in each level of a categorical `x` variable - quite similar to a histogram. You may recall if you want it to display an actual value in the data associated with some level/value/bucket of `x`, you have to specify the `stat = "identity"` transformation.
 
-In `plot_ly()`, `add_bars()` works like `geom_bar()` with `stat = "identity"`. In other words, it wants to map the height or length of the bar not to a count, but to a value in the data frame by default. Thus it requires you to specify what value that is as a `y` aesthetic. 
+In `plot_ly()`, `add_bars()` works like `geom_bar()` with `stat = "identity"`. In other words, it wants to map the height or length of the bar not to a count, but to a value in the data frame by default. Thus it requires you to specify what value that is as a `y` aesthetic.
 
 See if you can figure out how to produce an interactive bar chart of the number of diamonds in each category of cut with `plot_ly()` below. If you can't figure it out after a few minutes, you can check the solution.
 
 ```{r plotly_bar, exercise = TRUE}
 # Generate counts of diamonds by cut, then plot a bar graph
-diamonds2 <- diamonds %>% 
+diamonds2 <- diamonds %>%
   count(cut)
 diamonds2
 
 # Bar chart of diamonds by cut
-plot_ly(________) %>% 
+plot_ly(________) %>%
   add_XXX()
 
 ```
 ```{r plotly_bar-solution}
 # Generate counts of diamonds by cut, then plot a bar graph
-diamonds2 <- diamonds %>% 
+diamonds2 <- diamonds %>%
   count(cut)
 diamonds2
 
 # Bar chart of diamonds by cut
 plot_ly(data = diamonds2,
         x = ~ cut,
-        y = ~ n) %>% 
+        y = ~ n) %>%
   add_bars()
 
 ```
@@ -332,21 +334,21 @@ Let's work with a plot of `lifeExp` over time.
 
 ```{r plotly_react2, exercise = TRUE}
 # Line plot of per capita GDP by country, with highlighting capabilities
-gapminder %>% 
+gapminder %>%
   highlight_key(~ country) %>% # Must be the line *right before* plot_ly()
 plot_ly(x = ~ year,
         y = ~ lifeExp,
         color = ~ country,
-        colors = "#1f77b4") %>% 
-  add_lines() %>% 
-  layout(showlegend = FALSE) %>% 
+        colors = "#1f77b4") %>%
+  add_lines() %>%
+  layout(showlegend = FALSE) %>%
   highlight()
 
 ```
 Notice a few things about the above code:
 
 * We had to pass `gapminder` through a function called `highlight_key(~ <VARIABLE NAME>)`. This functions sort of like `group_by()`; it sets the subgroups of data your user can select. In this case, we want to allow them to select any individual country to see the progression of its life expectancy.
-    
+
     **CRITICAL**: This must be the *last* thing you write just before passing data to `plot_ly()`. Don't worry about why for now, but if you don't do this things won't work correctly!
 
 * You also need to add `highlight()` to your `plot_ly()` code
@@ -354,13 +356,13 @@ Notice a few things about the above code:
 * Your users can now, by default:
 
     + Single-click on a country's data point (not anywhere on the line, just near a point/year with data) to highlight that entire country's line and fade the others out.
-    
+
     + Single-click on another country's line to switch what's highlighted
-    
+
     + Shift+Single-click on another country's line to *add* that country to your highlighting
-    
+
     + Double-click to remove all highlighting and return to normal
-    
+
 These behavioral triggers can be customized. Check out the `on =` and `off =` arguments in the help page for `highlight()`. Play around with them a little bit in the code above.
 
 A more detailed accounting of everything you can do with highlighting, selecting, and user interactivity is available in [Chapter 16 of this free online book](https://plotly-r.com/client-side-linking.html#linking-animated-views), if you're interested.
@@ -381,7 +383,7 @@ By default, `plot_ly()` shows up to 4 things as part of the hovertext, if each i
 4. The name of the **trace** if more than one is used to plot the data.
 
     For example, if the data is grouped by color each color is actually considered a separate trace - which is why you get the country name displayed by default next to the line plots of `gdpPercap` over time.
-    
+
 You can change this in two main ways:
 
 * Specify the elements you want included with the `hoverinfo =` argument. By default this is `x+y+text+name`. By dropping any of these you can delete that information from the hovertext.
@@ -392,11 +394,11 @@ To see these in action, let's revisit a slightly-modified version of our `midwes
 
 ```{r plotly_hovertext, exercise = TRUE}
 # Scatterplot of Midwestern county-level education and poverty data
-plot_ly(midwest, 
-        x = ~percollege, 
+plot_ly(midwest,
+        x = ~percollege,
         y = ~percbelowpoverty) %>%
   add_markers(color = I("black"),
-               text = ~paste0('</br>County: ', county, # Display "County: <COUNTY NAME>" on one line, then 
+               text = ~paste0('</br>County: ', county, # Display "County: <COUNTY NAME>" on one line, then
                               '</br>State: ', state),  # "State: <STATE NAME>" on the next
               hoverinfo = "text") # ONLY display the info we specify in text =
 ```
@@ -410,9 +412,9 @@ plot_ly(data = gapminder,
         x = ~ gdpPercap,
         y = ~ lifeExp,
         color = ~ country,
-        colors = "#1f77b4") %>% 
-  add_markers() %>% 
-  layout(showlegend = FALSE) 
+        colors = "#1f77b4") %>%
+  add_markers() %>%
+  layout(showlegend = FALSE)
 
 ```
 ```{r plotly_hovertext2-solution}
@@ -425,9 +427,9 @@ plot_ly(data = gapminder,
         text = ~paste0('Country: ', country,
                       '</br>Continent: ', continent,
                       '<br>Year: ', year),
-        hoverinfo = "text") %>% 
-  add_markers() %>% 
-  layout(showlegend = FALSE) 
+        hoverinfo = "text") %>%
+  add_markers() %>%
+  layout(showlegend = FALSE)
 
 # OR
 
@@ -438,9 +440,9 @@ plot_ly(data = gapminder,
         colors = "#1f77b4",
         text = ~paste0('Continent: ', continent,
                       '<br> Year: ', year),
-        hoverinfo = "text+name") %>% 
-  add_markers() %>% 
-  layout(showlegend = FALSE) 
+        hoverinfo = "text+name") %>%
+  add_markers() %>%
+  layout(showlegend = FALSE)
 
 ```
 A more detailed accounting of everything you can do is available in [Chapter 25 of this free online book](https://plotly-r.com/controlling-tooltips.html#tooltip-text).
@@ -456,11 +458,11 @@ The simplest way to do this is by specifying `frame = <VARIABLE NAME>` and, if n
 plot_ly(data = gapminder,
         x = ~ gdpPercap,
         y = ~ lifeExp,
-        text = ~ paste0('Country: ', country)) %>% 
+        text = ~ paste0('Country: ', country)) %>%
   add_markers(frame = ~ year, # Create one "frame" of the plot for each value of year
-              ids = ~ country) %>%   # Causes points to transition from frame to frame within countries 
+              ids = ~ country) %>%   # Causes points to transition from frame to frame within countries
                                      # In other words, Kuwait 1952 slides to Kuwait 1957, and so on
-  layout(showlegend = FALSE) 
+  layout(showlegend = FALSE)
 ```
 You can also define frames with categorical variables. This is useful if, rather than having users play an animation, you want to allow them to select different subsets of the data to view on your plot. For example, we could create an "animation" by continent:
 
@@ -469,7 +471,7 @@ You can also define frames with categorical variables. This is useful if, rather
 plot_ly(data = gapminder,
         x = ~ gdpPercap,
         y = ~ lifeExp,
-        text = ~ paste0('Country: ', country)) %>% 
+        text = ~ paste0('Country: ', country)) %>%
   add_markers(frame = ~ continent, # Create one "frame" of the plot for each value of continent
               ids = ~ country) %>% # Keeping this ID prevents misleading transitions
   layout(showlegend = FALSE)
@@ -482,7 +484,7 @@ One thing to be cautious about here is creating misleading animations. Click pla
 
 <mark> Challenge:</mark> An alternative even if you deleted the `ids =` argument above is to specify you want `plot_ly()` to do something other than its default smooth transitions. You can accomplish this by using the code `animation_opts(transition = 0)` as a new line. (`transition = 0` simply removes any transitions.) Try it above! Do you like this any better than the original? Again, it's a personal/stylistic preference!
 
-If you're interested, for far more details on making animations in `plot_ly()` you can read [Chapter 14 of this free online textbook](https://plotly-r.com/animating-views.html). 
+If you're interested, for far more details on making animations in `plot_ly()` you can read [Chapter 14 of this free online textbook](https://plotly-r.com/animating-views.html).
 
 You can also do animations in `ggplot()` using the `gganimate` package! [Here](https://gganimate.com/articles/gganimate.html) is a very basic introduction. [Here](https://www.datanovia.com/en/blog/gganimate-how-to-create-plots-with-beautiful-animation-in-r/) are some more examples, including how to create an animation that "draws" a line graph live by gradually revealing more and more data over time! And [here](http://rstudio-pubs-static.s3.amazonaws.com/494188_154898728be3411ebab39050ca8a8dcd.html) is an example of how to animate a football play in R using `gganimate`!
 

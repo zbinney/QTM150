@@ -1,5 +1,5 @@
 ---
-title: "Tutorial 5.1 - If-Else Blocks, For-Loops"
+title: "Tutorial 9.1 - If-Else Blocks, For-Loops"
 
 author: "Zachary Binney, PhD"
 date: "November 2020"
@@ -39,9 +39,12 @@ But what if sometimes you want code to run, and other times you don't?
 
 Or what if sometimes you want your code to do one thing, but other times another thing?
 
-Enter the idea of **conditional execution** - code should run ("execute") different ways depending on whether certain conditions are met. We'll look at two fundamental methods for conditional execution, common across many programming languages besides R: **if-else statements** and **for-loops**.
+Enter the idea of **conditional execution** - code should run ("execute") different ways depending on whether certain conditions are met. We'll look at two fundamental methods for conditional execution, common across many programming languages besides R: **if-else statements** and **for-loops**. 
 
 Every time I write for-loops I think of Froot Loops. Now I want some Froot Loops. Is that everybody or just me? Go have some Froot Loops, then come back. I'll wait.
+
+Note also we have already encountered one particular kind of condition execution in R already. Do you remember? It was `case_when()` for data transformation!
+
 
 ## If-Else Statements
 
@@ -144,13 +147,13 @@ if (between(hr, 5, 11)) {
 }
 
 ```
+
 Notice here we captured the hour in a separate object above the entire if-else statement. We did this so we could feed that new object, `hr`, to the various conditions without typing `hour(Sys.time())` over and over again each time. It's more efficient and compact this way.
 
 You can also have statements with just **if** and **else if** but no **else** - if none of the conditions is met, R will simply do nothing and move on.
 
-If you find yourself writing a lot of else-if statements and creating a very long block, consider another technique to create more compact code, like `switch()`. In `mutate()`, `case_when()` fills that same kind of role - allowing you to write compactly what might otherwise take a nasty string of nested if-else statements. We're not going to get into these strategies in more detail today, though. See [*R for Data Science* Ch. 19.4.2 for an example, though.](https://r4ds.had.co.nz/functions.html#multiple-conditions)
 
-### More on the Conditions
+### How R Evaluates Conditions
 
 When encountering an **if-else statement** R will first execute the code you put inside the `if()` or `else if()` functions. It will try and return a single logical `TRUE` or `FALSE` for each of those. For example, above it checks whether the hour from `Sys.time()` is between 5 and 11 (or 12 and 16, etc.), and returns either `TRUE` or `FALSE` depending on the time of day.  It will execute the code attached to the condition if it returns `TRUE`.
 
@@ -201,7 +204,14 @@ if (between(hr, 5, 11) && name == "Zach") { # Check if it's between 5am and 11am
 }
 
 ```
+
 <mark>Challenge:</mark> Make R tell *you* good morning using your name.
+
+### The Virtue of `case_when()`
+
+If you find yourself writing a lot of else-if statements and creating a very long block that's hard to read and understand, consider another technique to create more compact code, like `switch()`. 
+
+In `mutate()`, `case_when()` fills that same kind of role - allowing you to write compactly what might otherwise take a nasty string of nested if-else statements. We're not going to get into these strategies in more detail today, though, since we covered them back in Tutorial 3.2. See [*R for Data Science* Ch. 19.4.2 for an example, though.](https://r4ds.had.co.nz/functions.html#multiple-conditions)
 
 
 ## For-Loops
@@ -316,6 +326,7 @@ for (i in pos_numeric_cols) {              # 1. "FOR THIS" sequence
 
 output
 ```
+
 ### While-Loops
 
 A slight variation on **for-loops** is the **while-loop**. While loops simply run until some condition stops being met. It's used when you don't know how long the input sequence will be - which you need to know for a for-loop. What if, for example, we wanted to simulate how many coin tosses it would take until we get at least 13 heads?
@@ -340,29 +351,18 @@ while (nheads < 13) {
 #Print the number of flips
 flips
 ```
+
 While loops are more general than for-loops. Any for-loop can be rewritten as a while loop, but not vice-versa.
 
 
 
-## Other Approaches to Iteration
-
-There are two other ways to run the same code over and over again efficiently that merit a brief mention here.
-
-### Custom Functions
-
-We will discuss these in the next Tutorial, but basically: every function you use has some code underlying it. Think about `mean()` for example - this code takes a vector, adds the values together, and divides by the length. You could, in theory, right the more basic code to do this yourself over and over again every time you needed it. But that would require a lot of copy-pasting and be *comically* inefficient.
-
-Instead, somebody long before you recognized this would be a problem and "abstracted" the general task into a function that could be called any time you want to calculate the a mean of a vector. 
-
-Simply put: **Common tasks should have a function.** You should not be copying the same code over and over again if you can avoid it. You write individual bits of code for specific analyses and one-time ad hoc tasks. But once you catch yourself doing it over and over again, you may want to make the greater upfront investment to write a function to save time and code on the back end.
-
-For more on this, check out [Chapter 19 of *R for Data Science.*](https://r4ds.had.co.nz/functions.html)
+## Another Approach to Iteration: `purrr`
 
 ### The `map()` functions and `purrr`
 
-The `purrr` package is another member of the `tidyverse`. We cover this more in QTM 151, but basically the `map_XX()` family of functions
+The `purrr` package is another member of the `tidyverse`. We cover this more in our next class, but basically the `map_XX()` family of functions
 
-* Takes a function and 
+* Takes a function, and 
 * Applies it to every element of a vector or list, then
 * Returns a vector (if using `map_xx()`) or list (if using `map()`) of the results
 
@@ -376,11 +376,11 @@ map_dbl( # Return a double vector
 
 ```
 
-That's it on the `map()` functions for now. I just wanted to show you they're another - arguably better - way you can do iterations in R. They take a little bit more practice to understand well than for-loops, though. [Chapter 21.5 of *R for Data Science.*](https://r4ds.had.co.nz/iteration.html#the-map-functions)
+That's it on the `map()` functions for now. I just wanted to show you they're another - arguably better - way you can do iterations in R. They take a little bit more practice to understand well than for-loops, though. Good thing they're the subject of our next class!
 
 
 ## Summary
 
-Today we covered two fundamental building blocks of many programming languages: if-else statements and for-loops. They allow you to tell R to run code some times but not others, or do different things depending on certain conditions. It increases the flexibility of your scripts substantially.
+Today we covered two fundamental building blocks of many programming languages: if-else statements and for-loops. They allow you to tell R to run code some times but not others, or do different things depending on certain conditions. It increases the flexibility of your scripts substantially. For- and while-loops can also be used for iteration (running the same code over and over).
 
-In our next and last Tutorial we'll briefly cover how to write your own basic functions, followed by a bit on how to create your own simulated data for statistical analyses. The latter will come in handy more often than you might think, both in your coursework and beyond.
+In our next Tutorial we'll talk more about another method for iteration: `purrr`.

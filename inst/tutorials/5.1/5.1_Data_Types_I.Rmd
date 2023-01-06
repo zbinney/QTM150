@@ -1,5 +1,5 @@
 ---
-title: "Tutorial 4.1 - Data Types I (Vectors and Lists)"
+title: "Tutorial 5.1 - Data Types I (Vectors and Lists)"
 
 author: "Zachary Binney, PhD"
 date: "October 2020"

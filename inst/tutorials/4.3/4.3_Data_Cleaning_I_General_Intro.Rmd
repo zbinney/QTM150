@@ -828,4 +828,4 @@ What does that mean? **You should always keep a copy of the totally raw, unclean
 
 In this Tutorial we covered some basic, general data cleaning tasks common to most if not all datasets you'll encounter.
 
-In the next few Tutorials we'll cover more specifically how to do cleaning and manipulation of strings (using `stringr`), factors (using `forcats`, which we've also covered a bit back in Tutorial 4.2), and dates (with `lubridate`).
+In future Tutorials we'll cover more specifically how to do cleaning and manipulation of strings (using `stringr`), factors (using `forcats`), and dates (with `lubridate`). But first, to understand these methods, we'll need to spend some time talking about the fundamental data structures in R: **vectors**, **lists**, and **data frames/tibbles**. 

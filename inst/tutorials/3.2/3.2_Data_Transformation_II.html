@@ -608,9 +608,9 @@ data-completion="1" data-diagnostics="1" data-startover="1"
 data-lines="0">
 <pre class="text"><code>rush %&gt;%
   filter(Year &gt;= 2000 &amp;
-        `Rushing Attempts Per Game` &lt;= 5) %&gt;%
-  select(Name, Team, Year,`Rushing Yards`) %&gt;% 
-  arrange(desc(as.numeric(`Rushing Yards`)))</code></pre>
+        Rushing.Attempts.Per.Game &lt;= 5) %&gt;%
+  select(Name, Team, Year, Rushing.Yards) %&gt;% 
+  arrange(desc(as.numeric(Rushing.Yards)))</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
 <p>If you had <strong>domain knowledge</strong> about the subject you’re
@@ -623,11 +623,7 @@ the ball on trick plays, which helps explain why he has few rushes
 <p>Without <strong>domain knowledge</strong> you might not know what to
 make of this list. Consider this an important lesson in not thinking
 <em>just</em> knowing the data science or math or programming is enough.
-Work with subject-matter experts to get the most out of your data.</p>
-<p>As a sidenote, we had to use backticks (``) around variable names
-that are written as multiple words with spaces in between. <strong>Try
-not to use variables with spaces so we don’t have to do this.</strong>
-Use snake_case, camelCase, or hyphenated-variable-names.</p>
+Work with subject matter experts to get the most out of your data.</p>
 <p>One final example. What if we wanted to plot each country’s average
 years of life expectancy above or below the world average in 2007?</p>
 <div class="tutorial-exercise" data-label="pipe_ex3" data-caption="Code"
@@ -812,12 +808,12 @@ flights %&gt;%
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
 </div>
-<div id="section-other-ways-to-use-summarze-and-group_by"
+<div id="section-other-ways-to-use-summarize-and-group_by"
 class="section level3">
-<h3>Other Ways to Use <code>summarze()</code> and
+<h3>Other Ways to Use <code>summarize()</code> and
 <code>group_by()</code></h3>
 <p>Means and counts are probably the most common reasons you’ll use
-<code>summarze()</code> and <code>group_by()</code>, but there are lots
+<code>summarize()</code> and <code>group_by()</code>, but there are lots
 of other things you can do.</p>
 <ul>
 <li><p>Grouped medians and other quantiles using <code>median()</code>
@@ -996,7 +992,7 @@ flights_small <- select(flights, year:day, ends_with("delay"), distance, air_tim
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-learnr:::question_prerendered_chunk(structure(list(type = "learnr_checkbox", label = "quiz1-1", question = structure("What <code>dplyr<\u002fcode> verb will we use to do this?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_abb7fe5",     option = "filter()", value = "filter()", label = structure("filter()", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_9a38493",     option = "select()", value = "select()", label = structure("select()", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_263ff9b",     option = "arrange()", value = "arrange()", label = structure("arrange()", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_990a019",     option = "None of these", value = "None of these", label = structure("None of these", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Incorrect", html = TRUE, class = c("html", "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "quiz1-1-answer", question = "quiz1-1"), loading = structure("<strong>Loading:<\u002fstrong> \nWhat <code>dplyr<\u002fcode> verb will we use to do this?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = TRUE,     seed = 2051464964.54471, options = list()), class = c("learnr_checkbox", "tutorial_question")))
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_checkbox", label = "quiz1-1", question = structure("What <code>dplyr<\u002fcode> verb will we use to do this?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_566abc3",     option = "filter()", value = "filter()", label = structure("filter()", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_d78a9bc",     option = "select()", value = "select()", label = structure("select()", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_8621684",     option = "arrange()", value = "arrange()", label = structure("arrange()", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_2c66ce7",     option = "None of these", value = "None of these", label = structure("None of these", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Incorrect", html = TRUE, class = c("html", "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "quiz1-1-answer", question = "quiz1-1"), loading = structure("<strong>Loading:<\u002fstrong> \nWhat <code>dplyr<\u002fcode> verb will we use to do this?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = TRUE,     seed = 991564006.038267, options = list()), class = c("learnr_checkbox", "tutorial_question")))
 </script>
 
 

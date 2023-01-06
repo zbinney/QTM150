@@ -1,5 +1,5 @@
 ---
-title: "Tutorial 7.1 - Advanced Visualization: Maps"
+title: "Tutorial 6.4 - Advanced Visualization: Maps"
 
 author: "Zachary Binney, PhD"
 date: "January 2021"
@@ -20,15 +20,7 @@ pacman::p_load(learnr)
 
 ## Intro
 
-Our first unit in this course is three methods for advancing your knowledge of data visualization in R. Previously you learned how to create and customize a range of both classic and more novel static plots - such as line and bar charts, scatterplots, boxplots, histograms, density plots, raincloud plots, and ridge/joyplots - using `ggplot2`. Now we're going to add 3 more tools to your toolbox:
-
-1. Maps
-
-2. Interactive plots using the `plotly` package
-
-3. Creating apps for data visualization (and other tasks!) with `shiny`
-
-In this tutorial we'll cover the first of these: maps.
+Today's Tutorial is about half an introduction to handling a new type of data and half an extension of our previous work on data visualization and `ggplot2`. We're talking about how to handle geographic data to produce maps.
 
 One thing to note before we begin: This tutorial is based heavily on [this course lecture from Eric Anderson at NOAA](http://eriqande.github.io/rep-res-web/lectures/making-maps-with-R.html). Because it was work done in his capacity as a U.S. federal government employee, it is in the public domain and distributed under a creative commons (CC0 1.0) license. This Tutorial is literally tax dollars at work!
 
@@ -489,4 +481,4 @@ Unfortunately when crafting this Tutorial I found it pretty finicky, so we won't
 
 You've learned the basics of creating maps in R! There's much more to learn, but you're well on your way to accomplishing most relatively simple mapping tasks. Check out [this course lecture from Eric Anderson at NOAA](http://eriqande.github.io/rep-res-web/lectures/making-maps-with-R.html) for more.
 
-Next up we'll expand our visualization toolkit even further by learning how to create interactive plots - including maps! - using `plotly`.
+Next up is something very Shiny...

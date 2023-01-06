@@ -60,6 +60,7 @@ numbers <- c(2, 3, 5, 7, 11)
 #Calculate the mean of the 5 numbers
 mean(x = numbers)
 ```
+
 Notice we passed a **vector** of 5 numbers as a single **argument**. **Vectors**, which we'll talk about more later, are a key data type in R. For now you can think of them as a sequence of data points, all lashed together. You create them using the function `c()`, which is short for "combine" - you combine multiple elements into a single object.
 
 <mark>Challenge:</mark> Try running the first line of the above code block in your own script. Then notice you've created a new object, `numbers`, in the Environment pane on the upper right in RStudio. It's a numeric **vector** with five **elements** (in this case, numbers).
@@ -212,6 +213,8 @@ ggplot(penguins, aes(body_mass_g, flipper_length_mm)) +
   geom_point()
 ```
 
+But these next two don't:
+
 ```{r order_relevant2, exercise = TRUE}
 #Also scatterplot of body mass and flipper length - will give us unexpected plot!
 ggplot(penguins, aes(flipper_length_mm, body_mass_g)) +
@@ -269,7 +272,7 @@ ggsave("./penguin_plot.png",
 
 ```
 
-I left the first two arguments in `ggsave()` unnamed because the first argument, `filename =`, is supposed to be where I want the plot to export to, and the second argument, `plot =`, is the plot I want exported.But I also want to tell it to change the scale. `scale =` is the 5th ordered argument, though, so if I didn't want to use its name I would have to specify the 3rd (`device =`) and 4th (`path =`) arguments, first. That's annoying. Far easier to just say "OK, in the 3rd spot I want you to take the `scale =` argument" by naming the argument I want.
+I left the first two arguments in `ggsave()` unnamed because the first argument, `filename =`, is supposed to be where I want the plot to export to, and the second argument, `plot =`, is the plot I want exported. But I also want to tell it to change the scale. `scale =` is the 5th ordered argument, though, so if I didn't want to use its name I would have to specify the 3rd (`device =`) and 4th (`path =`) arguments, first. That's annoying. Far easier to just say "OK, in the 3rd spot I want you to take the `scale =` argument" by naming the argument I want.
 
 ### Default Values
 
