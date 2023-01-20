@@ -675,6 +675,12 @@ On Canvas, if you click on "Modules", you'll see a section titled "RMarkdown Org
     
     Use your judgement as to whether 1/3 are needed in any particular case, but keep in mind you shouldn't assume your audience can quickly figure out what your code is doing by looking at the code itself and, if the output was produced to answer a specific question, highlight that answer in an analysis of the output.
     
+* Package names (e.g. `nycflights13`), data frame names (e.g. `flights`), variable names (e.g. `tailnum`), and function names (e.g. `mean()`), *if written in text outside of a code chunk*, should be formatted with backticks ``
+
+    + Please note backticks `` are different from apostrophes ''. Backticks are on the tilde key next to the 1-key on a standard English QWERTY keyboard.
+    
+* Do not **bold** or *italicize* entire paragraphs or blocks of text. Most text should simply be typed in without formatting. Use bolding, italics, and other formatting for key words and phrases you want to emphasize.
+    
 If you're confused about what I mean by any of this, refer to the HW1 Example file. I've designed it to reflect the level of detail and effort I want to see on your assignments.
     
     
