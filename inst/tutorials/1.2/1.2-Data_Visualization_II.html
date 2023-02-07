@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="Zachary Binney, PhD" />
+
+
+<meta name="progressive" content="true" />
+<meta name="allow-skip" content="false" />
+
+<title>Tutorial 1.2 - Data Visualization II</title>
+
+
+<!-- highlightjs -->
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+<!-- taken from https://github.com/rstudio/rmarkdown/blob/67b7f5fc779e4cfdfd0f021d3d7745b6b6e17149/inst/rmd/h/default.html#L296-L362 -->
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("section-TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+<!-- end tabsets -->
+
+
+<link rel="stylesheet" href="css\zb_style.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="pageContent band">
+<div class="bandContent page">
+
+<div class="topics">
+
+<div id="section-intro-and-setup" class="section level2">
+<h2>Intro and Setup</h2>
+<p>First as usual we need to load a few packages and, now, datasets.
+<strong>Make sure to run this in your own script as you follow
+along!</strong></p>
+<pre class="r"><code>pacman::p_load(tidyverse, palmerpenguins)
+
+data(mpg)
+
+data(diamonds)
+
+data(penguins)</code></pre>
+<p>In addition to <code>penguins</code> we’re going to use a couple new
+datasets from the <code>tidyverse</code> package for this tutorial:
+<code>mpg</code> (which stands for “miles per gallon” - this is about
+cars) and <code>diamonds</code>. Explore these datasets a bit first
+using the techniques you’ve already learned.</p>
+<div class="tutorial-exercise" data-label="explore" data-caption="Code"
+data-completion="1" data-diagnostics="1" data-startover="1"
+data-lines="0">
+<pre class="text"><code>#Explore mpg - write your own code below
+
+
+#Explore diamonds - write your own code below</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+</div>
+<div id="section-aesthetics-continued" class="section level2">
+<h2>Aesthetics (Continued)</h2>
+<p>We’ll start off with a more detailed dive into
+<strong>aesthetics</strong>. You’ve already learned a few - do you
+remember what they are? Briefly review that portion of Tutorial 1.1 if
+not.</p>
+<p>Aesthetics are often most powerful when used to <em>add</em>
+information to a graph, rather than just changing colors and shapes.
+We’ve already seen an example of that with grouping, splitting, and
+coloring our histogram of flipper length by species. To explore this
+further, though, let’s start taking a look at graphs that display two
+variables.</p>
+<p>I don’t know about you all, but I’m kind of curious about the
+relationship between body mass and flipper size in penguins. Do bigger
+penguins have longer flippers? Let’s start with a simple
+scatterplot:</p>
+<div class="tutorial-exercise" data-label="scatter_basic"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#A simple scatterplot
+ggplot(data = penguins) +
+  geom_point(mapping = aes(x = body_mass_g, y = flipper_length_mm))</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>What’s the problem with this graph? Think back to our histogram.</p>
+<p>Remember that Gentoo penguins are bigger than Adelies. Maybe we’re
+curious whether they also have longer flippers. How can we look at
+that?</p>
+<div id="section-grouping-aesthetics" class="section level3">
+<h3>Grouping Aesthetics</h3>
+<div id="section-overview-and-color" class="section level4">
+<h4>Overview and Color</h4>
+<p>Just like with our histogram, let’s <code>color</code> our
+scatterplot by species. Can you figure out how to modify the code below
+to do that? <strong>Don’t look below this code box until you
+do.</strong></p>
+<div class="tutorial-exercise" data-label="scatter_grouped"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#Scatterplot colored by species - need to modify code
+ggplot(data = penguins) +
+  geom_point(mapping = aes(x = body_mass_g, y = flipper_length_mm))</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>Review the plot for a minute. How do the species compare on body mass
+and flipper length?</p>
+<p>In this code <code>color</code> is an example of a <strong>grouping
+aesthetic</strong> - it tells <code>ggplot()</code> to group the data by
+species and do something different (in this case, use a different color)
+for each one. These always appear inside <code>mapping = aes()</code>.
+To be more explicit we could use this code which accomplishes the same
+thing but specifies the <code>group</code> aesthetic:</p>
+<pre class="r"><code>#Scatterplot colored by species
+ggplot(data = penguins) +
+  geom_point(mapping = aes(x = body_mass_g, y = flipper_length_mm, color = species,
+                           group = species))</code></pre>
+<pre><code>## Warning: Removed 2 rows containing missing values (geom_point).</code></pre>
+<p><img src="1.2-Data_Visualization_II_files/figure-html/scatter_grouped_explicit-1.png" width="624" /></p>
+<p>R just figured out you wanted it to group by species once you asked
+for it to color by species, so you didn’t have to tell it specifically.
+We’ll see some examples below where the <code>group</code> aesthetic
+itself is actually useful, though.</p>
+<p>Remember we use <code>color =</code> above rather than fill because
+we’re coloring points, and we put it within <code>mapping = aes()</code>
+because we’re mapping it to a variable in the data.</p>
+</div>
+<div id="section-point-shapes-and-sizes" class="section level4">
+<h4>Point Shapes and Sizes</h4>
+<p>One problem with just using colors to differentiate groups of
+interest is colorblindness. 1 in 8 males and 1 in 200 females suffer
+from colorblindness, a common form of which involves the inability to
+distinguish between red and green hues. So would they be able to tell
+the difference between Adelie and Chinstrap penguins above?</p>
+<p>How can you make your graphs more accessible to these people? How
+about using <strong>shapes</strong> instead of or in addition to colors?
+Simply add the <code>shape =</code> aesthetic to the code below:</p>
+<div class="tutorial-exercise" data-label="scatter_shape"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#Scatterplot colored and shaped by species - need to modify code
+ggplot(data = penguins) +
+  geom_point(mapping = aes(x = body_mass_g, y = flipper_length_mm, color = species))</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>Now even if you’re colorblind you can differentiate the species!</p>
+<p>You can also change the <strong>size</strong> of points instead.
+Simply use the <code>size =</code> aesthetic.</p>
+<div class="tutorial-exercise" data-label="scatter_size"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#Scatterplot colored and sized by species
+ggplot(data = penguins) +
+  geom_point(mapping = aes(x = body_mass_g, y = flipper_length_mm, color = species,
+                           size = species))</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>Notice the warning this threw us, though. R doesn’t like the fact
+that you mapped <strong>size</strong> to a <strong>discrete</strong>
+(i.e. categorical) rather than a continuous variable.
+<strong>Shape</strong> is a categorical aesthetic (you’re a circle, a
+square, a triangle, etc.), so it makes sense to map to a categorical
+variable like <code>species</code>. <strong>Size</strong>, though, is a
+continuous number - R would rather you map that to a continuous
+variable. Like, say, <code>bill_length_mm</code>. Can you figure out how
+to do all that below?</p>
+<div class="tutorial-exercise" data-label="scatter_size2"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#Scatterplot colored and shaped by species, and sized by bill length</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>Now our graph not only shows the body mass and flipper length of
+penguins by species. Not only is it good for colorblind folks. Now it
+<em>also</em> shows that Adelie penguins tend to have shorter bills,
+too!</p>
+<p>In my opinion this graph is far too complex and crowded with
+information. I don’t usually like to use <strong>size</strong> as a
+<em>group</em> aesthetic because I find it tends to clutter the graph
+and confuse readers. But <strong>size</strong> is useful for other
+things, and now you know how to use it!</p>
+</div>
+<div id="section-transparency-alpha" class="section level4">
+<h4>Transparency (Alpha)</h4>
+<p>You can also change the transparency of points (or bigger shapes)
+using an aesthetic called <strong>alpha</strong>. Why “alpha?” It’s
+complicated, but if you’re really curious <a
+href="https://en.wikipedia.org/wiki/Alpha_compositing">check this
+out</a>.</p>
+<div class="tutorial-exercise" data-label="scatter_alpha"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#Scatterplot colored and alpha-ed by species
+ggplot(data = penguins) +
+  geom_point(mapping = aes(x = body_mass_g, y = flipper_length_mm, color = species,
+                           alpha = species))</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>Using <strong>alpha</strong> as a group aesthetic has the same
+problem as <strong>size</strong>, but we’ve already seen an example
+where it’s useful outside the grouping context. Do you remember?</p>
+<p>Remember when we split our histogram by species? We needed to make
+the histogram bars partly transparent so you could see when the species
+overlapped in size.</p>
+</div>
+</div>
+<div id="section-manually-changing-colors-and-shapes"
+class="section level3">
+<h3>Manually Changing Colors and Shapes</h3>
+<p>Color and shape aesthetics are great for grouping, but they can also
+be changed manually.</p>
+<p>Let’s reproduce our basic scatterplot, but with all green squares
+instead of the default black circles. Would these go inside or outside
+the <code>mapping = aes()</code> argument?</p>
+<div class="tutorial-exercise" data-label="scatter_manual1"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#Scatterplot of green squares
+ggplot(data = penguins) +
+  geom_point(mapping = aes(x = body_mass_g, y = flipper_length_mm), 
+             color = &quot;darkgreen&quot;, shape = 15)</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>How does R know <code>shape = 15</code> means a square? R has 25
+built-in shapes for points:</p>
+<div class="figure">
+<img src="images/R_shape_codes.png" alt="*R shape codes.*" width="100%" />
+<p class="caption">
+<em>R shape codes.</em>
+</p>
+</div>
+<ul>
+<li><p>Shapes 0-14 are hollow outlines. Their outline color is
+controlled with the <code>color</code> aesthetic. You cannot give them
+an interior fill color.</p></li>
+<li><p>Shapes 15-18 are shapes whose color is controlled with the
+<code>color</code> aesthetic. 16 is the default value if you don’t
+specify a different shape - a black circle whose color you change with
+<code>color</code>. You can think of these shapes as having <em>no</em>
+outlines, just a color.</p></li>
+<li><p>Shapes 19-24 are shapes whose outline is controlled with the
+<code>color</code> aesthetic and whose interior color is controlled with
+<code>fill</code>.</p></li>
+</ul>
+<p><mark>Challenge:</mark>Try some different shapes and colors in the
+scatterplot above until you find a combination you like!</p>
+</div>
+<div id="section-manually-changing-sizes-and-transparency"
+class="section level3">
+<h3>Manually Changing Sizes and Transparency</h3>
+<p>Size and transparency (alpha) aesthetics are most useful when being
+changed manually. Say you want to make the points on a scatterplot all
+bigger or smaller. Try changing the <code>size =</code> aesthetic below
+and seeing how the plot changes.</p>
+<div class="tutorial-exercise" data-label="scatter_manual2"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#Scatterplot colored and alpha-ed by species - play around with the size aesthetic!
+ggplot(data = penguins) +
+  geom_point(mapping = aes(x = body_mass_g, y = flipper_length_mm), size = 1.5)</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>The <code>alpha =</code> aesthetic is most useful when you have
+overlapping data. This can be points on a scatterplot or, as we saw
+before, histograms. Note alpha is like a percentage, so it has to be
+between 0 (0%, fully transparent) and 1 (100%, fully opaque). Play
+around with with transparency parameters for both kinds of figures
+below:</p>
+<div class="tutorial-exercise" data-label="scatter_manual3"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#Scatterplot colored and alpha-ed by species - play around with alpha values!
+ggplot(data = penguins) +
+  geom_point(mapping = aes(x = body_mass_g, y = flipper_length_mm), alpha = 0.25)
+
+#Histogram of flipper length, with different fills for each species, improved
+ggplot(data = penguins) +
+  geom_histogram(mapping = aes(x = flipper_length_mm, fill = species),
+                 position = &quot;identity&quot;,
+                 alpha = 0.5) #Play around with alpha values!</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>Notice how in the scatterplot some points look darker than others
+when you reduce <strong>alpha</strong>? That shows points with the same
+values that were previously obscured because they were stacked on top of
+one another. Increasing the transparency (decreasing alpha) is one way
+to reveal overlapping data.</p>
+<p><div class="panel-heading tutorial-quiz-title">Quiz</div></p>
+<div class="panel panel-default">
+<div data-label="overlap-1" class="tutorial-question panel-body">
+<div id="overlap-1-answer_container" class="shiny-html-output"></div>
+<div id="overlap-1-message_container" class="shiny-html-output"></div>
+<div id="overlap-1-action_button_container" class="shiny-html-output"></div>
+<script>if (Tutorial.triggerMathJax) Tutorial.triggerMathJax()</script>
+</div>
+</div>
+</div>
+<div id="section-line-type-and-thickness" class="section level3">
+<h3>Line Type and Thickness</h3>
+<p>There are two more common aesthetics we should talk about, but they
+relate to lines, which we haven’t used yet. Let’s take our scatterplot
+from above and fit a straight line through the data points - like
+running a linear regression. Notice we used some global aesthetics here
+to avoid having to type them separately in each <strong>geom</strong>
+layer.</p>
+<div class="tutorial-exercise" data-label="scatter_line"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#A simple scatterplot with a line
+ggplot(data = penguins, mapping = aes(x = body_mass_g, y = flipper_length_mm)) +
+  geom_point() +
+  geom_smooth(method = &quot;lm&quot;)</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>We can change the color (<code>color =</code>), thickness
+(<code>lwd =</code>), and type (<code>linetype =</code>) of that line.
+For example:</p>
+<div class="tutorial-exercise" data-label="scatter_line_custom"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#A simple scatterplot with a thicker dashed red line
+ggplot(data = penguins, mapping = aes(x = body_mass_g, y = flipper_length_mm)) +
+  geom_point() +
+  geom_smooth(method = &quot;lm&quot;,
+              linetype = &quot;dashed&quot;, color = &quot;red&quot;, lwd = 3)</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>Hopefully <code>color =</code> and <code>lwd =</code> (line width, or
+thickness) are pretty self-explanatory by now. <code>linetype =</code>
+is slightly more complicated because how do you know what values it can
+take on? Try typing <code>?linetype</code> to see possible values. You
+can define it either using the value in quotes, such as
+<code>"dashed"</code>, or the corresponding integer (for a dashed line,
+just type <code>linetype = 2</code>).</p>
+<p><mark>Challenge:</mark> Try changing the color, thickness, and type
+of the line above to something you like. Try numbers and words for the
+<code>linetype</code> aesthetic.</p>
+<p>Notice the line also has a confidence interval (CI) around it - it’s
+a 95% confidence interval by default. You can remove it (not
+recommended), change its width (to, say an 89% confidence interval), or
+change its color or transparency:</p>
+<div class="tutorial-exercise" data-label="scatter_line_ci"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#A simple scatterplot with a thicker dashed red line and modified CI
+ggplot(data = penguins, mapping = aes(x = body_mass_g, y = flipper_length_mm)) +
+  geom_point() +
+  geom_smooth(method = &quot;lm&quot;,
+              linetype = &quot;dashed&quot;, color = &quot;red&quot;, lwd = 3,
+              se = TRUE, # Set to FALSE to remove the CI
+              alpha = 0.6, fill = &quot;blue&quot;, level = 0.95) # Change CI transparency, color, width (default 95%)</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p><mark>Challenge:</mark> Play around with all the aesthetics above to
+get a better feel for what they do!</p>
+</div>
+</div>
+<div id="section-facetting" class="section level2">
+<h2>Facetting</h2>
+<p>This is element #7 in our <strong>Grammar of Graphics</strong>
+framework. We’ve already covered #1 (data), #2 (geoms), and #3
+(aesthetics). Now we’re skipping ahead slightly to cover something
+simpler before #s 4-6.</p>
+<p><strong>Facets</strong> are an easy way to break a single plot into
+sub-plots by groups, usually defined by a categorical variable. Consider
+the below plot of <code>displ</code> (a measure of a car’s engine size)
+vs. <code>hwy</code> (miles per gallon on the highway, a measure of fuel
+efficiency) from the <code>mpg</code> dataset. We’ve split the graph by
+car type (<code>class</code>):</p>
+<div class="tutorial-exercise" data-label="scatter_facet"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#Scatterplot of engine size vs. highway mileage, by car class
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = class)) +
+  geom_point() +
+  geom_smooth() # Instead of specifying we want only a straight line we allow ggplot to use its default approach, called LOESS, that fits more flexible relationships. Note R lets you know this is what it&#39;s doing when you run this code.</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>That’s kind of a mess, isn’t it? What if we split this into multiple
+plots? That seems like it should be a pain to do, though, right?</p>
+<p>Well, no! Not in the <code>tidyverse</code> anyway. It takes one line
+of code in <code>ggplot()</code>.</p>
+<div class="tutorial-exercise" data-label="scatter_facet2"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#Scatterplot of engine size vs. highway mileage, by car class
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = class)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~ class, nrow = 2) # The syntax looks a little funny but it just means facet by class, and arrange the resulting facets in 2 rows</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>The benefit here is now that each plot is separate there’s less
+clutter and overlap. The drawback is that it’s harder to compare across
+facets. Do compacts have generally higher highway mileage than SUVs? On
+a single graph it’s easy to tell, here your eyes have to dart back and
+forth a bit to make a guess. Nonetheless, you’ll find facetting
+<em>extremely</em> useful, I promise.</p>
+<p>You can also facet by two variables using <code>facet_grid()</code>
+instead:</p>
+<div class="tutorial-exercise" data-label="scatter_facet3"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#Scatterplot of engine size vs. highway mileage, by car class
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = class)) +
+  geom_point() +
+  facet_grid(drv ~ cyl) #drv = front, rear or 4-wheel drive; cyl = number of cylinders in engine</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>The <code>facet_grid()</code> row is your first experience with
+<strong>formula notation</strong> in R. You’ll see it come up a few more
+times later, but in this context it just tells R to create rows of plots
+from <code>drv</code> and columns from <code>cyl</code>.</p>
+<p>Notice that a few combinations of these variables are common, some
+are uncommon, and some don’t exist at all.</p>
+<div id="section-facetting-scales" class="section level4">
+<h4>Facetting “Scales”</h4>
+<p>Notice that in both the above examples the X and Y axes had the same
+start and end point. This led some graphs to look like points are
+“smooshed” over into one side or even one corner. What if we wanted to
+change that?</p>
+<div class="tutorial-exercise" data-label="facet_scale"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#Scatterplot of engine size vs. highway mileage, by car class
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = class)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~ class, nrow = 2,
+             scales = &quot;free&quot;) # The default is &quot;fixed&quot;, meaning the scales are fixed (the same) across sub-plots</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>Now everything is plotted on a different scale. The benefit is its
+easier to see the relationships within each group and the data are less
+“smooshed.” The problem is that it’s harder to compare across
+sub-plots.</p>
+<p>Look again - do compacts and SUVs have about the same average highway
+mileage, or is one higher than the other? You now have to compare the y
+axes and notice that the bottom for “compact” is nearly the same as the
+top for “suv”!</p>
+<p><mark>Challenge:</mark> You can allow <em>just</em> the x or y axes
+to vary while keeping the other fixed by using
+<code>scales = free_x</code> or <code>scales = free_y</code>. Try this
+in the code above to see the effects!</p>
+</div>
+</div>
+<div id="section-statistical-transformations-stats"
+class="section level2">
+<h2>Statistical Transformations (Stats)</h2>
+<p>This is element #4 in our <strong>Grammar of Graphics</strong>
+framework. We’ve already covered #1 (data), #2 (geoms), #3 (aesthetics),
+and #7 (facetting).</p>
+<p>When I got engaged to my wife I had a jeweler re-set a diamond from
+my grandmother’s engagement ring. Part of that process involved getting
+that diamond appraised. How could I know I was getting a good deal? What
+should a diamond of a certain size and quality be worth? We can explore
+the <code>diamonds</code> dataset to get an idea!</p>
+<p>Consider a basic scatterplot of two variables from the
+<code>diamonds</code> dataset. Note <code>carat</code> is a measure of
+the weight of a diamond; in case you’re curious, it’s equivalent to 200
+mg.</p>
+<div class="tutorial-exercise-support" data-label="shuffle"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>rows &lt;- sample(nrow(diamonds))
+diamonds &lt;- diamonds[rows, ]</code></pre>
+</div>
+<div class="tutorial-exercise" data-label="scatter_diamond"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#A simple scatterplot of carat vs. price, using just the first 5000 rows to simplify plotting (54K rows total)
+ggplot(data = head(diamonds, 5000)) +
+  geom_point(mapping = aes(x = carat, y = price))</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"shuffle","exercise.checker":"NULL"}</script>
+</div>
+<p>Here the values of <code>carat</code> and <code>price</code> map
+<em>directly</em> onto their x and y coordinates with no changes. You
+might say they are <em>identical</em>. In fact, behind the scenes that’s
+exactly what <code>ggplot()</code> is telling R.</p>
+<p>Just as each <strong>geom</strong> takes a set of
+<strong>aesthetics</strong>, it also takes a <strong>stat</strong>
+(statistical transformation) that tells it to do something to the data
+before mapping to specific aesthetics. The default <strong>stat</strong>
+for <code>geom_point()</code> is <code>stat = "identity"</code>, which
+in English means “do nothing” - map the data just as they are
+(identically).</p>
+<p><mark>Challenge:</mark> Note that we didn’t need to specify the
+argument <code>stat = "identity"</code> in the code above because it’s
+the default stat for <code>geom_point()</code> and it’s what we wanted.
+Try adding it to the above code, though, as a new
+<strong>argument</strong> to <code>geom_point()</code> - you should get
+the exact same results, you’ve just made it more explicit.</p>
+<p>How can you know what the default stat is for a geom? Try typing
+<code>?geom_point</code> into the Console to go to its help page, and
+look under the <strong>Usage</strong> heading. You’ll see each argument
+with their default values, one of which is
+<code>stat = "identity"</code>.</p>
+<p>Let’s look at a more interesting example, though: a bar chart. My
+grandmother’s diamond had an “Ideal” cut. How does that compare to the
+diamonds in this dataset? How many of each type of cut are there?</p>
+<div class="tutorial-exercise" data-label="bar_diamond"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#A simple bar chart
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut))</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"shuffle","exercise.checker":"NULL"}</script>
+</div>
+<p>OK, looks like R plotted “Good” as about 5,000. Can you find that
+value anywhere in the dataset? How did R decide to map “Good” to 5,000?
+Perhaps it applied some kind of <strong>statistical
+transformation</strong>?</p>
+<p>Can you figure out what the default <strong>stat</strong> is for
+<code>geom_bar()</code>?</p>
+<p><div class="panel-heading tutorial-quiz-title">Quiz</div></p>
+<div class="panel panel-default">
+<div data-label="bar_stat-1" class="tutorial-question panel-body">
+<div id="bar_stat-1-answer_container" class="shiny-html-output"></div>
+<div id="bar_stat-1-message_container" class="shiny-html-output"></div>
+<div id="bar_stat-1-action_button_container" class="shiny-html-output"></div>
+<script>if (Tutorial.triggerMathJax) Tutorial.triggerMathJax()</script>
+</div>
+</div>
+<div id="section-the-count-stat" class="section level3">
+<h3>The “count” Stat</h3>
+<p><code>stat = "count"</code> works with categorical variables. It’s an
+algorithm (<strong>transformation</strong>) that tells
+<code>ggplot()</code> to first <em>count</em> the number of observations
+at each level of the x aesthetic (in our case, <code>cut</code>) and
+plot <em>that</em>, rather than any actual value from the dataset.
+Here’s an illustration taken from <em>R for Data Science</em> chapter
+3.7:</p>
+<div class="figure">
+<img src="images/stat_count.png" alt="*How a bar chart and stat = 'count' work.*" width="100%" />
+<p class="caption">
+<em>How a bar chart and stat = ‘count’ work.</em>
+</p>
+</div>
+</div>
+<div id="section-changing-a-default-stat" class="section level3">
+<h3>Changing a Default Stat</h3>
+<p>With some geoms like <code>geom_point()</code> you’ll rarely change
+the default <strong>stat</strong>. Bar charts are a weird case, though.
+For instance, what if you had data like this instead?</p>
+<div class="tutorial-exercise-support" data-label="bar_sum"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>cut_counts &lt;- diamonds %&gt;% 
+  group_by(cut) %&gt;% 
+  summarize(n_diamonds = n())</code></pre>
+</div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["cut"],"name":[1],"type":["ord"],"align":["right"]},{"label":["n_diamonds"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"Fair","2":"1610"},{"1":"Good","2":"4906"},{"1":"Very Good","2":"12082"},{"1":"Premium","2":"13791"},{"1":"Ideal","2":"21551"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>And then you tried to make a bar chart like this:</p>
+<div class="tutorial-exercise" data-label="bar_diamond_summary"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#A simple bar chart of summary data
+ggplot(data = cut_counts) +
+  geom_bar(mapping = aes(x = cut))</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"bar_sum","exercise.checker":"NULL"}</script>
+</div>
+<p>What the heck? Why is it plotting every group as 1? Think about it
+for a moment before reading on.</p>
+<p>It’s because <code>ggplot()</code> is trying to use
+<code>stat = "count"</code> to count the number of observations for each
+value of <code>cut</code>, and it only finds one for each! But you want
+it to plot the actual <em>value</em> of <code>n_diamonds</code>. The
+<em>identical</em> value, one might say.</p>
+<p>Here’s how you would fix the code. Unfortunately you have to both
+change the <strong>stat</strong> and do one other thing.</p>
+<div class="tutorial-exercise" data-label="bar_diamond_summary2"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#A simple bar chart of summary data
+ggplot(data = cut_counts) +
+  geom_bar(mapping = aes(x = cut, y = n_diamonds), stat = &quot;identity&quot;) # If you use stat = &quot;identity&quot;, you also have to tell ggplot() what value to use for the height of the bar (y) </code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"bar_sum","exercise.checker":"NULL"}</script>
+</div>
+</div>
+<div id="section-other-stats" class="section level3">
+<h3>Other Stats</h3>
+<p>Many other geoms use non-“identity” stats when plotting. For
+example:</p>
+<ul>
+<li><p>Histograms and frequency polygons use <code>stat = "bin"</code>
+to “bin” your data in different groups and then plot bin
+counts.</p></li>
+<li><p>Density plots use <code>stat = "density"</code> to compute the
+density values it then plots (don’t worry about further details for
+now).</p></li>
+<li><p>Smoothers like <code>geom_smooth()</code> use
+<code>stat = "smooth"</code> to first fit a smoothed curve to your data.
+It then plots the values (predictions) of the curves rather than your
+data itself.</p></li>
+<li><p>Boxplots use <code>stat = "boxplot"</code> to compute a 5-number
+summary (min, 1st quartile, median, 3rd quartile, max) that it then
+plots.</p></li>
+</ul>
+<p>Check the <a
+href="https://rstudio.com/wp-content/uploads/2016/11/ggplot2-cheatsheet-2.1.pdf">ggplot2
+cheatsheet</a> for a more complete list of available
+<strong>stats</strong>.</p>
+</div>
+</div>
+<div id="section-position-adjustments-positions" class="section level2">
+<h2>Position Adjustments (Positions)</h2>
+<p>This is element #5 in our <strong>Grammar of Graphics</strong>
+framework. We’ve already covered #1 (data), #2 (geoms), #3 (aesthetics),
+#4 (stats), and #7 (facetting).</p>
+<p>Bar charts are once again the easiest way to demonstrate what we mean
+by a <strong>position adjustment (position)</strong>.</p>
+<p>My grandmother’s diamond had an “Ideal” cut and a color grade of “H”.
+Color grades technically run from D-Z, where just like your grades
+earlier letters are better. I wonder how her diamond - which, as a
+reminder, I’m using for my wife’s engagement ring - compares to this
+huge dataset of diamonds in cut and color. Am I giving her a
+particularly nice diamond? (NOTE: I honestly think diamonds are far too
+expensive and often morally questionable due to how they are mined. My
+wife did not even want a diamond, and in no way am I suggesting this is
+something you should do for your own partners. But since I already had
+my grandmother’s sitting around and she had expressed a desire for me to
+use it, I did.)</p>
+<p>Let’s create a bar chart to investigate this:</p>
+<div class="tutorial-exercise" data-label="bar_diamond2"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#A simple bar chart of summary data
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = color))</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>Where does my grandmother’s - now my wife’s diamond - fit in? Is it a
+common cut? A common color? Near the best, the worst, or kind of in the
+middle on both these dimensions?</p>
+<p>Notice how the default is for <code>geom_bar()</code>, when using the
+fill aesthetic mapped to a second variable, to produce a
+<em>stacked</em> bar chart. Why does it do that? Check the default of
+the <code>position =</code> argument in <code>geom_bar()</code>. Do you
+remember how to do that?</p>
+<p><div class="panel-heading tutorial-quiz-title">Quiz</div></p>
+<div class="panel panel-default">
+<div data-label="pos_quiz-1" class="tutorial-question panel-body">
+<div id="pos_quiz-1-answer_container" class="shiny-html-output"></div>
+<div id="pos_quiz-1-message_container" class="shiny-html-output"></div>
+<div id="pos_quiz-1-action_button_container" class="shiny-html-output"></div>
+<script>if (Tutorial.triggerMathJax) Tutorial.triggerMathJax()</script>
+</div>
+</div>
+<div id="section-changing-the-default-position" class="section level3">
+<h3>Changing the Default <strong>Position</strong></h3>
+<p>So the default for a bar chart is <code>position = "stack"</code>,
+which unsurprisingly produces a stacked bar chart. What do the other
+options do? Try each of them below.</p>
+<div class="tutorial-exercise" data-label="bar_diamond3"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#A simple bar chart of summary data
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = color), position = &quot;stack&quot;) #Try &quot;identity&quot;, &quot;fill&quot;, and &quot;dodge&quot;</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<ul>
+<li><p><code>"identity"</code> isn’t very good for bar charts because
+now the bars overlap (notice the y-axis is much shorter than before, and
+the “G” color group - the largest one for most cuts - is top rather than
+“D”).</p>
+<p><mark>Challenge:</mark>If you want to see more clearly that these are
+overlapping try making the bars somewhat transparent. Do you remember
+how to do that?</p></li>
+<li><p><code>"fill"</code> makes all the bars the same height - 1.0 - so
+you see the <em>proportion</em> of diamonds of each cut that are in each
+color grade. This can be useful or not depending on the question you
+want to answer about your data!</p>
+<p>Does there seem to be a lot of variation in the distribution of
+colors in diamonds of different cuts?</p></li>
+<li><p><code>"dodge"</code> creates side-by-side bars for each color
+within each cut. Again, this may be useful or not depending on how you
+want to visualize your data and what exactly you’re trying to
+compare.</p>
+<p>This is probably the most common position adjustment I make in R. It
+makes it easier to compare the number of diamonds of each color within
+and across groups groups. In a stacked chart it’s a little harder to
+eyeball whether one chunk of a bar is bigger than another.</p></li>
+</ul>
+</div>
+</div>
+<div id="section-coordinate-systems" class="section level2">
+<h2>Coordinate Systems</h2>
+<p>This is element #6 in our <strong>Grammar of Graphics</strong>
+framework. This is the last element we have to introduce! While it’s
+arguably the most complicated one we’ll barely scratch the surface, so
+it’ll seem simple.</p>
+<p>Most of the time - and all the time in this class - you’ll plot on a
+Cartesian (X-Y) coordinate system. <code>ggplot()</code> is capable of
+laying down all sorts of other systems, though, such as polar
+coordinates (remember high school math?) and maps for spatial data. Just
+know that’s something <code>ggplot()</code> <em>can</em> do.</p>
+<p>The main coordinate system technique I want to introduce to you now
+is <code>coord_flip()</code>, which flips the X and Y axes. Say you
+wanted a horizontal bar chart rather than a vertical one. In
+<code>ggplot()</code> it’s easy - just add one line of code!</p>
+<div class="tutorial-exercise" data-label="bar_horiz"
+data-caption="Code" data-completion="1" data-diagnostics="1"
+data-startover="1" data-lines="0">
+<pre class="text"><code>#A simple horizontal bar chart of summary data
+ggplot(data = mpg) +
+  geom_bar(mapping = aes(x = class)) +
+  coord_flip()</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>While it isn’t a problem here, this is often useful if you have a lot
+of classes and long labels that overlap on the bottom. Flipping the
+coordinates means the labels have a lot more room to stack vertically
+rather than having to fit on a single line.</p>
+<p>Or maybe you just like the look of horizontal bars better! I’m not
+here to judge.</p>
+</div>
+<div id="section-summary" class="section level2">
+<h2>Summary</h2>
+<p>In this tutorial we covered how to add more information to charts
+using color, shape, and size aesthetics. We also learned a bit about a
+few ways to customize your charts to your liking.</p>
+<p>Finally, we introduced all the rest of the elements of the
+<strong>grammar of graphics</strong>.</p>
+<pre class="r"><code>ggplot(data = &lt;DATA&gt;) + # 1. A dataset
+  
+  &lt;GEOM_FUNCTION&gt;( #2. A &quot;geometric object&quot;, or geom - basically a chart type!
+    
+     mapping = aes(&lt;MAPPINGS&gt;), # 3. Aesthetic mappings - specifying X and Y variables, changing colors, sizes, and fonts, and so on
+     
+     stat = &lt;STAT&gt;, # 4. A statistical transformation, or &quot;stat&quot; - often unnecessary because the default is fine
+     
+     position = &lt;POSITION&gt; # 5. Positional adjustments - for example, do you want bar charts stacked or side-by-side?
+       
+  ) +
+  &lt;COORDINATE_FUNCTION&gt; + # 6. Coordinate system - most often Cartesian (2-dimensional X-Y axes, but can also do polar, or maps for spatial data!)
+  
+  &lt;FACET_FUNCTION&gt; # 7. Facetting - split one plot into many sub-plots, for example one frame/sub-plot for each species of penguin</code></pre>
+<p>You’re now equipped to combine them to produce basically any chart
+under the sun.</p>
+In the next tutorial we’ll introduce some more examples of common charts
+you might use and discuss a few more customization techniques to make
+them prettier! 
+<script type="application/shiny-prerendered" data-context="server">
+learnr:::register_http_handlers(session, metadata = NULL)
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+session$onSessionEnded(function() {
+        learnr:::session_stop_event(session)
+      })
+</script>
+
+
+<script type="application/shiny-prerendered" data-context="server-start">
+pacman::p_load(tidyverse, palmerpenguins)
+
+data(mpg)
+
+data(diamonds)
+
+data(penguins)
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-explore-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-explore-code-editor`)), session)
+output$`tutorial-exercise-explore-output` <- renderUI({
+  `tutorial-exercise-explore-result`()
+})
+</script>
+
+
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-scatter_basic-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-scatter_basic-code-editor`)), session)
+output$`tutorial-exercise-scatter_basic-output` <- renderUI({
+  `tutorial-exercise-scatter_basic-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-scatter_grouped-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-scatter_grouped-code-editor`)), session)
+output$`tutorial-exercise-scatter_grouped-output` <- renderUI({
+  `tutorial-exercise-scatter_grouped-result`()
+})
+</script>
+
+
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-scatter_shape-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-scatter_shape-code-editor`)), session)
+output$`tutorial-exercise-scatter_shape-output` <- renderUI({
+  `tutorial-exercise-scatter_shape-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-scatter_size-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-scatter_size-code-editor`)), session)
+output$`tutorial-exercise-scatter_size-output` <- renderUI({
+  `tutorial-exercise-scatter_size-result`()
+})
+</script>
+
+
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-scatter_size2-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-scatter_size2-code-editor`)), session)
+output$`tutorial-exercise-scatter_size2-output` <- renderUI({
+  `tutorial-exercise-scatter_size2-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-scatter_alpha-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-scatter_alpha-code-editor`)), session)
+output$`tutorial-exercise-scatter_alpha-output` <- renderUI({
+  `tutorial-exercise-scatter_alpha-result`()
+})
+</script>
+
+
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-scatter_manual1-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-scatter_manual1-code-editor`)), session)
+output$`tutorial-exercise-scatter_manual1-output` <- renderUI({
+  `tutorial-exercise-scatter_manual1-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-scatter_manual2-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-scatter_manual2-code-editor`)), session)
+output$`tutorial-exercise-scatter_manual2-output` <- renderUI({
+  `tutorial-exercise-scatter_manual2-result`()
+})
+</script>
+
+
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-scatter_manual3-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-scatter_manual3-code-editor`)), session)
+output$`tutorial-exercise-scatter_manual3-output` <- renderUI({
+  `tutorial-exercise-scatter_manual3-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "overlap-1", question = structure("Do you remember what <em>other<\u002fem> strategy we used to reveal overlapped data points in Tutorial 1.1?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_328e790",     option = "geom_jitter()", value = "geom_jitter()", label = structure("geom_jitter()", html = TRUE, class = c("html",     "character")), correct = TRUE, message = structure("That&#39;s right! geom_jitter() adds a little bit of random noise to spread out overlapped points without greatly messing up the actual relationships in the data.", html = TRUE, class = c("html",     "character"))), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_615f773", option = "color =",     value = "color =", label = structure("color =", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_97670bd",     option = "geom_density()", value = "geom_density()", label = structure("geom_density()", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_a8264cc",     option = "fill = ", value = "fill = ", label = structure("fill = ", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Incorrect", html = TRUE, class = c("html", "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "overlap-1-answer", question = "overlap-1"), loading = structure("<strong>Loading:<\u002fstrong> \nDo you remember what <em>other<\u002fem> strategy we used to reveal overlapped data points in Tutorial 1.1?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = TRUE,     seed = 1456235121.82189, options = list()), class = c("learnr_radio", "tutorial_question")))
+</script>
+
+
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-scatter_line-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-scatter_line-code-editor`)), session)
+output$`tutorial-exercise-scatter_line-output` <- renderUI({
+  `tutorial-exercise-scatter_line-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-scatter_line_custom-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-scatter_line_custom-code-editor`)), session)
+output$`tutorial-exercise-scatter_line_custom-output` <- renderUI({
+  `tutorial-exercise-scatter_line_custom-result`()
+})
+</script>
+
+
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-scatter_line_ci-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-scatter_line_ci-code-editor`)), session)
+output$`tutorial-exercise-scatter_line_ci-output` <- renderUI({
+  `tutorial-exercise-scatter_line_ci-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-scatter_facet-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-scatter_facet-code-editor`)), session)
+output$`tutorial-exercise-scatter_facet-output` <- renderUI({
+  `tutorial-exercise-scatter_facet-result`()
+})
+</script>
+
+
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-scatter_facet2-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-scatter_facet2-code-editor`)), session)
+output$`tutorial-exercise-scatter_facet2-output` <- renderUI({
+  `tutorial-exercise-scatter_facet2-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-scatter_facet3-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-scatter_facet3-code-editor`)), session)
+output$`tutorial-exercise-scatter_facet3-output` <- renderUI({
+  `tutorial-exercise-scatter_facet3-result`()
+})
+</script>
+
+
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-facet_scale-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-facet_scale-code-editor`)), session)
+output$`tutorial-exercise-facet_scale-output` <- renderUI({
+  `tutorial-exercise-facet_scale-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-scatter_diamond-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-scatter_diamond-code-editor`)), session)
+output$`tutorial-exercise-scatter_diamond-output` <- renderUI({
+  `tutorial-exercise-scatter_diamond-result`()
+})
+</script>
+
+
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-bar_diamond-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-bar_diamond-code-editor`)), session)
+output$`tutorial-exercise-bar_diamond-output` <- renderUI({
+  `tutorial-exercise-bar_diamond-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "bar_stat-1", question = structure("The default <strong>stat<\u002fstrong> for <code>geom_bar()<\u002fcode> is:", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_118859a",     option = "identity", value = "identity", label = structure("identity", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_cc27bb4",     option = "bin", value = "bin", label = structure("bin", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_923c292",     option = "prop", value = "prop", label = structure("prop", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_bbb5264",     option = "count", value = "count", label = structure("count", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Incorrect", html = TRUE, class = c("html", "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "bar_stat-1-answer", question = "bar_stat-1"), loading = structure("<strong>Loading:<\u002fstrong> \nThe default <strong>stat<\u002fstrong> for <code>geom_bar()<\u002fcode> is:\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = TRUE,     seed = 1808407684.15789, options = list()), class = c("learnr_radio", "tutorial_question")))
+</script>
+
+
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-bar_diamond_summary-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-bar_diamond_summary-code-editor`)), session)
+output$`tutorial-exercise-bar_diamond_summary-output` <- renderUI({
+  `tutorial-exercise-bar_diamond_summary-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-bar_diamond_summary2-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-bar_diamond_summary2-code-editor`)), session)
+output$`tutorial-exercise-bar_diamond_summary2-output` <- renderUI({
+  `tutorial-exercise-bar_diamond_summary2-result`()
+})
+</script>
+
+
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-bar_diamond2-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-bar_diamond2-code-editor`)), session)
+output$`tutorial-exercise-bar_diamond2-output` <- renderUI({
+  `tutorial-exercise-bar_diamond2-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "pos_quiz-1", question = structure("The default <strong>position<\u002fstrong> for <code>geom_bar()<\u002fcode> is:", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_2355911",     option = "identity", value = "identity", label = structure("identity", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_7ceab22",     option = "fill", value = "fill", label = structure("fill", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_8b4e0c4",     option = "stack", value = "stack", label = structure("stack", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_930a9a5",     option = "dodge", value = "dodge", label = structure("dodge", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Incorrect", html = TRUE, class = c("html", "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "pos_quiz-1-answer", question = "pos_quiz-1"), loading = structure("<strong>Loading:<\u002fstrong> \nThe default <strong>position<\u002fstrong> for <code>geom_bar()<\u002fcode> is:\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = TRUE,     seed = 1100615223.98749, options = list()), class = c("learnr_radio", "tutorial_question")))
+</script>
+
+
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-bar_diamond3-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-bar_diamond3-code-editor`)), session)
+output$`tutorial-exercise-bar_diamond3-output` <- renderUI({
+  `tutorial-exercise-bar_diamond3-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-bar_horiz-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-bar_horiz-code-editor`)), session)
+output$`tutorial-exercise-bar_horiz-output` <- renderUI({
+  `tutorial-exercise-bar_horiz-result`()
+})
+</script>
+ <!--html_preserve-->
+<script type="application/shiny-prerendered" data-context="dependencies">
+{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["header-attrs"]},{"type":"character","attributes":{},"value":["2.11"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/pandoc"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["header-attrs.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.11"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["jquery"]},{"type":"character","attributes":{},"value":["3.6.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/3.6.0"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquery-3.6.0.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquerylib"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["bootstrap"]},{"type":"character","attributes":{},"value":["3.3.5"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/bootstrap"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["viewport"]}},"value":[{"type":"character","attributes":{},"value":["width=device-width, initial-scale=1"]}]},{"type":"character","attributes":{},"value":["js/bootstrap.min.js","shim/html5shiv.min.js","shim/respond.min.js"]},{"type":"character","attributes":{},"value":["css/cerulean.min.css"]},{"type":"character","attributes":{},"value":["<style>h1 {font-size: 34px;}\n       h1.title {font-size: 38px;}\n       h2 {font-size: 30px;}\n       h3 {font-size: 24px;}\n       h4 {font-size: 18px;}\n       h5 {font-size: 16px;}\n       h6 {font-size: 12px;}\n       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}\n       pre:not([class]) { background-color: white }<\/style>"]},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.11"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["pagedtable"]},{"type":"character","attributes":{},"value":["1.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/pagedtable-1.1"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["js/pagedtable.js"]},{"type":"character","attributes":{},"value":["css/pagedtable.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.11"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["highlightjs"]},{"type":"character","attributes":{},"value":["9.12.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/highlightjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["highlight.js"]},{"type":"character","attributes":{},"value":["textmate.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.11"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial"]},{"type":"character","attributes":{},"value":["0.10.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial.js"]},{"type":"character","attributes":{},"value":["tutorial.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-autocompletion"]},{"type":"character","attributes":{},"value":["0.10.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-autocompletion.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-diagnostics"]},{"type":"character","attributes":{},"value":["0.10.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-diagnostics.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-format"]},{"type":"character","attributes":{},"value":["0.10.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmarkdown/templates/tutorial/resources"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-format.js"]},{"type":"character","attributes":{},"value":["tutorial-format.css","rstudio-theme.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["jquery"]},{"type":"character","attributes":{},"value":["3.6.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/3.6.0"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquery-3.6.0.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquerylib"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["navigation"]},{"type":"character","attributes":{},"value":["1.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/navigation-1.1"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tabsets.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.11"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["highlightjs"]},{"type":"character","attributes":{},"value":["9.12.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/highlightjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["highlight.js"]},{"type":"character","attributes":{},"value":["default.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.11"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["jquery"]},{"type":"character","attributes":{},"value":["3.6.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/3.6.0"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquery-3.6.0.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquerylib"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["font-awesome"]},{"type":"character","attributes":{},"value":["5.1.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/fontawesome"]}]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["css/all.css","css/v4-shims.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.11"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["bootbox"]},{"type":"character","attributes":{},"value":["4.4.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/bootbox"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["bootbox.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["idb-keyvalue"]},{"type":"character","attributes":{},"value":["3.2.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/idb-keyval"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["idb-keyval-iife-compat.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[false]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial"]},{"type":"character","attributes":{},"value":["0.10.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial.js"]},{"type":"character","attributes":{},"value":["tutorial.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-autocompletion"]},{"type":"character","attributes":{},"value":["0.10.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-autocompletion.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-diagnostics"]},{"type":"character","attributes":{},"value":["0.10.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-diagnostics.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["0.10.1"]}]}]}
+</script>
+<!--/html_preserve-->
+<!--html_preserve-->
+<script type="application/shiny-prerendered" data-context="execution_dependencies">
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages","version"]},"class":{"type":"character","attributes":{},"value":["data.frame"]},"row.names":{"type":"integer","attributes":{},"value":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90]}},"value":[{"type":"character","attributes":{},"value":["assertthat","backports","base","broom","bslib","cellranger","checkmate","cli","colorspace","compiler","crayon","datasets","DBI","dbplyr","digest","dplyr","ellipsis","evaluate","fansi","farver","fastmap","forcats","fs","gargle","generics","ggplot2","glue","googledrive","googlesheets4","graphics","grDevices","grid","gtable","haven","highr","hms","htmltools","htmlwidgets","httpuv","httr","jquerylib","jsonlite","knitr","labeling","later","learnr","lifecycle","lubridate","magrittr","markdown","methods","mime","modelr","munsell","pacman","palmerpenguins","pillar","pkgconfig","promises","purrr","R6","Rcpp","readr","readxl","reprex","rlang","rmarkdown","rprojroot","rstudioapi","rvest","sass","scales","shiny","stats","stringi","stringr","tibble","tidyr","tidyselect","tidyverse","tools","tzdb","utf8","utils","vctrs","withr","xfun","xml2","xtable","yaml"]},{"type":"character","attributes":{},"value":["0.2.1","1.1.7","4.0.2","1.0.1","0.3.1","1.1.0","2.0.0","3.2.0","2.0-2","4.0.2","1.4.2","4.0.2","1.1.0","2.1.1","0.6.25","1.0.8","0.3.2","0.16","1.0.0","2.1.0","1.1.0","0.5.1","1.5.2","1.2.0","0.1.1","3.3.6","1.6.2","2.0.0","1.0.0","4.0.2","4.0.2","4.0.2","0.3.0","2.5.1","0.8","1.1.2","0.5.2","1.5.3","1.5.4","1.4.2","0.1.4","1.7.2","1.40","0.4.2","1.1.0.1","0.10.1","1.0.1","1.8.0","2.0.3","1.1","4.0.2","0.12","0.1.8","0.5.0","0.5.1","0.1.0","1.8.1","2.0.3","1.1.1","0.3.4","2.5.1","1.0.7","2.1.2","1.3.1","2.0.2","1.0.2","2.11","2.0.2","0.13","1.0.2","0.4.1","1.2.1","1.7.1","4.0.2","1.7.5","1.4.0","3.1.6","1.1.4","1.1.1","1.3.2","4.0.2","0.1.2","1.2.2","4.0.2","0.4.1","2.4.2","0.29","1.3.3","1.8-4","2.2.1"]}]}]}
+</script>
+<!--/html_preserve-->
+</div>
+
+</div> <!-- topics -->
+
+<div class="topicsContainer">
+<div class="topicsPositioner">
+<div class="band">
+<div class="bandContent topicsListContainer">
+
+<!-- begin doc-metadata -->
+<div id="doc-metadata">
+<h2 class="title toc-ignore" style="display:none;">Tutorial 1.2 - Data
+Visualization II</h2>
+<h4 class="author"><em>Zachary Binney, PhD</em></h4>
+<h4 class="date"><em>June 2020</em></h4>
+</div>
+<!-- end doc-metadata -->
+
+</div> <!-- bandContent.topicsListContainer -->
+</div> <!-- band -->
+</div> <!-- topicsPositioner -->
+</div> <!-- topicsContainer -->
+
+
+</div> <!-- bandContent page -->
+</div> <!-- pageContent band -->
+
+
+
+
+<script>
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+
+</body>
+
+</html>

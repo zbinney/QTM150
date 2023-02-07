@@ -514,7 +514,7 @@ While it isn't a problem here, this is often useful if you have a lot of classes
 
 Or maybe you just like the look of horizontal bars better! I'm not here to judge.
 
-##Summary
+## Summary
 
 In this tutorial we covered how to add more information to charts using color, shape, and size aesthetics. We also learned a bit about a few ways to customize your charts to your liking.
 
