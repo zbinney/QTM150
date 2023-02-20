@@ -32,18 +32,12 @@ A warning: this Tutorial is heavier on the text than I like, with relatively les
 
 As usual we need to load packages. This time we need `tidyverse` because we pretty much always do; and `janitor`, which provides some additional specialized but extremely useful cleaning functions. Remember you might need to install `janitor` first (but `p_load()` should take care of that automatically)! 
 
-We also need to install `tidyimpute` to give us some options for replacing missing values. That we have to install separately from Github, the code for which I've included below but commented out. **Please be sure to run it on your own machines.** 
 
-*Some students have had difficulty installing `tidyimpute` - if you are one of them, don't worry about it - simply remove `tidyimpute` from our `p_load()` call, and comment out lines 693-4 and 724-5. Then proceed with the Tutorial without needing to actually run `tidyimpute`.*
 
 ```{r setup, message = FALSE}
 
-# # Install the tidyimpute package from Github
-# library(devtools)
-# install_github( "decisionpatterns/tidyimpute")
-
 # Load (and, if necessary, first install) packages
-pacman::p_load(tidyverse, janitor, palmerpenguins, tidyimpute, fivethirtyeight)
+pacman::p_load(tidyverse, janitor, palmerpenguins, fivethirtyeight)
 
 # Stroke recovery data
 stroke <- read.csv("./datasets/stroke.csv")
@@ -727,13 +721,7 @@ stroke %>%
 stroke %>% 
   replace_na(list(fim = 0)) # Must enclose your recodings as a list()
 
-# Impute 0 for missing FIM using tidyimpute::impute()
-stroke %>%
-  impute(0, fim)
-
 ```    
-
-The last method was based on the `tidyimpute` package, which despite its name is not part of the `tidyverse`. You should have installed it separately on your own machines.
 
 You should be able to parse the basics of what all that code did, but to help orient you to the general structure of an `impute()` call:
 
@@ -754,13 +742,14 @@ I'd urge using static imputation with extreme caution. **You need a really stron
 
 * You could, instead, simply impute all missings with the overall mean value of a variable (or the most common category if it's categorical). This has a similar flaw as static imputation - you could assign a very wrong value to many observations! - but it may be better if there's no particular reason for data to be missing. That is, if stroke victims were just missing `fim` data completely at random, perhaps just filling in those missings with the mean `fim` value more or less makes sense.
 
-    Here's an easy way to do that using `tidyimpute`:
+    Here's an easy way to do that:
     
 ```{r impute_mean, exercise = TRUE}
 
-# Impute mean for missing FIM using tidyimpute::impute()
-stroke %>%
-  impute_mean(fim)
+# Impute mean for missing FIM
+stroke %>% 
+  mutate(fim = case_when(is.na(fim) ~ mean(fim), 
+                         TRUE ~ as.double(fim)))  # To allow for decimals, make fim a double rather than integer
 
 ```  
 

@@ -382,7 +382,7 @@ Notice a few things:
 
 2. They all have a `dest` value of "ABQ". We use `==` to check for equality, rather than a single `=`, which is an assignment operator used to, for example, tell R what the value of an argument is.
 
-3. We used an unnamed argument first since all these functions/verbs have `data =` as their first argument.
+3. We used an unnamed argument first since all these functions/verbs have `.data =` as their first argument.
 
 4. The next argument doesn't have a name; it's just a sequence of actions to take on certain variables to filter the dataset down to the desired subset.
 
