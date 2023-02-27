@@ -22,7 +22,7 @@ pacman::p_load(learnr)
 
 This Tutorial continues our work on **data cleaning** - but we will once again focus on getting *somewhat* pre-cleaned data into a tidy format.
 
-In this one we will focus on how to **reshape** data by switching between long and wide format. This is a very common task because different analyses may be more easily conducted and different questions more easily answered in either long or wide format. Some of you may have already needed to learn these to process data in your QTM 150 Final Project (for example, if you worked with the marijuana data).
+In this one we will focus on how to **reshape** data by switching between long and wide format. This is a very common task because different analyses may be more easily conducted and different questions more easily answered in either long or wide format.
 
 Future Tutorials will expand our cleaning skill set. They will cover how to take messy real-world data and do the other parts of data cleaning beyond tidying how it's stored and reshaping: fixing incorrect or missing or implausible or corrupted or incomplete values; dealing with duplicate observations; changing variable formats; fixing variable names; and so on.
 
@@ -46,8 +46,10 @@ Let's return to one of our basic toy example of un-tidy data (cases of a disease
 
 ```{r pivot_longer1}
 table4a <- table4a %>% 
-  mutate(`2001` = c(1700, 51000, 213000)) # Adding a fourth column so going to long format
-                                          # will actually result in fewer columns (from 4 in wide to 3 in long format)
+  mutate(yr_2001 = c(1700, 51000, 213000)) %>%  # Adding a fourth column so going to long format
+                                                # will actually result in fewer columns (from 4 in wide to 3 in long format)
+  rename(yr_2000 = `2000`, # Renaming columns so later code will work in learnr
+         yr_1999 = `1999`)
 table4a
 
 ```
@@ -85,34 +87,32 @@ We are going to **reshape** this wide data frame into long (tidy) format by ensu
 
 This probably doesn't make a ton of sense right now. Let's see it in action:
 
-```{r pivot_longer2, exercise = TRUE}
+```{r pivot_longer2}
 # Change `table4a` from wide to long format
 table4a %>% 
-  pivot_longer(cols = `1999`:`2001`, # Note the select() style syntax
+  pivot_longer(cols = yr_1999:yr_2001, # Note the select() style syntax
                names_to = "year",
                values_to = "cases")
-
-               
 ```
 
-Previously our data was 3 x 4. Now it's 9 x 3. We exchanged the three columns `1999`, `2000`, and `2001` for two new columns: `year` (to indicate what year's data a row contains) and `cases` (the actual variable represented by the values in the "wide" columns). Fewer columns, more rows! And now each row contains a single observation for one country in one year - tidy! Here's a graphical depiction of what happened:
+Previously our data was 3 x 4. Now it's 9 x 3. We exchanged the three columns `yr_1999`, `yr_2000`, and `yr_2001` for two new columns: `year` (to indicate what year's data a row contains) and `cases` (the actual variable represented by the values in the "wide" columns). Fewer columns, more rows! And now each row contains a single observation for one country in one year - tidy! Here's a graphical depiction of what happened:
 
 ```{r img0, echo = FALSE, out.width = "100%", fig.align = "center", fig.cap = "Graphical depiction of the `pivot_longer()` function from [Chapter 12.3 of *R for Data Science*](https://r4ds.had.co.nz/tidy-data.html#pivoting)."}
 knitr::include_graphics("images/pivot_longer.png")
 ```
 
-<mark>Challenge:</mark> What if I hadn't added the third year column `2001` above? What would have happened to the dimensions of our wide and long data frames? Do you notice anything interesting about that? 
+<mark>Challenge:</mark> What if I hadn't added the third year column `yr_2001` above? What would have happened to the dimensions of our wide and long data frames? Do you notice anything interesting about that? 
 
 <mark>Challenge:</mark> Duplicate and modify the code above to turn `table4b` from wide to long. It should require several minor modifications.
 
 ### `select()` Syntax?
 
-Let's discuss briefly what I mean by using `select()` syntax for the `cols =` argument. Briefly, anything you can do with `select()` you can do here. So in `table4a` I wanted to select the columns `1999`, `2000`, and `2001`. Here are two ways I could have done that:
+Let's discuss briefly what I mean by using `select()` syntax for the `cols =` argument. Briefly, anything you can do with `select()` you can do here. So in `table4a` I wanted to select the columns `yr_1999`, `yr_2000`, and `yr_2001`. Here are two ways I could have done that:
 
 ```{r pivot_longer_select}
 # Change `table4a` from wide to long format
 table4a %>% 
-  pivot_longer(cols = `1999`:`2001`,
+  pivot_longer(cols = yr_1999:yr_2001,
                names_to = "year",
                values_to = "cases")
 

@@ -81,7 +81,7 @@ Notice that data transformation (for example, manipulations with `dplyr` verbs),
 
 ### The 3 Tidy Criteria
 
-**Tidy** data is data stored in a way that meets 3 key criteria (as articulated by Hadley Wickham in *R for Data Science*:
+**Tidy** data is data stored in a way that meets 3 key criteria (as articulated by Hadley Wickham in *R for Data Science*):
 
 1. Each variable must have its own column
 2. Each observation must have its own row
@@ -93,7 +93,7 @@ These criteria are depicted in the graphic below:
 knitr::include_graphics("images/tidy.png")
 ```
 
-The easiest way to help you understand these abstract ideas is to look at some simple examples of tidy and un-tidy data and identify the differences. So let's do that using some made-up data about the number of cases of <INSERT YOUR FAVORITE DISEASE HERE> in various countries in two years (1999 and 2000):
+The easiest way to help you understand these abstract ideas is to look at some simple examples of tidy and un-tidy data and identify the differences. So let's do that using some made-up data about the number of cases of [INSERT YOUR FAVORITE DISEASE HERE] in various countries in two years (1999 and 2000):
 
 ```{r tidy_untidy}
 # Tidy data example
@@ -397,7 +397,7 @@ Let me close this section by saying it is important to remember **tidy data is a
 
 I just spent a lot of time trying to convince you of the value of tidy data.
 
-But let's say we get un-tidy data. If tidy data is so great...how do we actually tidy it? We'll start that now and then continue it in Tutorial 9.2.
+But let's say we get un-tidy data. If tidy data is so great...how do we actually tidy it? We'll start that now and then continue it in Tutorial 4.2.
 
 ### `separate()`
 

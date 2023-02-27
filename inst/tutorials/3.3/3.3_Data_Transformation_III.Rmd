@@ -32,12 +32,16 @@ data(airlines)
 data(planes)
 data(weather)
 
+# Slightly modifying dataset included in R for later
+band_instruments <- rbind(band_instruments, c("Paul", "keyboard")) # Paul McCartney played over 40 instruments, but we'll just pick two
+
+
 ```
 
 
 ## Relational Data Intro
 
-Before we get into this, I just want to say I'm going to try and keep this whole Tutorial short because we're already covering a lot in this course, but as a result it will be a bit of a superficial treatment of all this. Still, I think it's important you at least get some introduction to it. For a more detailed treatment, see [Chapter 13 of *R for Data Science.*](https://r4ds.had.co.nz/relational-data.html). 
+Before we get into this, I just want to say I'm going to try and keep this whole Tutorial short because we're already covering a lot in this course, but as a result it will be a bit of a superficial treatment of all this. Still, I think it's important you at least get some introduction to it. For a more detailed treatment, see [Chapter 13 of *R for Data Science*](https://r4ds.had.co.nz/relational-data.html). 
 
 So far we've worked with single, isolated data frames. But often a more efficient way to store data is in what are called **relational databases**, where the information you want may be scattered across several data sets. If you've ever worked with SQL (Structured Query Language) or Microsoft Access in any form you've worked with a relational database.
 
@@ -163,20 +167,16 @@ To dig into this process a little more, let's look at some (slightly modified) s
 #Print band_members
 band_members
 
-#Print band_instruments, but with one extra row (r) bound (bind) to it
-band_instruments <- rbind(band_instruments, c("Paul", "keyboard")) # Paul McCartney played over 40 instruments, but we'll just pick two
+#Print band_instruments
 band_instruments
 ```
 
 Fill in the code below to complete an extremely simple `left_join()` of these two data frames to add instrument information to `band_members`. HINT: You should end up with a 4 x 3 data frame if you've done it correctly.
 
-```{r left_join_simpledata2, exercise = TRUE, exercise.setup = "left_join_simpledata"}
+```{r left_join_simpledata2, exercise = TRUE}
 #Join the data frames
 band_members %>% 
   left_join(__________, by = _______)
-
-band_members %>% 
-  left_join(band_instruments, by = "name")
 
 ```
 Let's break down what happened using our step-by-step outline from above.
