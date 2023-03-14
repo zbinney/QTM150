@@ -45,7 +45,7 @@ There are 3 main types we need to learn, and you've actually already learned one
 
 #### 1. Names
 
-These allow you to name elements of a vector (SEE Tutorial 4.1)
+These allow you to name elements of a vector (SEE Tutorial 5.1)
 
 #### 2. Dimensions
 
@@ -182,9 +182,6 @@ mpg
     
     #What about the third "element"?
     mpg[[3]]
-
-  # Check its type
-  typeof(traffic_light) # But R tells us it's an integer! What!?
   
   # Check its attributes
   attributes(mpg) # Here R tells us it has the 3 classes we expect
@@ -312,7 +309,7 @@ If you're thinking really deeply about R you might wonder what's the difference 
 
 ### A Deeper Dive on `mutate()`
 
-`mutate()` works by, essentially, extracting the columns you're asking R to perform operations on as vectors of equal length. Then it performs **vectorized** operations (SEE Tutorial 4.1) across columns to create a new column. Then, finally, it adds that vector onto the data frame as a new column. For example:
+`mutate()` works by, essentially, extracting the columns you're asking R to perform operations on as vectors of equal length. Then it performs **vectorized** operations (SEE Tutorial 5.1) across columns to create a new column. Then, finally, it adds that vector onto the data frame as a new column. For example:
 
 ```{r mut1, exercise = TRUE}
 # Calculate the difference between city and highway mileage for each car

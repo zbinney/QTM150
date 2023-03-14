@@ -90,7 +90,9 @@ Vectors have two key attributes:
     e. Complex
     f. Raw
     
-    **Numeric** vectors is an umbrella term for integer and double vectors. We'll focus on the first 4 today.
+    (**Numeric** vectors is an umbrella term for integer and double vectors.) 
+    
+    We'll focus on the first 4 types today.
     
 2. A length, which is the number of elements it contains
 
@@ -153,7 +155,7 @@ char_vec_2
 
 ```
 
-There is lots more detail to working with **strings**, but we actually cover that in QTM 151. If you want a preview, though, you can see [Chapter 14 of *R for Data Science*](https://r4ds.had.co.nz/strings.html).
+There is lots more detail to working with **strings**, but we will cover that later. If you want a preview, though, you can see [Chapter 14 of *R for Data Science*](https://r4ds.had.co.nz/strings.html).
 
 #### Numeric
 
@@ -356,7 +358,7 @@ You may need to think for a moment about what that last line is doing. Instead o
 
 2. These then get fed into our brackets for subsetting, so the code *becomes* `bday[3,7]`, but 3 and 7 are output by `which()` rather than input by us manually.
 
-This may seem arbitrary now, but I assure you it's actually quite useful (just wait until HW 4)!
+This may seem arbitrary now, but I assure you it's actually quite useful (just wait until the homework for this Tutorial)!
 
 One last thing here. What if we only want *one* instance of "Birthday?" That's no problem once we remember `which()` returns a vector itself.
 
@@ -442,6 +444,7 @@ OK, end of sidenote. Let's look at a slightly more complex example.
 c(11:20) + c(5, 7)
 
 ```
+
 It recycles `c(5,7)` 5 times until it has a vector of length 10, `c(5, 7, 5, 7, 5, 7, 5, 7, 5, 7)`, then it adds that to the initial vector of length 10!
 
 What if we try this, though?
@@ -451,9 +454,10 @@ What if we try this, though?
 c(11:20) + c(5, 7, 9)
 
 ```
+
 R will still recycle the shorter vector but will throw a **warning** that 10 is not a multiple of 3 so you're aware you may be using some parts of the shorter vector more than others. In this case R repeats the full shorter vector 3 times for 9 elements, then takes the first element again to make it length 10: `c(5, 7, 9, 5, 7, 9, 5, 7, 9, 5)`. It truncates the rest of the shorter vector its 4th time through.
 
-In the `tidyverse` R will actually throw an **error** rather than a **warning** and refuse to run at all - you may have already encountered something this in `ggplot()`! This is to avoid any unintentional screw-ups, as this uneven recycling can sometimes create big but silent problems in your code.
+In the `tidyverse` R will actually throw an **error** rather than a **warning** and refuse to run at all - you may have already encountered something like this in `ggplot()`! This is to avoid any unintentional screw-ups, as this uneven recycling can sometimes create big but silent problems in your code.
 
 R does the same thing with comparisons. For example:
 
@@ -574,7 +578,7 @@ summarize(group_by(flights, origin),
 
 ```
 
-Sometimes R will do something you don't want it to, though (wait 'til you learn about `stringsAsFactors` in QTM 151...), so you need to know about vector types and coercion to be able to identify when it does and correct or undo its mistake.
+Sometimes R will do something you don't want it to, though (wait 'til you learn about `stringsAsFactors`...), so you need to know about vector types and coercion to be able to identify when it does and correct or undo its mistake.
 
 One instance is when you try and create a vector with multiple element types. R will always assign the whole vector the *most* complex/flexible data type, since it can only have one. The hierarchy goes:
 
@@ -632,7 +636,7 @@ Notice that one nice result of this is nothing ever gets annihilated in the coer
 The other time you've encountered implicit coercion so far is when importing data. Consider the below code where I import the diabobes data:
 
 ```{r import_work_sub}
-diabobes <- read.csv("./datasets/obesity-diabetes.csv")
+diabobes <- read_csv("./datasets/obesity-diabetes.csv")
 
 ```
 
