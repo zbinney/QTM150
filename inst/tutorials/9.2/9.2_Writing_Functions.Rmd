@@ -195,7 +195,7 @@ Now let's try out our new function.
 
 </mark>Challenge:</mark> Predict what our function is going to return for each invocation below.
 
-```{r func_general_test, exercise = TRUE, exercise.setup = "func_general"}
+```{r func_general_test, exercise = TRUE, exercise.setup = "fg"}
 
 check(x = 1)
 
