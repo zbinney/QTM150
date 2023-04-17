@@ -165,7 +165,7 @@ Usually it's not a good idea to try to write a function from scratch. Get some c
 
 Here's the general structure of a function, illustrated with a trivial function that takes a single number as input and checks if it's greater than 2.
 
-```{r fg, eval = FALSE, include = TRUE}
+```{r func_general}
 
 # 1. Name of the function
 check <- 
@@ -190,6 +190,30 @@ check <-
 }
 ```
 
+```{r fg, eval = FALSE, include = TRUE}
+
+# 1. Name of the function
+check <- 
+# the "function" function is used to create a function  
+  function(
+    # 2. List of arguments to be fed to function body  
+    # separated by commas if more than one
+    x
+  ){
+  
+    # 3. Body: what the function will do
+  
+      if(x > 2){
+      
+      print(x)  
+      
+      } else{
+      
+      print("variable `x` is smaller or equal to 2")      
+      
+      }
+}
+```
 
 Now let's try out our new function. 
 

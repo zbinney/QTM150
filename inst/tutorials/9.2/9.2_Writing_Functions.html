@@ -308,6 +308,27 @@ Get some code working for a specific and simple situation first,
 <p>Here’s the general structure of a function, illustrated with a
 trivial function that takes a single number as input and checks if it’s
 greater than 2.</p>
+<pre class="r"><code># 1. Name of the function
+check &lt;- 
+# the &quot;function&quot; function is used to create a function  
+  function(
+    # 2. List of arguments to be fed to function body  
+    # separated by commas if more than one
+    x
+  ){
+  
+    # 3. Body: what the function will do
+  
+      if(x &gt; 2){
+      
+      print(x)  
+      
+      } else{
+      
+      print(&quot;variable `x` is smaller or equal to 2&quot;)      
+      
+      }
+}</code></pre>
 <div class="tutorial-exercise-support" data-label="fg"
 data-caption="Code" data-completion="1" data-diagnostics="1"
 data-startover="1" data-lines="0">
