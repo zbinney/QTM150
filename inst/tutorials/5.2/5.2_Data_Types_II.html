@@ -150,7 +150,7 @@ its behavior. You can always check an object’s attributes with
 learned one:</p>
 <div id="section-names" class="section level4">
 <h4>1. Names</h4>
-<p>These allow you to name elements of a vector (SEE Tutorial 4.1)</p>
+<p>These allow you to name elements of a vector (SEE Tutorial 5.1)</p>
 </div>
 <div id="section-dimensions" class="section level4">
 <h4>2. Dimensions</h4>
@@ -328,9 +328,6 @@ mpg
     
     #What about the third &quot;element&quot;?
     mpg[[3]]
-
-  # Check its type
-  typeof(traffic_light) # But R tells us it&#39;s an integer! What!?
   
   # Check its attributes
   attributes(mpg) # Here R tells us it has the 3 classes we expect
@@ -504,7 +501,7 @@ you want.</p>
 <p><code>mutate()</code> works by, essentially, extracting the columns
 you’re asking R to perform operations on as vectors of equal length.
 Then it performs <strong>vectorized</strong> operations (SEE Tutorial
-4.1) across columns to create a new column. Then, finally, it adds that
+5.1) across columns to create a new column. Then, finally, it adds that
 vector onto the data frame as a new column. For example:</p>
 <div class="tutorial-exercise" data-label="mut1" data-caption="Code"
 data-completion="1" data-diagnostics="1" data-startover="1"

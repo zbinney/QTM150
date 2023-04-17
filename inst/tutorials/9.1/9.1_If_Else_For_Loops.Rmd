@@ -20,9 +20,9 @@ pacman::p_load(learnr)
 
 ## Intro and Setup
 
-Today we enter our final chapter, where we superficially cover some major statistical programming techniques you might need in your careers: if-else statements, for-loops, basic function writing, and statistical simulation. Today we cover the first two of these.
+Today we enter our final chapter, where we superficially cover some major statistical programming techniques you might need in your careers: if-else statements, for-loops, basic function writing, iteration, and statistical simulation. Today we cover the first two of these.
 
-Once again we don't need much from packages today - just `lubridate` for dates and the `tidyverse`. **Just remember to run this code in your own script before proceeding.**
+Once again we don't need much from packages today - just `lubridate` for dates and the `tidyverse`, plus `palmerpenguins` for some data. **Just remember to run this code in your own script before proceeding.**
 
 ```{r setup, message = FALSE}
 pacman::p_load(tidyverse, lubridate, palmerpenguins)
@@ -273,7 +273,7 @@ for (i in c(3:6)) {              # 1. "FOR THIS" sequence It's 3-6 because we wa
 
     output[[j]] <- median(penguins[[i]], na.rm = TRUE)      # 2. "DO THIS" body
     names(output)[j] <- colnames(penguins[i])               # Calculate median and name the resulting value the column name
-    j <- j + 1                                              # Increment out output vector position by 1
+    j <- j + 1                                              # Increment our output vector position by 1
 }
 
 output
@@ -282,11 +282,11 @@ This for-loop has the 2 parts we're already used to, but we also add a third par
 
 1. **Sequence** - "FOR THIS"; what you loop over. 
 
-    Here we ask it to simply start i from the first element in the vector (1), and keep going until it reaches the last element (4). Once it reaches the end of the vector `c(1:4)`, it will stop and not run the loop again.
+    Here we ask it to simply start i from the first element in the vector (3), and keep going until it reaches the last element (6). Once it reaches the end of the vector `c(3:6)`, it will stop and not run the loop again.
 
 2. **Body** - "DO THIS"; the code that runs multiple times
 
-    Here we ask R to, for each value of i, take the median of i'th column (ignoring `NA`s!) and save it to the i'th element in our vector `output`. We also ask it to name that i'th element using the name of the i'th column in `penguins`.
+    Here we ask R to, for each value of j (1 to 4, corresponding to i being 3 to 6), take the median of i'th column (ignoring `NA`s!) and save it to the j'th element in our vector `output`. We also ask it to name that j'th element using the name of the i'th column in `penguins`.
 
 3. **Output** - where any results the for-loop generates are stored. Note in all but things like our first toy example where we printed the numbers 1-15, you're probably going to want to save some output.
 
@@ -360,7 +360,7 @@ While loops are more general than for-loops. Any for-loop can be rewritten as a 
 
 ### The `map()` functions and `purrr`
 
-The `purrr` package is another member of the `tidyverse`. We cover this more in our next class, but basically the `map_XX()` family of functions
+The `purrr` package is another member of the `tidyverse`. We cover this more later, but basically the `map_XX()` family of functions
 
 * Takes a function, and 
 * Applies it to every element of a vector or list, then
@@ -376,11 +376,11 @@ map_dbl( # Return a double vector
 
 ```
 
-That's it on the `map()` functions for now. I just wanted to show you they're another - arguably better - way you can do iterations in R. They take a little bit more practice to understand well than for-loops, though. Good thing they're the subject of our next class!
+That's it on the `map()` functions for now. I just wanted to show you they're another - arguably better - way you can do iterations in R. They take a little bit more practice to understand well than for-loops, though. Good thing they're the subject of another session soon!
 
 
 ## Summary
 
 Today we covered two fundamental building blocks of many programming languages: if-else statements and for-loops. They allow you to tell R to run code some times but not others, or do different things depending on certain conditions. It increases the flexibility of your scripts substantially. For- and while-loops can also be used for iteration (running the same code over and over).
 
-In our next Tutorial we'll talk more about another method for iteration: `purrr`.
+In our next Tutorial we'll talk more about writing our own functions to be able to go beyond those R has built in.

@@ -122,12 +122,12 @@ $(document).ready(function () {
 <h2>Intro and Setup</h2>
 <p>Today we enter our final chapter, where we superficially cover some
 major statistical programming techniques you might need in your careers:
-if-else statements, for-loops, basic function writing, and statistical
-simulation. Today we cover the first two of these.</p>
+if-else statements, for-loops, basic function writing, iteration, and
+statistical simulation. Today we cover the first two of these.</p>
 <p>Once again we don’t need much from packages today - just
-<code>lubridate</code> for dates and the <code>tidyverse</code>.
-<strong>Just remember to run this code in your own script before
-proceeding.</strong></p>
+<code>lubridate</code> for dates and the <code>tidyverse</code>, plus
+<code>palmerpenguins</code> for some data. <strong>Just remember to run
+this code in your own script before proceeding.</strong></p>
 <pre class="r"><code>pacman::p_load(tidyverse, lubridate, palmerpenguins)
 data(penguins)</code></pre>
 </div>
@@ -464,7 +464,7 @@ for (i in c(3:6)) {              # 1. &quot;FOR THIS&quot; sequence It&#39;s 3-6
 
     output[[j]] &lt;- median(penguins[[i]], na.rm = TRUE)      # 2. &quot;DO THIS&quot; body
     names(output)[j] &lt;- colnames(penguins[i])               # Calculate median and name the resulting value the column name
-    j &lt;- j + 1                                              # Increment out output vector position by 1
+    j &lt;- j + 1                                              # Increment our output vector position by 1
 }
 
 output</code></pre>
@@ -475,15 +475,16 @@ a third part:</p>
 <ol style="list-style-type: decimal">
 <li><p><strong>Sequence</strong> - “FOR THIS”; what you loop over.</p>
 <p>Here we ask it to simply start i from the first element in the vector
-(1), and keep going until it reaches the last element (4). Once it
-reaches the end of the vector <code>c(1:4)</code>, it will stop and not
+(3), and keep going until it reaches the last element (6). Once it
+reaches the end of the vector <code>c(3:6)</code>, it will stop and not
 run the loop again.</p></li>
 <li><p><strong>Body</strong> - “DO THIS”; the code that runs multiple
 times</p>
-<p>Here we ask R to, for each value of i, take the median of i’th column
-(ignoring <code>NA</code>s!) and save it to the i’th element in our
-vector <code>output</code>. We also ask it to name that i’th element
-using the name of the i’th column in <code>penguins</code>.</p></li>
+<p>Here we ask R to, for each value of j (1 to 4, corresponding to i
+being 3 to 6), take the median of i’th column (ignoring
+<code>NA</code>s!) and save it to the j’th element in our vector
+<code>output</code>. We also ask it to name that j’th element using the
+name of the i’th column in <code>penguins</code>.</p></li>
 <li><p><strong>Output</strong> - where any results the for-loop
 generates are stored. Note in all but things like our first toy example
 where we printed the numbers 1-15, you’re probably going to want to save
@@ -579,8 +580,8 @@ class="section level2">
 <div id="section-the-map-functions-and-purrr" class="section level3">
 <h3>The <code>map()</code> functions and <code>purrr</code></h3>
 <p>The <code>purrr</code> package is another member of the
-<code>tidyverse</code>. We cover this more in our next class, but
-basically the <code>map_XX()</code> family of functions</p>
+<code>tidyverse</code>. We cover this more later, but basically the
+<code>map_XX()</code> family of functions</p>
 <ul>
 <li>Takes a function, and</li>
 <li>Applies it to every element of a vector or list, then</li>
@@ -599,8 +600,8 @@ data-lines="0">
 <p>That’s it on the <code>map()</code> functions for now. I just wanted
 to show you they’re another - arguably better - way you can do
 iterations in R. They take a little bit more practice to understand well
-than for-loops, though. Good thing they’re the subject of our next
-class!</p>
+than for-loops, though. Good thing they’re the subject of another
+session soon!</p>
 </div>
 </div>
 <div id="section-summary" class="section level2">
@@ -611,100 +612,101 @@ run code some times but not others, or do different things depending on
 certain conditions. It increases the flexibility of your scripts
 substantially. For- and while-loops can also be used for iteration
 (running the same code over and over).</p>
-In our next Tutorial we’ll talk more about another method for iteration:
-<code>purrr</code>. 
+In our next Tutorial we’ll talk more about writing our own functions to
+be able to go beyond those R has built in. 
 <script type="application/shiny-prerendered" data-context="server">
 learnr:::register_http_handlers(session, metadata = NULL)
 </script>
- 
+
+
 <script type="application/shiny-prerendered" data-context="server">
 session$onSessionEnded(function() {
         learnr:::session_stop_event(session)
       })
 </script>
-
-
+ 
 <script type="application/shiny-prerendered" data-context="server-start">
 pacman::p_load(tidyverse, lubridate, palmerpenguins)
 data(penguins)
 
 </script>
- 
+
+
 <script type="application/shiny-prerendered" data-context="server">
 `tutorial-exercise-if-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-if-code-editor`)), session)
 output$`tutorial-exercise-if-output` <- renderUI({
   `tutorial-exercise-if-result`()
 })
 </script>
-
-
+ 
 <script type="application/shiny-prerendered" data-context="server">
 `tutorial-exercise-if_else-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-if_else-code-editor`)), session)
 output$`tutorial-exercise-if_else-output` <- renderUI({
   `tutorial-exercise-if_else-result`()
 })
 </script>
- 
+
+
 <script type="application/shiny-prerendered" data-context="server">
 `tutorial-exercise-if_elseif_else-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-if_elseif_else-code-editor`)), session)
 output$`tutorial-exercise-if_elseif_else-output` <- renderUI({
   `tutorial-exercise-if_elseif_else-result`()
 })
 </script>
-
-
+ 
 <script type="application/shiny-prerendered" data-context="server">
 `tutorial-exercise-any_all-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-any_all-code-editor`)), session)
 output$`tutorial-exercise-any_all-output` <- renderUI({
   `tutorial-exercise-any_all-result`()
 })
 </script>
- 
+
+
 <script type="application/shiny-prerendered" data-context="server">
 `tutorial-exercise-if_mult-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-if_mult-code-editor`)), session)
 output$`tutorial-exercise-if_mult-output` <- renderUI({
   `tutorial-exercise-if_mult-result`()
 })
 </script>
-
-
+ 
 <script type="application/shiny-prerendered" data-context="server">
 `tutorial-exercise-basic_for-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-basic_for-code-editor`)), session)
 output$`tutorial-exercise-basic_for-output` <- renderUI({
   `tutorial-exercise-basic_for-result`()
 })
 </script>
- 
+
+
 <script type="application/shiny-prerendered" data-context="server">
 `tutorial-exercise-iteration1-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-iteration1-code-editor`)), session)
 output$`tutorial-exercise-iteration1-output` <- renderUI({
   `tutorial-exercise-iteration1-result`()
 })
 </script>
-
-
+ 
 <script type="application/shiny-prerendered" data-context="server">
 `tutorial-exercise-for_loop1-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-for_loop1-code-editor`)), session)
 output$`tutorial-exercise-for_loop1-output` <- renderUI({
   `tutorial-exercise-for_loop1-result`()
 })
 </script>
- 
+
+
 <script type="application/shiny-prerendered" data-context="server">
 `tutorial-exercise-for_loop_robust-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-for_loop_robust-code-editor`)), session)
 output$`tutorial-exercise-for_loop_robust-output` <- renderUI({
   `tutorial-exercise-for_loop_robust-result`()
 })
 </script>
-
-
+ 
 <script type="application/shiny-prerendered" data-context="server">
 `tutorial-exercise-while_loop-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-while_loop-code-editor`)), session)
 output$`tutorial-exercise-while_loop-output` <- renderUI({
   `tutorial-exercise-while_loop-result`()
 })
 </script>
- 
+
+
 <script type="application/shiny-prerendered" data-context="server">
 `tutorial-exercise-map-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-map-code-editor`)), session)
 output$`tutorial-exercise-map-output` <- renderUI({

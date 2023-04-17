@@ -163,9 +163,9 @@ Usually it's not a good idea to try to write a function from scratch. Get some c
 
 ### General Function Structure
 
-Here's the general function of a structure, illustrated with a trivial function that takes a single number as input and checks if it's greater than 2.
+Here's the general structure of a function, illustrated with a trivial function that takes a single number as input and checks if it's greater than 2.
 
-```{r func_general}
+```{r fg, eval = FALSE, include = TRUE}
 
 # 1. Name of the function
 check <- 
@@ -189,6 +189,7 @@ check <-
       }
 }
 ```
+
 
 Now let's try out our new function. 
 

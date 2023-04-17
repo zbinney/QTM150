@@ -316,6 +316,7 @@ If you're thinking really deeply about R you might wonder what's the difference 
 mpg %>% 
   mutate(mile_diff = cty - hwy) %>% 
   select(mile_diff, everything())
+
 ```
 
 This basically subtracts each value of `hwy` from each corresponding value of `cty` and then tacks that resulting vector, which we've named `mile_diff`, back on to `mpg`.

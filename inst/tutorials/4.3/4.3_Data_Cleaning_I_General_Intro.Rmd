@@ -723,20 +723,6 @@ stroke %>%
 
 ```    
 
-You should be able to parse the basics of what all that code did, but to help orient you to the general structure of an `impute()` call:
-
-```{r impute_str, eval = FALSE}
-
-<DATA FRAME WITH MISSINGS> %>%
-    impute(<REPLACEMENT VALUE>,
-           <FIRST COLUMN WHERE MISSING VALUES WANT TO BE REPLACED>,
-           <SECOND COLUMN WHERE MISSING VALUES WANT TO BE REPLACED>,
-           ...
-           )
-
-```   
-
-Note if you want to impute different values for different columns you'll need to use a separate `impute()` call.
 
 I'd urge using static imputation with extreme caution. **You need a really strong belief about the proper imputed value. If you're not sure, you could really mess up your data by forcing very wrong/unrealistic values on observations.**
 

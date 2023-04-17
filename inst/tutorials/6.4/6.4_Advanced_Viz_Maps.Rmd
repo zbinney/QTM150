@@ -26,7 +26,7 @@ One thing to note before we begin: This tutorial is based heavily on [this cours
 
 ### Packages
 
-As usual we need to load a few packages to do our mapping. We need `tidyverse` because, among other reasons, it contains `ggplot2`, which we're still going to be using to plot maps. `RColorBrewer` and `colorRamps` give us some nice color schemes for our maps. The other packages are new ones we haven't worked with previously, which means they also need to be installed (with, remember, `pacman::p_load()` will handle automatically).
+As usual we need to load a few packages to do our mapping. We need `tidyverse` because, among other reasons, it contains `ggplot2`, which we're still going to be using to plot maps. `RColorBrewer` and `colorRamps` give us some nice color schemes for our maps. The other packages are new ones we haven't worked with previously, which means they also need to be installed (which, remember, `pacman::p_load()` will handle automatically).
 
 ```{r setup, message = FALSE}
 # Load (and, if necessary, first install) packages
