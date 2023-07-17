@@ -647,19 +647,27 @@ Explicit missing values are relatively simple to deal with, because you know the
     
 Also recognize you will also have to use `na.rm = TRUE` for many functions that act on any variable with *any* missing data. Those observations will be ignored for that function. Depending on the number of observations that are ignored, this may be OK or it may not be. It's a judgement call for you to make - and one that you need to be aware of at all times. That's why investigating how much data is missing and any patterns is so important.
 
-#### Drop `drop_na()`
+#### DON'T USE `na.omit()`!!!
 
-You may be tempted to use `drop_na()` - which drops observations with *any* missing values for the specified variables (or for *any* variable if you don't specify any). It's the "simplest" way to deal with missing data, and leaves you with a nice, clean, complete data frame.
+If you Google around for solutions to missing data you will see a LOT of people using `na.omit()`. Avoid these solutions like the plague.
+
+The big problem is this will drop observations with *any* missing values for *any* variable. It's the "simplest" way to deal with missing data, and leaves you with a nice, clean, complete data frame.
 
 But simple != good.
 
-And I urge caution here. I don't like simply throwing out observations without a very, very good reason. In addition to dumping the missing values, you're also dumping a lot of useful, known, non-missing data on other variables. It's too arbitrary and sacrifices information. Not a good practice to get into. 
+In fact it is BAD to throw out observations without a very, very good reason. In addition to dumping the missing values, you're also dumping a lot of useful, known, non-missing data on other variables. It's too arbitrary and sacrifices information. Not a good practice to get into. 
 
 You could also induce massive bias if, for example, a subpopulation refused to answer (or couldn't answer, because it wasn't applicable) 1-2 questions on a survey - and you just threw out all their data entirely! 
 
 Plus, this could substantially reduce your sample size.
 
-That said, some analyses - like regression models - require this implicitly. If you ask to regress a company's stock price on its P/E ratio and dividends paid in the last year, then you can't include any companies (or company-quarters) for which that information is missing. If you haven't run a regression before this may not make sense - just move on.
+#### Use `drop_na()` Cautiously
+
+The `drop_na()` function is a somewhat better solution because it allows you to drop observations only if they are missing a certain set of values rather than just any value, but be very careful. Specifically, **always specify the columns where, if the data is missing, you want the observation dropped**. 
+
+It will do the same thing as `na.omit()` if you don't specify which columns you want to drop if they are missing.
+
+The same warnings as above about dropping observations because they have certain variables missing also apply.
     
 #### How to Deal With Explicit Missing Values
 
