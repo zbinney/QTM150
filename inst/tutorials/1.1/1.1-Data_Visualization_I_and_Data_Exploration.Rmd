@@ -362,6 +362,8 @@ One last neat trick: what if you forgot to put quotes around something you wante
 
 When you first start with R error messages are going to be hard to interpret. That's natural. They're still hard for me, too! I have two pieces of advice for debugging them:
 
+* Check out [this *excellent* guide](https://nickch-k.github.io/DataCommSlides/Lecture_04_Common_R_Problems.html#things-breaking) from Nick Huntington-Klein at Seattle University. It lists some common error messages, what the typical sources of those are, and how to fix them. This is a GREAT first step when you're troubleshooting.
+
 * Use the help page for the function that's throwing the error. Type `?[FUNCTION NAME]` in the Console. What may be especially helpful is to scroll down that page to see if there's a code example for what you're trying to do, and match it up with what you wrote to see where the problem might be.
 
 * Google the error message.
