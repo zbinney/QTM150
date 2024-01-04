@@ -2,7 +2,7 @@
 title: "Tutorial 3.2 - Data Transformation II"
 
 author: "Zachary Binney, PhD"
-date: "September 2020"
+date: "January 2024"
 
 output: 
   learnr::tutorial:
@@ -318,9 +318,11 @@ knitr::include_graphics("images/the_pipe.jpg")
 
 The pipe is basically an operator that takes a result of whatever code you wrote before it and pipes it as the first argument to the next function after it. This may not *sound* terribly useful or sensible at first, but Oh My God it is.
 
-I can't explain it any better than Hadley Wickham in *R for Data Science*, so why try? Go now and read [chapter 5.6.1](https://r4ds.had.co.nz/transform.html#combining-multiple-operations-with-the-pipe) and [chapter 18](https://r4ds.had.co.nz/pipes.html). They're pretty brief, I promise! Return to this tutorial once you have.
+I can't explain it any better than Hadley Wickham in *R for Data Science (2nd ed.)*, so why try? Go now and read [chapter 3.1.3 and 3.4](https://r4ds.hadley.nz/data-transform.html#dplyr-basics). They're pretty brief, I promise! Return to this tutorial once you have.
 
-I'll just also remind you here that there's a useful shortcut for typing the pipe in RStudio: **CTRL/COMMAND + M**.
+NOTE: We are learning the newer "native" pipe (`|>`) that was added to base R versions from 2023 and onward. Previously this class taught, and you will often see in all but the most recent code examples, the `%>%` version of the pipe that is part of the `tidyverse`. These are, for the purposes of this class, essentially interchangeable. There are some minor differences I'm sure you'll pick up if you continue your programming career, but I'm not going to cover them here.
+
+I'll just also remind you here that there's a useful shortcut for typing the pipe in RStudio: **CTRL/COMMAND +SHIFT + M**. But make sure you make the change as outlined in Chapter 3.4 to get `|>` rather than `%>%`.
 
 ### Knowledge Check
 
@@ -355,13 +357,13 @@ Here's another relatively simple one. What if we wanted to calculate and plot th
 
 ```{r pipe_ex1, exercise = TRUE}
 #Take your data and pass it as the first argument to...
-gapminder %>%
+gapminder |>
   
   #Filter to only data from 1952...
-  filter(year == 1952) %>%
+  filter(year == 1952) |>
   
   #Within that dataset, create a new variable for log of per capita GDP
-  mutate(log_gdpPercap = log(gdpPercap)) %>% 
+  mutate(log_gdpPercap = log(gdpPercap)) |> 
   
   #And feed this transformed dataset as the first argument to ggplot() for a scatterplot, all in one block!
   ggplot() +
@@ -384,10 +386,10 @@ Using a dataset I just sneakily imported without you knowing, let's find the top
 3. And attempted <5 rushes per game on average
 
 ```{r pipe_ex2, exercise = TRUE}
-rush %>%
+rush |>
   filter(Year >= 2000 &
-        Rushing.Attempts.Per.Game <= 5) %>%
-  select(Name, Team, Year, Rushing.Yards) %>% 
+        Rushing.Attempts.Per.Game <= 5) |>
+  select(Name, Team, Year, Rushing.Yards) |> 
   arrange(desc(as.numeric(Rushing.Yards)))
 
 ```
@@ -399,9 +401,9 @@ Without **domain knowledge** you might not know what to make of this list. Consi
 One final example. What if we wanted to plot each country's average years of life expectancy above or below the world average in 2007?
 
 ```{r pipe_ex3, exercise = TRUE}
-gapminder %>% 
-  filter(year == 2007) %>% 
-  mutate(LE_minus_mean_2007 = lifeExp - weighted.mean(lifeExp, pop)) %>% 
+gapminder |> 
+  filter(year == 2007) |> 
+  mutate(LE_minus_mean_2007 = lifeExp - weighted.mean(lifeExp, pop)) |> 
   ggplot() +
   geom_point(aes(x = continent, y = LE_minus_mean_2007))
 
@@ -478,8 +480,8 @@ One of the most common uses of the pipe is grouped summaries. Without pipes, get
 Let's re-write our code above using pipes:
 
 ```{r sum2_pipe, exercise = TRUE}
-flights %>% 
-  group_by(origin) %>% 
+flights |> 
+  group_by(origin) |> 
   summarize(mean_dep_delay = mean(dep_delay, na.rm = TRUE), #Calculate mean departure delay by airport
           
           #Also give me the number of flights by airport
@@ -495,8 +497,8 @@ That's a bit cleaner - and is also the typical way you'll see grouped summaries 
 You can also group by multiple variables! Say we wanted the mean departure delay for each airport for each month:
 
 ```{r sum3_pipe, exercise = TRUE}
-flights %>% 
-  group_by(origin, month) %>% #Group by airport AND month 
+flights |> 
+  group_by(origin, month) |> #Group by airport AND month 
   summarize(mean_dep_delay = mean(dep_delay, na.rm = TRUE),
 
           n_flights = n(),
@@ -510,9 +512,9 @@ It's also trivial to add in more steps in a pipe. For example, what if we want t
 ```{r grouped_summ_pipe, exercise = TRUE}
 
 # Get number of flights, mean distance, and total arrival delays in January by origin airport
-flights %>% 
-  filter(month == 1) %>% 
-  group_by(origin) %>% 
+flights |> 
+  filter(month == 1) |> 
+  group_by(origin) |> 
   summarize(count = n(),
             dist = mean(distance, na.rm = TRUE),
             arrival_delay_mins = sum(arr_delay, na.rm = TRUE))
@@ -525,11 +527,11 @@ flights %>%
 The desire to simply count the number of observations by groups of one or more variables is so common that there's actually a standalone function for it: `count()`. The two bits of code below are equivalent:
 
 ```{r sum4_pipe, exercise = TRUE}
-flights %>% 
-  group_by(origin, month) %>% #Group by airport AND month 
+flights |> 
+  group_by(origin, month) |> #Group by airport AND month 
   summarize(n_flights = n())
 
-flights %>% 
+flights |> 
   count(origin, month, name = "n_flights")
 
 ```
@@ -552,8 +554,8 @@ Means and counts are probably the most common reasons you'll use `summarize()` a
     
 ```{r sum4, exercise = TRUE}
 #Calculate percent of flights delayed by airport
-flights %>% 
-  group_by(origin) %>% 
+flights |> 
+  group_by(origin) |> 
 summarize(count_delayed = sum(dep_delay > 0, na.rm = TRUE),
           prop_delayed = mean(dep_delay > 0, na.rm = TRUE))
 
@@ -579,8 +581,8 @@ For example, what if we wanted to find the most delayed (but not canceled!) flig
 
 ```{r sum5, exercise = TRUE}
 #Most delayed flight each month
-flights_small %>% 
-  group_by(month) %>% 
+flights_small |> 
+  group_by(month) |> 
   
   #Find the max non-NA value of `dep_delay`, which will be applied to each month
   filter(dep_delay == max(dep_delay, na.rm = TRUE))
@@ -595,10 +597,10 @@ If you save a grouped data frame, I find it's good practice to always use `ungro
 
 ```{r sum6, exercise = TRUE}
 # Create a data frame grouped by airport and month for future operations like summarize()...
-flights_notgrouped <- group_by(flights, origin, month) %>% 
+flights_notgrouped <- group_by(flights, origin, month) |> 
   
   # Add in a column with the maximum departure delay for each airport and month
-  mutate(max_dep_delay = max(dep_delay, na.rm = TRUE)) %>% 
+  mutate(max_dep_delay = max(dep_delay, na.rm = TRUE)) |> 
 
   # Manually remove any groupings so the next time you run an operation on this data it's not grouped unexpectedly  
   ungroup()
@@ -656,7 +658,7 @@ Recreate the categorical distance variable from a previous exercise, and find th
 <!-- (biz <- tibble(product_line = c("Widgets", "Gizmos", "Doohickys", "Widgets"), -->
 <!--               revenue = c(1000, 1000, 2000, 1000))) -->
 
-<!-- biz %>% -->
+<!-- biz |> -->
 <!--   get_dupes(product_line) -->
 
 <!-- ``` -->

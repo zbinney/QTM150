@@ -2,7 +2,7 @@
 title: "Tutorial 9.4 - Statistical Simulations"
 
 author: "Zachary Binney, PhD"
-date: "January 2023"
+date: "January 2024"
 
 output: 
   learnr::tutorial:
@@ -87,7 +87,7 @@ rannorm <- tibble(
 ```{r norm_single_plot, exercise = TRUE}
 
 # Plot our random normal draws
-rannorm %>% 
+rannorm |> 
   ggplot(aes(x = rand1)) +
   geom_density() +
   scale_x_continuous(breaks = c(-10:10))
@@ -123,7 +123,7 @@ rannorm <- tibble(
 rannorm
 
 #Plot these data
-rannorm %>% 
+rannorm |> 
   ggplot(aes(x = rand1, y = rand2)) +
   geom_point(alpha = 0.1)
 
@@ -182,7 +182,7 @@ correl <- matrix(c(9,4,   # SD of first variable is 3 --> variance 9
 # Simulate the data
 rannorm <- mvrnorm(n=N,
                    mu=means,
-                   Sigma=correl) %>% # Sigma = correlation matrix
+                   Sigma=correl) |> # Sigma = correlation matrix
   as.tibble()
 
 #Rename the columns to what we're used to
@@ -191,7 +191,7 @@ colnames(rannorm) <- c("rand1", "rand2")
 rannorm
   
 #Plot these data
-rannorm %>% 
+rannorm |> 
   ggplot(aes(x = rand1, y = rand2)) +
   geom_point(alpha = 0.1)
 

@@ -2,7 +2,7 @@
 title: "Tutorial 9.1 - If-Else Blocks, For-Loops"
 
 author: "Zachary Binney, PhD"
-date: "November 2020"
+date: "January 2024"
 
 output: 
   learnr::tutorial:
@@ -33,7 +33,7 @@ data(penguins)
 
 ## Conditional Execution
 
-So far you've written code that runs when you run it - either by selecting specific lines or running a whole script or RMarkdown document.
+So far you've written code that runs when you run it - either by selecting specific lines or running a whole script or Quarto document.
 
 But what if sometimes you want code to run, and other times you don't?
 
@@ -68,7 +68,7 @@ The simplest if-else statement actually just involves a single `if` condition. T
 
 ```{r if, exercise = TRUE}
 
-if (hour(Sys.time()) %>% # Extract the hour from your computer clock
+if (hour(Sys.time()) |> # Extract the hour from your computer clock
     between(5, 11)) { # Check if it's between 5am and 11am
   
   print("Good Morning!")
@@ -96,7 +96,7 @@ Let's kick up the complexity just a notch. What if we still want R to print some
 
 ```{r if_else, exercise = TRUE}
 
-if (hour(Sys.time()) %>% # If this condition is met, run the code immediately below
+if (hour(Sys.time()) |> # If this condition is met, run the code immediately below
     between(5, 11)) { 
   
   print("Good Morning!")

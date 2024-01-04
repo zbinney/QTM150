@@ -2,7 +2,7 @@
 title: "Tutorial 1.2 - Data Visualization II"
 
 author: "Zachary Binney, PhD"
-date: "June 2020"
+date: "January 2024"
 
 output: 
   learnr::tutorial:
@@ -386,14 +386,14 @@ knitr::include_graphics("images/stat_count.png")
 With some geoms like `geom_point()` you'll rarely change the default **stat**. Bar charts are a weird case, though. For instance, what if you had data like this instead?
 
 ```{r bar_sum, echo = FALSE}
-cut_counts <- diamonds %>% 
-  group_by(cut) %>% 
+cut_counts <- diamonds |> 
+  group_by(cut) |> 
   summarize(n_diamonds = n())
 ```
 
 ```{r ccprint, echo = FALSE}
-cut_counts <- diamonds %>% 
-  group_by(cut) %>% 
+cut_counts <- diamonds |> 
+  group_by(cut) |> 
   summarize(n_diamonds = n())
 
 cut_counts

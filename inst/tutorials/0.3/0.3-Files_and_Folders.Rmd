@@ -2,7 +2,7 @@
 title: "Tutorial 0.3 - Files, Folders, and Directories"
 
 author: "Zachary Binney, PhD"
-date: "December 2022"
+date: "January 2024"
 
 output:
   learnr::tutorial:

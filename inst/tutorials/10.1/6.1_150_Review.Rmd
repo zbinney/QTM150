@@ -2,7 +2,7 @@
 title: "Tutorial 6.1 - Review of QTM 150"
 
 author: "Zachary Binney, PhD"
-date: "January 2021"
+date: "January 2024"
 
 output: 
   learnr::tutorial:
@@ -228,15 +228,15 @@ Filtering lets you select a subset of rows based on one or more criteria using B
 
 ```{r filter, exercise = TRUE}
 # All Delta flights in January
-flights %>% 
+flights |> 
   filter(month == 1 & carrier == "DL")
 
 # All flights in January from Delta OR going to Atlanta
-flights %>% 
+flights |> 
   filter(month == 1 & (carrier == "DL" | dest == "ATL"))
 
 # All Delta flights in January or February NOT going to Atlanta or Albuquerque
-flights %>% 
+flights |> 
   filter(month == 1 & carrier == "DL" & !(dest %in% c("ATL", "ABQ")))
 
 ```
@@ -246,18 +246,18 @@ Selecting lets you choose a subset of columns or reorder some or all columns. Fo
 
 ```{r select, exercise = TRUE}
 #Select all 5 columns from year to sched_dep_time, plus arr_time for 6 total columns
-flights %>% 
-  head(100) %>% 
+flights |> 
+  head(100) |> 
   select(year:sched_dep_time, arr_time) 
 
 #Select all columns EXCEPT arr_time
-flights %>% 
-  head(100) %>% 
+flights |> 
+  head(100) |> 
   select(-arr_time) 
 
 #Simply Reorder columns to put arr_time at the front
-flights %>% 
-  head(100) %>% 
+flights |> 
+  head(100) |> 
   select(arr_time, everything())
 
 ```
@@ -268,7 +268,7 @@ To sort you use the `arrange()` function. This will by default sort one or more 
 
 ```{r sort, exercise = TRUE}
 #Sort earliest to latest scheduled departure time, with ties broken by actual departure time (latest to earliest)
-flights_arranged <- flights %>% 
+flights_arranged <- flights |> 
   arrange(sched_dep_time, desc(dep_time))
 
 head(flights_arranged, 20)
@@ -281,13 +281,13 @@ You use `mutate()` to create new columns, which are typically (but don't *have* 
 
 ```{r mutate1, exercise = TRUE}
 # Create a new variable called "gain" for time made up in the air
-flights %>% 
-  head(100) %>% 
+flights |> 
+  head(100) |> 
   mutate(gain = dep_delay - arr_delay)
 
 # Use case-when to create new variables based off the conditions of other variables
-flights %>% 
-  head(100) %>% 
+flights |> 
+  head(100) |> 
   # Categorize departure delays as on-time if within 5 minutes of schedule, or early or late
   mutate(dep_cat = case_when(dep_delay < -5 ~ "Early",
                              dep_delay <= 5 ~ "On Time",
@@ -302,8 +302,8 @@ You'll often want to calculate grouped summaries, and you do this using `group_b
 For example, say you wanted to get the number of flights departing and the mean departure delay for flights leaving each NYC airport (so maybe you can choose the one with the lowest delay to fly out of):
 
 ```{r grouped_sum, exercise = TRUE}
-flights %>% 
-  group_by(origin) %>% 
+flights |> 
+  group_by(origin) |> 
   summarize(mean_dep_delay = mean(dep_delay, na.rm = TRUE), #Calculate mean departure delay by airport
           
           #Also give me the number of flights by airport

@@ -2,7 +2,7 @@
 title: "Tutorial 3.3 - Data Transformation III"
 
 author: "Zachary Binney, PhD"
-date: "October 2020"
+date: "January 2024"
 
 output: 
   learnr::tutorial:
@@ -90,13 +90,13 @@ You can check if something is a primary key by counting how many observations ap
 
 ```{r pk, exercise = TRUE}
 # Check if something is a primary key
-planes %>% 
-  count(tailnum) %>% # count() creates a new variable, n, that is the number of times each value of tailnum appears
+planes |> 
+  count(tailnum) |> # count() creates a new variable, n, that is the number of times each value of tailnum appears
   filter(n > 1) # because this returns 0 records, we conclude tailnum 
                 # uniquely IDs each observation and is a primary key
 
-planes %>% 
-  count(manufacturer) %>% 
+planes |> 
+  count(manufacturer) |> 
   filter(n > 1) # manufacturer is not a primary key; multiple observations have the same manufacturer since
                 # most companies make more than 1 individual airplane
 
@@ -141,9 +141,9 @@ Let's look at an example:
 
 ```{r left_join1, exercise = TRUE}
 # Simple left join adding full airline name
-flights %>% # 1.
-  select(month:dep_time, carrier:dest) %>% # 2.
-  left_join(airlines, by = "carrier") %>% # 3.
+flights |> # 1.
+  select(month:dep_time, carrier:dest) |> # 2.
+  left_join(airlines, by = "carrier") |> # 3.
   head()
 
 ```
@@ -175,7 +175,7 @@ Fill in the code below to complete an extremely simple `left_join()` of these tw
 
 ```{r left_join_simpledata2, exercise = TRUE}
 #Join the data frames
-band_members %>% 
+band_members |> 
   left_join(__________, by = _______)
 
 ```
@@ -192,9 +192,9 @@ This last step - which often comes from an **under-specified key** that doesn't 
 
 ```{r left_join_underspecify, exercise = TRUE}
 # Left join adding weather data with an underspecified key
-flights %>%
-  head() %>% # Only take the first 6 observations
-  select(month:sched_dep_time, hour, carrier, origin:dest) %>% 
+flights |>
+  head() |> # Only take the first 6 observations
+  select(month:sched_dep_time, hour, carrier, origin:dest) |> 
   # Try to pull weather data by matching on airport and day
   left_join(weather, by = c("origin", "month", "day"))
 
@@ -242,13 +242,13 @@ Take our `left_join()`, for example:
 
 ```{r left_join2, exercise = TRUE}
 #First delete United from airlines
-airlines2 <- airlines %>%
+airlines2 <- airlines |>
   filter(carrier != "UA")
 
 # Simple left join adding full airline name
-flights %>%
-  select(month:dep_time, carrier:dest) %>% 
-  left_join(airlines2, by = "carrier") %>% 
+flights |>
+  select(month:dep_time, carrier:dest) |> 
+  left_join(airlines2, by = "carrier") |> 
   head()
 
 
@@ -263,9 +263,9 @@ You can also join data frames using multiple keys at once. Consider, for example
 
 ```{r left_join_mult, exercise = TRUE}
 # Left join adding weather data
-flights %>%
-  select(month:sched_dep_time, hour, carrier, origin:dest) %>% 
-  left_join(weather, by = c("origin", "month", "day", "hour")) %>% 
+flights |>
+  select(month:sched_dep_time, hour, carrier, origin:dest) |> 
+  left_join(weather, by = c("origin", "month", "day", "hour")) |> 
   head()
 
 
@@ -279,13 +279,13 @@ One other point I do want to briefly discuss, though, is what happens if you hav
 
 ```{r left_join_diff, exercise = TRUE}
 # Rename the carrier column in airlines
-airlines2 <- airlines %>%
+airlines2 <- airlines |>
   rename(abbv = carrier)
 
 # Simple left join adding full airline name
-flights %>%
-  select(month:dep_time, carrier:dest) %>% 
-  left_join(airlines2, by = c("carrier" = "abbv")) %>% 
+flights |>
+  select(month:dep_time, carrier:dest) |> 
+  left_join(airlines2, by = c("carrier" = "abbv")) |> 
   head()
 
 ```
@@ -298,9 +298,9 @@ Consider the following join, which adds more information about the specific plan
 
 ```{r avoid_dupes}
 # Simple left join of the flights and planes data frames
-flights %>%
-  select(year:tailnum) %>% 
-  left_join(planes, by = "tailnum") %>% 
+flights |>
+  select(year:tailnum) |> 
+  left_join(planes, by = "tailnum") |> 
   head()
 
 ```
@@ -328,9 +328,9 @@ Here's an example, where say we only wanted to add the manufacturer and type of 
 
 ```{r avoid_dupes_works, exercise = TRUE}
 # Simple left join of the flights and planes data frames
-flights %>%
-  select(year:tailnum) %>% 
-  left_join(select(planes, tailnum, manufacturer, engine), by = "tailnum") %>% 
+flights |>
+  select(year:tailnum) |> 
+  left_join(select(planes, tailnum, manufacturer, engine), by = "tailnum") |> 
   head()
 
 ```
@@ -354,14 +354,14 @@ Easiest will be to look at a couple examples. Say we want to filter `flights` to
 
 ```{r semi_join, exercise = TRUE}
 # What are the top 10 destinations from NYC?
-top_dest <- flights %>%
-  count(dest, sort = TRUE) %>%
+top_dest <- flights |>
+  count(dest, sort = TRUE) |>
   head(10)
 top_dest
 
 # Keep only the flights that match one of these top 10 destinations
-flights %>% 
-  select(dest, everything()) %>% 
+flights |> 
+  select(dest, everything()) |> 
   semi_join(top_dest, by = "dest") # Only returns 141,145 flights to top destinations
 ```
 
@@ -371,14 +371,14 @@ An `anti_join()` is really just the inverse. What if we only wanted flights to l
 
 ```{r anti_join, exercise = TRUE}
 # What are the top 10 destinations from NYC?
-top_dest <- flights %>%
-  count(dest, sort = TRUE) %>%
+top_dest <- flights |>
+  count(dest, sort = TRUE) |>
   head(10)
 top_dest
 
 # Keep only the flights that DON'T match one of these top 10 destinations
-flights %>% 
-  select(dest, everything()) %>% 
+flights |> 
+  select(dest, everything()) |> 
   anti_join(top_dest, by = "dest")
 ```
 This returns the other 195,631 rows.
@@ -387,8 +387,8 @@ A more sensible use of `anti_join()` is to find mismatches when you try to execu
 
 ```{r anti_join2, exercise = TRUE}
 # Find flights whose aircraft don't appear in planes
-flights %>% 
-  anti_join(planes, by = "tailnum") %>%
+flights |> 
+  anti_join(planes, by = "tailnum") |>
   count(tailnum, sort = TRUE)
 ```
 

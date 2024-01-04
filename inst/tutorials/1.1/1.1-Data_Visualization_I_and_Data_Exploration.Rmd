@@ -2,7 +2,7 @@
 title: "Tutorial 1.1 - Dataset Exploration + Data Visualization I"
 
 author: "Zachary Binney, PhD"
-date: "June 2020"
+date: "January 2024"
 
 output: 
   learnr::tutorial:
@@ -149,7 +149,7 @@ How can we start exploring a data frame in R? I have four recommendations:
 #### Printing
 First, we could **print** the data frame (or tibble) as we did above. By default R will print the first 10 rows of a tibble in the **Console**, though in our tutorial here you're able to flip through all observations 10 at a time. You can change that with the `head()` and `tail()` functions, which print some number of rows from the top or bottom of the data frame. 
 
-Try running the below code in your own script. (NOTE: the output looks slightly different than what `RMarkdown` prints below.)
+Try running the below code in your own script. (NOTE: the output looks slightly different than what `Quarto` prints below.)
 
 ```{r printing}
 #Print top 10 rows
@@ -282,7 +282,7 @@ The native functions for data exploration we worked through above (`head()`, `ta
 
 One such solution I like is the `skimr` package, though there many others (often split by discipline - psychologists have some they like, economists others, etc.).
 
-`skimr`'s `skim()` function mixes some of the elements from both `str()` and `summary()`, renders beautifully in RMarkdown, and provides a small histogram next to the numerical summaries of continuous variables, allowing you to immediately see its distribution visually (normal, skewed, bimodal, etc.).
+`skimr`'s `skim()` function mixes some of the elements from both `str()` and `summary()`, renders beautifully in Quarto, and provides a small histogram next to the numerical summaries of continuous variables, allowing you to immediately see its distribution visually (normal, skewed, bimodal, etc.).
 
 ```{r skimr, exercise = TRUE}
 skim(penguins) 

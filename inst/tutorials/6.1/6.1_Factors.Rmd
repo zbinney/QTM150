@@ -2,7 +2,7 @@
 title: "Tutorial 6.1 - Factors"
 
 author: "Zachary Binney, PhD"
-date: "January 2023"
+date: "January 2024"
 
 output:
   learnr::tutorial:
@@ -70,7 +70,7 @@ You can also create factors from existing character or numeric variables in a da
 # Create factors from numeric and character variables
 str(mpg)
 
-mpg_fct <- mpg %>%
+mpg_fct <- mpg |>
   mutate(cyl = factor(cyl),
          manufacturer = factor(manufacturer))
 
@@ -157,29 +157,30 @@ Let's take `marital`. How can we figure out what the levels are, how many people
 
 ```{r gss2, exercise = TRUE}
 # View levels and number of observations at each level of a factor
-gss_cat %>%
+gss_cat |>
   count(marital)
 
-gss_cat %>%
+gss_cat |>
   ggplot(aes(x = marital)) +
   geom_bar()
 ```
 
 Note these methods will NOT show any levels of the factor for which there are no values in your data. That is, there may be other defined levels that simply don't exist in what you're looking at.
 
-By the way, factors are great for a few reasons, but one major one is they help with sorting. You can specify the order of values of a categorical variable when that's important - think months. Months aren't in alphabetical order, so you want a way to set the order (Jan, Feb, Mar...). Speaking of which, let's dive a bit more into how to create a sensible order for factor levels.
 
 ### Reordering Factor Levels
 
-Let's try to plot the number of hours of TV watched per day by religion:
+Factors are great for a few reasons, but one major one is they help with sorting. You can specify the order of values of a categorical variable when that's important - think months. Months aren't in alphabetical order, so you want a way to set the order (Jan, Feb, Mar...).
+
+Sometimes when visualizing data you will also want categories plotted in a specific order that makes the plot more aesthetically appealing. Let's try to plot the number of hours of TV watched per day by religion:
 
 ```{r fct_reorderlvl, exercise = TRUE}
 # Plot hours of TV per day by religion
-gss_cat %>%
-  group_by(relig) %>%
+gss_cat |>
+  group_by(relig) |>
   summarise(age = mean(age, na.rm = TRUE),
             tvhours = mean(tvhours, na.rm = TRUE),
-            n = n()) %>%
+            n = n()) |>
   ggplot(aes(x = tvhours,
              y = relig)) +
   geom_point()
@@ -193,12 +194,12 @@ This plot is a bit annoying, though. There's no clear pattern. What if we wanted
 
 ```{r fct_reorderlvl2, exercise = TRUE}
 # Plot hours of TV per day by religion, ordered most to least
-gss_cat %>%
-  group_by(relig) %>%
+gss_cat |>
+  group_by(relig) |>
   summarise(age = mean(age, na.rm = TRUE),
             tvhours = mean(tvhours, na.rm = TRUE),
-            n = n()) %>%
-  mutate(relig = fct_reorder(relig, tvhours)) %>% # This reorders "relig" by the number of TV hours, highest-to-lowest
+            n = n()) |>
+  mutate(relig = fct_reorder(relig, tvhours)) |> # This reorders "relig" by the number of TV hours, highest-to-lowest
   ggplot(aes(x = tvhours,
              y = relig)) +
   geom_point()
@@ -209,29 +210,29 @@ We can also manually change the order of a factor. What if we wanted to put all 
 
 ```{r fct_reorderlvl3, exercise = TRUE}
 # Plot hours of TV per day by religion, Christians at bottom
-gss_cat %>%
-  group_by(relig) %>%
+gss_cat |>
+  group_by(relig) |>
   summarise(age = mean(age, na.rm = TRUE),
             tvhours = mean(tvhours, na.rm = TRUE),
-            n = n()) %>%
+            n = n()) |>
   # This reorders "relig" by starting with whatever you specify, then filling in prior levels in order
-  mutate(relig = fct_relevel(relig, "Protestant", "Catholic", "Christian")) %>%
+  mutate(relig = fct_relevel(relig, "Protestant", "Catholic", "Christian")) |>
   ggplot(aes(x = tvhours,
              y = relig)) +
   geom_point()
 ```
 
-If you're creating a bar plot to count the number of appearances of various factor levels you can also reorder factors by their frequency. Consider the two plots below:
+If you're creating a bar plot to count the number of appearances of various factor levels you can also reorder factors by their frequency using `fct_infreq()`. Consider the two plots below:
 
 ```{r fct_reorderlvl4, exercise = TRUE}
 # Plot default bar chart - ugly
-gss_cat %>%
+gss_cat |>
   ggplot(aes(x = marital)) +
   geom_bar()
 
 # Plot bar chart ordered by frequency - prettier!
-gss_cat %>%
-  mutate(marital = fct_infreq(marital)) %>%
+gss_cat |>
+  mutate(marital = fct_infreq(marital)) |>
   ggplot(aes(x = marital)) +
   geom_bar()
 ```
@@ -243,10 +244,10 @@ Say you have levels of a factor that are too long or you don't like, such as `pa
 
 ```{r fct_recodelvl, exercise = TRUE}
 # These aren't the best values
-gss_cat %>% count(partyid)
+gss_cat |> count(partyid)
 
 # Let's recode them to something more understandable
-gss_cat %>%
+gss_cat |>
   mutate(partyid = fct_recode(partyid,
     "Republican, strong"    = "Strong republican",
     "Republican, weak"      = "Not str republican",
@@ -254,21 +255,21 @@ gss_cat %>%
     "Independent, near dem" = "Ind,near dem",
     "Democrat, weak"        = "Not str democrat",
     "Democrat, strong"      = "Strong democrat"
-  )) %>%
+  )) |>
   count(partyid)
 ```
 
-You can also collapse some categories into fewer categories using `fct_collapse`!
+You can also collapse some categories into fewer categories using `fct_collapse()`!
 
 ```{r fct_recodelvl2, exercise = TRUE}
 # Let's create fewer categories of partyid
-gss_cat %>%
+gss_cat |>
   mutate(partyid = fct_collapse(partyid,
     Other = c("No answer", "Don't know", "Other party"), # Sets these 3 levels to "Other"
     Republican = c("Strong republican", "Not str republican"), # Sets these 3 levels to "Republican
     Independent = c("Ind,near rep", "Independent", "Ind,near dem"),
     Democrat = c("Not str democrat", "Strong democrat")
-  )) %>%
+  )) |>
   count(partyid)
 ```
 
@@ -278,14 +279,14 @@ Factors play an important role in plotting. What if we wanted to plot the number
 
 ```{r fct_plot, exercise = TRUE}
 # Year is treated as continuous
-gss_cat %>%
+gss_cat |>
   mutate(partyid = fct_collapse(partyid,
                                 Other = c("No answer", "Don't know", "Other party"), # Sets these 3 levels to "Other"
                                 Republican = c("Strong republican", "Not str republican"), # Sets these 3 levels to "Republican
                                 Independent = c("Ind,near rep", "Independent", "Ind,near dem"),
-                                Democrat = c("Not str democrat", "Strong democrat"))) %>%
-  group_by(partyid, year) %>%
-  summarize(tvhours = mean(tvhours, na.rm = TRUE)) %>%
+                                Democrat = c("Not str democrat", "Strong democrat"))) |>
+  group_by(partyid, year) |>
+  summarize(tvhours = mean(tvhours, na.rm = TRUE)) |>
   ggplot(aes(x = tvhours, y = partyid, color = year)) +
   geom_point()
 ```
@@ -294,15 +295,15 @@ Here it's treating year as a continuous variable, so when you assign it a color 
 
 ```{r fct_plot2, exercise = TRUE}
 # Year is treated as categorical
-gss_cat %>%
+gss_cat |>
   mutate(partyid = fct_collapse(partyid,
                                 Other = c("No answer", "Don't know", "Other party"), # Sets these 3 levels to "Other"
                                 Republican = c("Strong republican", "Not str republican"), # Sets these 3 levels to "Republican
                                 Independent = c("Ind,near rep", "Independent", "Ind,near dem"),
                                 Democrat = c("Not str democrat", "Strong democrat")),
-         year = factor(year)) %>%
-  group_by(partyid, year) %>%
-  summarize(tvhours = mean(tvhours, na.rm = TRUE)) %>%
+         year = factor(year)) |>
+  group_by(partyid, year) |>
+  summarize(tvhours = mean(tvhours, na.rm = TRUE)) |>
   ggplot(aes(x = tvhours, y = partyid, color = year)) +
   geom_point()
 ```
@@ -337,7 +338,7 @@ shirts_ord <- factor(c("Small", "Small", "Medium", "Large", "Large"), levels = c
 One other important thing to note about ordered factors is they'll plot by default in the order specified by their levels.
 
 ```{r fct_order3, exercise = TRUE}
-diamonds %>%
+diamonds |>
   ggplot(aes(x = clarity)) +
   geom_bar()
 ```

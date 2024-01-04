@@ -2,7 +2,7 @@
 title: "Tutorial 1.4 - Advanced Visualization: Interactive Graphs and Plotly"
 
 author: "Zachary Binney, PhD"
-date: "January 2021"
+date: "January 2024"
 
 output:
   learnr::tutorial:
@@ -62,7 +62,7 @@ Now it's much easier to find the names of interesting outlier counties for furth
 
 Unfortunately, as you probably noticed from the above example `plot_ly()` uses a somewhat different syntax from `ggplot()`. So we'll have to learn a new "grammar" for producing interactive plots. Fortunately there is some overlap, so learning `plot_ly()` should be substantially easier than your first time with `ggplot()`. Some of the major differences include:
 
-* `plot_ly()` uses the pipe `%>%` all the way through, never the `+` operator to add more layers.
+* `plot_ly()` uses a different pipe `%>%` all the way through, never the `+` operator to add more layers.
 
 * `plot_ly()` uses the term **trace** where `ggplot()` would use **geom** or **layer**
 

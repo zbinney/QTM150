@@ -2,7 +2,7 @@
 title: "Tutorial 1.3 - Data Visualization III"
 
 author: "Zachary Binney, PhD"
-date: "June 2020"
+date: "January 2024"
 
 output: 
   learnr::tutorial:
@@ -828,7 +828,7 @@ You can also add new geoms or anything else this way.
 
 ### Exporting a Plot
 
-If you're producing an RMarkdown document you never have to worry about exporting a plot because it will simply display in-line with your code and explanatory text. But what if you need to export it for, say, a Powerpoint presentation?
+If you're producing Quarto document you never have to worry about exporting a plot because it will simply display in-line with your code and explanatory text. But what if you need to export it for, say, a Powerpoint presentation?
 
 The easiest way is probably `ggsave()`.
 

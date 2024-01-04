@@ -2,7 +2,7 @@
 title: "Tutorial 4.1 - Tidy Data I"
 
 author: "Zachary Binney, PhD"
-date: "February 2021"
+date: "January 2024"
 
 output: 
   learnr::tutorial:
@@ -169,8 +169,8 @@ tidy_econ
 ```
 
 ```{r chinaplot1-solution}
-tidy_econ %>% 
-  filter(country == "China", year >= 2007) %>% 
+tidy_econ |> 
+  filter(country == "China", year >= 2007) |> 
   ggplot(aes(x = year, y = GDPpcap)) +
   geom_line() +
   geom_point()
@@ -207,7 +207,7 @@ We could use `dplyr` verbs and `ggplot` with no further alterations to this tidy
                        year = yrs)
   
   # OK. NOW we can finally make our plot as before...
-  new_tibble %>% 
+  new_tibble |> 
     ggplot(aes(x = year, y = china_gdp)) +
     geom_line() +
     geom_point()
@@ -332,7 +332,7 @@ Consider two different research questions.
 ```
 
 ```{r scatter1-solution}
-abortion %>% 
+abortion |> 
   ggplot(aes(x = CDC, y = AGI)) +
   geom_point()
 
@@ -351,13 +351,13 @@ abortion %>%
 
 ```{r scatter2-solution}
 # One solution
-ab_long <- abortion %>%
+ab_long <- abortion |>
   pivot_longer(cols = c(CDC, AGI), 
                names_to = "source",
                values_to = "abort_count")
 
-ab_long %>% 
-  filter(state == "GA") %>% 
+ab_long |> 
+  filter(state == "GA") |> 
   ggplot(aes(x = year, y = abort_count, color = source)) +
   geom_point()
   
@@ -416,7 +416,7 @@ The basic structure of a `separate()` call is:
 
 ```{r sep2, eval = FALSE}
 
-<OLD DATA FRAME> %>%
+<OLD DATA FRAME> |>
 separate(<COLUMN YOU WISH TO SEPARATE>, 
          into = c(<NAMES OF COLUMNS YOU WANT TO CREATE TO HOLD THE NEW SEPARATED VALUES, SEPARTED BY COMMAS>), 
          sep= <CONDITION OR SPOT AT WHICH YOU SEPARATE OLD COLUMN VALUES>)
@@ -429,7 +429,7 @@ Anyway, here's how we'd tidy up `table3`:
 ```{r sep3, exercise = TRUE}
 #Tidying up table3 with separate()
 
-table3 %>%
+table3 |>
 separate(rate, # Separate rate
          into = c("cases", "population"), # Split it into two columns called cases and population 
          sep = "/", # Split the values into pieces before the / and after it
@@ -457,7 +457,7 @@ economics
 The results of the first part of the challenge should look like this: 
 
 ```{r sep_exer_soln1, echo = FALSE}
-economics %>%
+economics |>
   separate(date, into = c("year", "month", "day"), sep = "-")
 
 ```
@@ -465,7 +465,7 @@ economics %>%
 The results of the second part of the challenge may look like this: 
 
 ```{r sep_exer_soln2, echo = FALSE}
-economics %>%
+economics |>
   separate(date, into = c("year", "month-day"), sep = 4)
 
 ```
@@ -478,7 +478,7 @@ Sir Isaac Newton told us that for every action there is an equal and opposite re
 
 ```{r unite1, eval = FALSE}
 
-<OLD DATA FRAME> %>%
+<OLD DATA FRAME> |>
 unite(<NAME OF NEW COLUMN AFTER UNIFICATION>, 
          (<NAMES OF COLUMNS YOU WANT TO UNIFY, SEPARATED BY COMMAS), 
          sep = <CHARACTERS, IF ANY, YOU WANT TO INSERT BETWEEN VALUES FROM UNIFIED COLUMNS>)
@@ -489,7 +489,7 @@ You wouldn't normally do this because it violates tidy principles, but let's say
 ```{r unite2, exercise = TRUE}
 #Tidying up table3 with separate()
 
-table1 %>%
+table1 |>
 unite(rate, # Create new rate column
          cases, population, # Unite these two into `rate` 
          sep = "/") # Split the values using a "/" in the new column

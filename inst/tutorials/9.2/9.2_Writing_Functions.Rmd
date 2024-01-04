@@ -2,7 +2,7 @@
 title: "Tutorial 9.2 - Writing Functions"
 
 author: "Zachary Binney, PhD"
-date: "November 2020"
+date: "January 2024"
 
 output: 
   learnr::tutorial:
@@ -136,7 +136,7 @@ Take your new function for a test drive in your own script.
 
 ```{r func_rescale_test, eval = FALSE}
 # Now we can use this function any time we want to calculate the range of a column. Let's use it!
-penguins_rescale <- penguins %>% 
+penguins_rescale <- penguins |> 
   mutate(body_mass_rescale = rescale01(body_mass_g), # We can use our new function right here. So compact!
          bill_length_rescale = rescale01(bill_length_mm))
 

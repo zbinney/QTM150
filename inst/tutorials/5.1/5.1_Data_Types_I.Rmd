@@ -2,7 +2,7 @@
 title: "Tutorial 5.1 - Data Types I (Vectors and Lists)"
 
 author: "Zachary Binney, PhD"
-date: "October 2020"
+date: "January 2024"
 
 output: 
   learnr::tutorial:

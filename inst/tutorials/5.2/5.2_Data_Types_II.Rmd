@@ -2,7 +2,7 @@
 title: "Tutorial 5.2 - Data Types II (Data Frames and Tibbles)"
 
 author: "Zachary Binney, PhD"
-date: "October 2020"
+date: "January 2024"
 
 output: 
   learnr::tutorial:
@@ -84,7 +84,7 @@ The object `rock` is not food - that is, it lacks an **attribute** that makes it
 #Eat a rock
 x <- c(1:10)
 
-x %>% select(everything())
+x |> select(everything())
 ```
 But the object `rice` *does* have the food **attribute**. So when our body encounters it and we run `eat(rice)`, the function `eat()` works. Try eating rice by feeding a **tibble** to `select()`:
 
@@ -92,7 +92,7 @@ But the object `rice` *does* have the food **attribute**. So when our body encou
 #Eat rice
 midwest
 
-midwest %>% select(everything())
+midwest |> select(everything())
 ```
 
 Often functions can take multiple types of input but may do different things depending on what the **class** of that input is. For example, `print()`, `str()`, and `as.Date()` will try to do different things depending on whether you feed it a vector or list, and what `typeof` vector or list it is.
@@ -247,7 +247,7 @@ It turns out this is *exactly* how `filter()` works! Consider this code:
 
 ```{r filt, exercise = TRUE}
 # This returns all cars with a 4-cylinder engine
-mpg %>% 
+mpg |> 
   filter(cyl == 4)
 
 # So does this!
@@ -273,7 +273,7 @@ mpg[5] # Returns the same thing because R interprets this as "selecting" the 5th
 mpg["cyl"] # Returns a data frame with one column
 
   # This is essentially how select() works!
-  mpg %>% 
+  mpg |> 
     select(cyl) # Returns a data frame with one column
 
 # Or column names with this new subset operator, $
@@ -298,7 +298,7 @@ One other way is `pull()`, like so:
 ```{r one_column_pull, exercise = TRUE}
 
 #Use pull to access a single columns
-mpg %>% 
+mpg |> 
   pull(cyl)
 
 ```
@@ -313,8 +313,8 @@ If you're thinking really deeply about R you might wonder what's the difference 
 
 ```{r mut1, exercise = TRUE}
 # Calculate the difference between city and highway mileage for each car
-mpg %>% 
-  mutate(mile_diff = cty - hwy) %>% 
+mpg |> 
+  mutate(mile_diff = cty - hwy) |> 
   select(mile_diff, everything())
 
 ```
@@ -325,13 +325,13 @@ Not every function is vectorized, though. For example, you need a workaround if 
 
 ```{r mut2, exercise = TRUE}
 # Mean highway and city mileage - works
-mpg %>% 
-  mutate(mile_diff = (cty+hwy)/2) %>% 
+mpg |> 
+  mutate(mile_diff = (cty+hwy)/2) |> 
   select(mile_diff, everything())
 
 # Mean highway and city mileage - broken
-mpg %>% 
-  mutate(mile_diff = mean(cty, hwy)) %>%
+mpg |> 
+  mutate(mile_diff = mean(cty, hwy)) |>
   select(mile_diff, everything())
 
 ```

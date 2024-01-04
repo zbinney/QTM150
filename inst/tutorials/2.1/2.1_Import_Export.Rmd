@@ -2,7 +2,7 @@
 title: "Tutorial 2.1 - Working Directories; Data Import and Export"
 
 author: "Zachary Binney, PhD"
-date: "September 2020"
+date: "January 2024"
 
 output: 
   learnr::tutorial:
@@ -127,15 +127,14 @@ diabobes <- read_csv("../obesity-diabetes.csv")
 
 You can also combine these tricks to move up, then down. If you need to take one step "up" in your file structure, then access another sub-directory, just start with `..` and then specify the sub-directory you need. Note you can specify as many sub-directory steps as you want, just like with a normal file path.
 
-### Working Directories in RMarkdown
+### Working Directories in Quarto
 
-RMarkdown notebooks (`.Rmd` files) work differently than R scripts.
+Quarto notebooks (`.Rmd` files) work differently than R scripts.
 
-In RMarkdown files, the working directory is *automatically* set to be the location of the RMarkdown file. As long as that's what you want, there's no need to set it explicitly.
+In Quarto files, the working directory is *automatically* set to be the location of the Quarto file. As long as that's what you want, there's no need to set it explicitly.
 
-If that's *not* what you want you have to change the working directory, but differently than how we discussed before. The most common way would be in the `setup` chunk, usually at the beginning of the RMarkdown document just below the YAML header. You would use code like this inside that chunk: `knitr::opts_knit$set(root.dir = '[FILE PATH FOR WORKING DIRECTORY]')`.
+If that's *not* what you want you have to change the working directory, but differently than how we discussed before. The most common way would be in the `setup` chunk, usually at the beginning of the Quarto document just below the YAML header. You would use code like this inside that chunk: `knitr::opts_knit$set(root.dir = '[FILE PATH FOR WORKING DIRECTORY]')`.
 
-For more on manipulating working directories in RMarkdown, see [chapter 16.6 of Yihui Xie's incredible resource the *R Markdown Cookbook*](https://bookdown.org/yihui/rmarkdown-cookbook/working-directory.html).
 
 
 ## Data Import

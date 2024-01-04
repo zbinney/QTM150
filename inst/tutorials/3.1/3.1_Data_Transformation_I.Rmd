@@ -2,7 +2,7 @@
 title: "Tutorial 3.1 - Data Transformation I"
 
 author: "Zachary Binney, PhD"
-date: "September 2020"
+date: "January 2024"
 
 output: 
   learnr::tutorial:

@@ -2,7 +2,7 @@
 title: "Tutorial 4.2 - Tidy Data II"
 
 author: "Zachary Binney, PhD"
-date: "March 2021"
+date: "January 2024"
 
 output: 
   learnr::tutorial:
@@ -45,8 +45,8 @@ tidy_econ <- read.csv("./datasets/tidy_econ.csv")
 Let's return to one of our basic toy example of un-tidy data (cases of a disease in various countries):
 
 ```{r pivot_longer1}
-table4a <- table4a %>% 
-  mutate(yr_2001 = c(1700, 51000, 213000)) %>%  # Adding a fourth column so going to long format
+table4a <- table4a |> 
+  mutate(yr_2001 = c(1700, 51000, 213000)) |>  # Adding a fourth column so going to long format
                                                 # will actually result in fewer columns (from 4 in wide to 3 in long format)
   rename(yr_2000 = `2000`, # Renaming columns so later code will work in learnr
          yr_1999 = `1999`)
@@ -78,7 +78,7 @@ This data frame exhibits a *very* common issue where the columns are not separat
 We are going to **reshape** this wide data frame into long (tidy) format by ensuring there is only *one* (1) observation - defined as data from a single country in a singe year - in each row. This will add rows to our data frame, making it **longer** (or taller, and narrower). We accomplish this with a new function, `pivot_longer()`. Here's the general format for a basic call:
 
 ```{r pivot_longer_form, eval = FALSE}
-<WIDE DATA FRAME> %>% 
+<WIDE DATA FRAME> |> 
   pivot_longer(cols = <NAMES OF COLUMNS ACROSS WHICH SINGLE OBSERVATION IS SPLIT, CHOSEN USING `select()` SYNTAX>,
                names_to = <QUOTED STRING OF THE IMPLICIT VARIABLE REPRESENTED IN THE NAMES OF cols>,
                values_to = <QUOTED STRING OF THE VARIABLE REPRESENTED BY THE VALUES STORED IN cols>)
@@ -89,7 +89,7 @@ This probably doesn't make a ton of sense right now. Let's see it in action:
 
 ```{r pivot_longer2}
 # Change `table4a` from wide to long format
-table4a %>% 
+table4a |> 
   pivot_longer(cols = yr_1999:yr_2001, # Note the select() style syntax
                names_to = "year",
                values_to = "cases")
@@ -111,13 +111,13 @@ Let's discuss briefly what I mean by using `select()` syntax for the `cols =` ar
 
 ```{r pivot_longer_select}
 # Change `table4a` from wide to long format
-table4a %>% 
+table4a |> 
   pivot_longer(cols = yr_1999:yr_2001,
                names_to = "year",
                values_to = "cases")
 
 # Change `table4a` from wide to long format
-table4a %>% 
+table4a |> 
   pivot_longer(cols = -country,
                names_to = "year",
                values_to = "cases")
@@ -137,7 +137,7 @@ Also note this was a *very* simple example of how to use `pivot_longer()`. For m
 Remember Newton's third law? Here it is again. For (some) actions in R we want an equal and opposite reaction. The `pivot_longer()` function took us from wide-to-long...but what if we want to go in reverse from long-to-wide? Let me introduce `pivot_wider()`:
 
 ```{r pivot_wider_form, eval = FALSE}
-<LONG DATA FRAME> %>% 
+<LONG DATA FRAME> |> 
   pivot_wider(names_from = <QUOTED STRING OF COLUMN TO TAKE NEW COLUMN NAMES FROM>,
               values_from = <QUOTED STRING OF THE COLUMN THAT HOLDS THE VALUES FOR THE NEW COLUMNS>)
 
@@ -157,7 +157,7 @@ Anyway, maybe we'd like to reshape this to put each observation in a single row.
 
 ```{r pivot_wider2, exercise = TRUE}
 # Tidy table2 by widening it
-table2 %>% 
+table2 |> 
   pivot_wider(names_from = "type", # Will create two new columns, one for each value of "type"
               values_from = "count") # Will place values from count into those two new columns
 

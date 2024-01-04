@@ -2,7 +2,7 @@
 title: "Tutorial 6.4 - Advanced Visualization: Maps"
 
 author: "Zachary Binney, PhD"
-date: "January 2021"
+date: "January 2024"
 
 output: 
   learnr::tutorial:
@@ -34,9 +34,9 @@ pacman::p_load(tidyverse, ggmap, maps, mapdata, RColorBrewer, colorRamps)
 
 #Prep some data for later. Ignore this code.
 us_state <- map_data("state")
-diabobes <- read.csv("./datasets/obesity-diabetes.csv") %>% 
+diabobes <- read.csv("./datasets/obesity-diabetes.csv") |> 
   mutate(state = str_to_lower(state))
-us_state_diab <- us_state %>% 
+us_state_diab <- us_state |> 
   left_join(diabobes, by = c("region" = "state"))
 
 ```
@@ -73,7 +73,7 @@ wyoming <- tibble(x = c(1, 1, 3, 3),
                   y = c(1, 2, 2, 1))
 
 #Plot the polygon defined by the coordinates
-wyoming %>% 
+wyoming |> 
   ggplot(aes(x = x, y = y)) +
   geom_point() +
   geom_polygon(fill = "yellow")
@@ -178,7 +178,7 @@ quiz(
 At this point you should be able to look at any output of `map_data()` in R and be able to roughly read and understand it. Test your knowledge with the code below (run it in your own script to make exploration easier). Can you figure out what it shows? If not, practice a little more with the data frames above.
 
 ```{r map_data_china, exercise = TRUE}
-china <- map_data("world") %>% 
+china <- map_data("world") |> 
   filter(region == "China")
 china
 
@@ -233,7 +233,7 @@ We have an `order` variable to make it easy to return the data to the correct or
 
 ```{r map_plot_badorder, exercise = TRUE}
 #U.S. state map...but ordered by longitude
-us_state <- map_data("state") %>% 
+us_state <- map_data("state") |> 
   arrange(desc(long))
 
 ggplot(us_state, aes(x = long, y = lat)) +
@@ -253,9 +253,9 @@ What if you only want to plot a portion of your data, for example just a few sta
 #U.S. southeast state map
 us_state <- map_data("state")
 
-us_state %>% 
+us_state |> 
   #Only plot certain states
-  filter(region %in% c("georgia", "florida", "alabama", "tennessee", "north carolina", "south carolina")) %>% 
+  filter(region %in% c("georgia", "florida", "alabama", "tennessee", "north carolina", "south carolina")) |> 
   ggplot(aes(x = long, y = lat)) +
     geom_polygon(aes(group = group), 
                  color = "black", fill = "red") + 
@@ -275,10 +275,10 @@ You can also Zoom in by defining a specific latitude and longitude. Let's start 
 
 ```{r map_plot_ga_counties, exercise = TRUE}
 #County map of Georgia
-ga_county <- map_data("county") %>% 
+ga_county <- map_data("county") |> 
   filter(region == "georgia")
 
-ga_county %>% 
+ga_county |> 
   ggplot(aes(x = long, y = lat)) +
     geom_polygon(aes(group = group), 
                  color = "black", fill = "lavender") + 
@@ -289,10 +289,10 @@ What if we want to Zoom in on *just* the Metro Atlanta area, though? We could se
 
 ```{r map_plot_atl, exercise = TRUE}
 #County map of Atlanta
-ga_county <- map_data("county") %>% 
+ga_county <- map_data("county") |> 
   filter(region == "georgia")
 
-ga_county %>% 
+ga_county |> 
   ggplot(aes(x = long, y = lat)) +
     geom_polygon(aes(group = group), 
                  color = "black", fill = "lavender") + 
@@ -326,7 +326,7 @@ Correct the code below to create a better map. HINT: You should be making two ch
 
 ```{r west_coast_needs_fix, exercise = TRUE}
 #U.S. west coast map
-west_coast <- map_data("state") %>% filter(region %in% c("california", "oregon", "washington"))
+west_coast <- map_data("state") |> filter(region %in% c("california", "oregon", "washington"))
 
 ggplot(data = west_coast) + 
   geom_polygon(aes(x = long, y = lat), fill = "palegreen", color = "black") 
@@ -404,12 +404,12 @@ diabobes <- read.csv("./datasets/obesity-diabetes.csv")
 head(diabobes)
 
 #Link diabetes prevalence data to map data
-diabobes <- diabobes %>% 
+diabobes <- diabobes |> 
   
   #Make all state names lower case to match with map data
   mutate(state = str_to_lower(state))
   
-us_state_diab <- us_state %>% 
+us_state_diab <- us_state |> 
   left_join(diabobes, by = c("region" = "state")) # Region in map data corresponds to state in diabetes data
 
 head(us_state_diab)

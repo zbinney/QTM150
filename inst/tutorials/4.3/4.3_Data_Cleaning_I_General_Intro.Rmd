@@ -2,7 +2,7 @@
 title: "Tutorial 4.3 - Data Cleaning I - General Intro"
 
 author: "Zachary Binney, PhD"
-date: "March 2021"
+date: "January 2024"
 
 output: 
   learnr::tutorial:
@@ -191,8 +191,8 @@ To fix that, let me introduce you to the magical function `janitor::clean_names(
 
 ```{r clean_names2, exercise = TRUE}
 
-stroke %>% 
-  clean_names() %>% 
+stroke |> 
+  clean_names() |> 
   head()
 
 ```
@@ -209,7 +209,7 @@ It also has some very useful functions like `tabyl()` for creating "contingency 
 
 ```{r tabyl, exercise = TRUE}
 
-stroke %>% 
+stroke |> 
   tabyl(FEMALE, MARITAL)
 
 ```
@@ -241,7 +241,7 @@ But what if somebody's finger slipped during data entry?
 
 ```{r check_vals2, exercise = TRUE}
 
-penguins_error <- penguins %>% 
+penguins_error <- penguins |> 
   mutate(flipper_length_mm = case_when(flipper_length_mm == 231 ~ as.integer(2231),
                                        TRUE ~ flipper_length_mm))
 
@@ -266,12 +266,12 @@ As an example of how plotting can help you catch impossible values, consider the
 
 ```{r plot_data1, exercise = TRUE}
 # No big problems detected (though we can see we might have substantial differences by species)
-penguins %>% 
+penguins |> 
   ggplot(aes(x = flipper_length_mm)) +
   geom_density()
 
 # BIG PROBLEM
-classic_rock_song_list %>% 
+classic_rock_song_list |> 
   ggplot(aes(x = release_year)) + # release_year is the year a "classic rock" song was released
                                   # with just a little domain knowledge, you know this should probably be roughly from 1950 and later
   geom_density()
@@ -320,7 +320,7 @@ Back to our `stroke` data! We have a bunch of numbers. From the data dictionary 
 
 ```{r recode_as_factor, exercise = TRUE}
 
-stroke_recode <- stroke %>% 
+stroke_recode <- stroke |> 
   mutate(MARITAL = factor(MARITAL, # Change marital from its current type (integer) into a factor
                           levels = c(1, 2), # List the current values of the variable
                           labels = c("Married", "Unmarried"))) # Assign labels to those, in order
@@ -340,7 +340,7 @@ For more general recoding of certain values you can use `recode()`. Here are a c
 ```{r recode_general, exercise = TRUE}
 
 #Recode time in months rather than days
-stroke_recode <- stroke %>% 
+stroke_recode <- stroke |> 
   mutate(time = recode(time, 
                           "90" = 3L, # L to specify we want an integer to match type in our new column 
                           "365" = 12L)) # Even though time is an integer, we have to put each old value in quotes
@@ -357,7 +357,7 @@ str(stroke_recode)
 state_abbs <- c("IL" = "Illinois", "OH" = "Ohio", "IN" = "Indiana", "MI" = "Michigan", "WI" = "Wisconsin")
 
 
-midwest_recode <- midwest %>% 
+midwest_recode <- midwest |> 
   mutate(state = recode(state, !!!state_abbs)) # If you're passing in a vector, precede it with !!!
 
 #Check our work
@@ -372,14 +372,14 @@ You can also recode with joins. Here's an example, again using our `midwest` dat
 ```{r recode_join, exercise = TRUE}
 
 #Recode state abbreviations to full names using another data frame
-state.keys <- tibble(state = state.name, ab = state.abb) %>%  # state.name and state.abb are vectors built in to R
+state.keys <- tibble(state = state.name, ab = state.abb) |>  # state.name and state.abb are vectors built in to R
   rename(state_name = state)
 state.keys
 
 
-midwest_recode <- midwest %>% 
-  select(county, state, poptotal) %>% # To create smaller data frame to easily see what happens
-  left_join(state.keys, by = c("state" = "ab")) %>% 
+midwest_recode <- midwest |> 
+  select(county, state, poptotal) |> # To create smaller data frame to easily see what happens
+  left_join(state.keys, by = c("state" = "ab")) |> 
   select(-state)
 
 #Check our work
@@ -428,7 +428,7 @@ How can we make `widgets_made` a numeric variable? Let's try a very simple solut
 ```{r char_to_num2, exercise = TRUE}
 
 # Simple solution to make widgets_made numeric
-widgets %>% 
+widgets |> 
   mutate(widgets_made = as.numeric(widgets_made))
 
 ```
@@ -446,10 +446,10 @@ Unfortunately we also lost the numeric value for Guangdong. Because it had comma
 ```{r char_to_num3}
 
 # Correct solution to make widgets_made numeric
-widgets %>% 
+widgets |> 
   mutate(widgets_made = str_replace_all(widgets_made, #Take the string widgets_made and replace every (all)...
                                     ",", #...comma...
-                                    "")) %>%  #...with nothing (no character)
+                                    "")) |>  #...with nothing (no character)
   mutate(widgets_made = as.numeric(widgets_made))
 
 ```
@@ -469,7 +469,7 @@ The first thing to do is identify *if* there are any duplicated observations. On
 penguins_dupe <- rbind(penguins, penguins[300,], penguins[300,], penguins[13,])
 
 #Check for duplicates
-penguins_dupe %>% 
+penguins_dupe |> 
   get_dupes()
 
 ```
@@ -483,7 +483,7 @@ By default, `get_dupes()` checks for rows that duplicate *all* columns. But you 
 #Remember penguins itself is a clean dataset with no duplicates
 
 #Check for duplicates
-penguins %>% 
+penguins |> 
   get_dupes(species, island, sex, bill_length_mm, flipper_length_mm)
 
 ```
@@ -504,7 +504,7 @@ penguins_dupe <- rbind(penguins, penguins[300,], penguins[300,], penguins[13,])
 str(penguins_dupe) # 347 total observations right now
 
 #Remove duplicates (find them, then delete all but the first in each duplicate set)
-penguins_dupe %>% 
+penguins_dupe |> 
   distinct() # Notice we're only left with 344 rows, the correct number of unique penguins
 
 ```
@@ -518,7 +518,7 @@ You can also use `distinct()` for subsets of columns, but the same big flashing 
 #Remember penguins itself is a clean dataset with no duplicates
 
 #Remove "duplicates"
-penguins %>% 
+penguins |> 
   distinct(species, island, sex, bill_length_mm, flipper_length_mm,
            .keep_all = TRUE) # Oh no! We should keep all 344 penguins from the original data frame,
                              # but we only have 339
@@ -543,7 +543,7 @@ q <- data.frame(v1 = c(1, NA, 3),
 q
 
 # Remove empty rows and columns
-q_clean <- q %>%
+q_clean <- q |>
   remove_empty(c("rows", "cols"))
 q_clean
 
@@ -701,7 +701,7 @@ The first three rows are all data on Derrick - we just left the second and third
 
 ```{r fill2, exercise = TRUE}
 
-treatment %>% 
+treatment |> 
   fill(person) # Specify the variable name(s) you want to fill with prior values
 
 ```
@@ -721,12 +721,12 @@ Another thing you can do is fill in `NA`s with sensible actual values of the var
 ```{r impute_static, exercise = TRUE}
 
 # Impute 0 for missing FIM using our old friend case_when()
-stroke %>% 
+stroke |> 
   mutate(fim = case_when(is.na(fim) ~ as.integer(0), # To indicate FIM should stay as integers, not switch to doubles
                          TRUE ~ fim))
 
 # Impute 0 for missing FIM using replace_na()
-stroke %>% 
+stroke |> 
   replace_na(list(fim = 0)) # Must enclose your recodings as a list()
 
 ```    
@@ -741,7 +741,7 @@ I'd urge using static imputation with extreme caution. **You need a really stron
 ```{r impute_mean, exercise = TRUE}
 
 # Impute mean for missing FIM
-stroke %>% 
+stroke |> 
   mutate(fim = case_when(is.na(fim) ~ mean(fim), 
                          TRUE ~ as.double(fim)))  # To allow for decimals, make fim a double rather than integer
 
@@ -754,19 +754,19 @@ You can also impute other summary statistics easily by using, for example, `impu
 ```{r impute_mean_subgroup, exercise = TRUE}
 
 # Calculate the mean fim by racial group in a separate data frame
-mean_fim_race <- stroke %>% 
-  group_by(RACE) %>% 
+mean_fim_race <- stroke |> 
+  group_by(RACE) |> 
   summarize(mean_fim = mean(fim, na.rm = TRUE)) # Only use non-missing FIM for the mean calculations
 
 mean_fim_race
 
 # Link this data back into the main data frame
-stroke %>% 
+stroke |> 
   # Link in mean data
-  left_join(mean_fim_race, by = "RACE") %>% 
+  left_join(mean_fim_race, by = "RACE") |> 
   #Fill in missing fim values with group means
   mutate(fim = case_when(is.na(fim) ~ mean_fim, 
-                         TRUE ~ as.double(fim))) %>%  # To allow for decimals, make fim a double rather than integer
+                         TRUE ~ as.double(fim))) |>  # To allow for decimals, make fim a double rather than integer
   # Drop new column
   select(-mean_fim)
 
@@ -786,7 +786,7 @@ The big issue with implicit missing observations is identifying them and making 
 ```{r complete, exercise = TRUE}
 
 # Print some data on Zoom stock prices, with the missing quarter filled in
-stocks %>% 
+stocks |> 
   complete(year, qtr)
 
 ```
