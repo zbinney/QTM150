@@ -93,9 +93,9 @@ Notice you already know a little bit about `penguins`. For example:
 ```{r dims, echo=FALSE}
 quiz(
   question("What are the dimensions of the `penguins` dataset?",
-      answer("344 rows x 7 columns", correct = TRUE, message = "That's right! This dataset has 344 observations (i.e. rows, or penguins) and 7 variables (i.e. columns) of data about each one."),
-      answer("7 rows x 344 columns"),
-      answer("7 rows x 7 columns"),
+      answer("344 rows x 8 columns", correct = TRUE, message = "That's right! This dataset has 344 observations (i.e. rows, or penguins) and 8 variables (i.e. columns) of data about each one."),
+      answer("8 rows x 344 columns"),
+      answer("8 rows x 8 columns"),
       answer("We don't know?"),
       type = "learnr_radio",
       allow_retry = TRUE)
@@ -166,7 +166,7 @@ Look at the output in your Console. What can you learn about the data just from 
 
 * This data is stored as a **tibble**.
 
-* The **dimensions** are 344 rows x 7 columns...unless you used the `head()` or `tail()` function, in which case R truncates the dataset behind the scenes and now treats `penguins` as having only 6 rows.
+* The **dimensions** are 344 rows x 8 columns...unless you used the `head()` or `tail()` function, in which case R truncates the dataset behind the scenes and now treats `penguins` as having only 6 rows.
 
 * **Variable names**. These are the names of the columns in the tibble. For example, "species" and "bill_length_mm" (penguin bill lenth in millimeters).
 
@@ -654,7 +654,7 @@ Much like a standard boxplot, the box runs from the 1st to 3rd quartiles (25th-7
 
 ##### **Raincloud Plots**
 
-I *love* raincloud plots because they show a ton of information, mitigate the disadvantages of both histograms and density plots, and yet don't overwhelm the viewer. The code below (and given above) is for a quick and dirty version of one of these plots, but there are also [much more detailed (and complex) examples](https://micahallen.org/2018/03/15/introducing-raincloud-plots/). Let's break it down line-by-line: 
+I *love* raincloud plots because they show a ton of information, mitigate the disadvantages of both histograms and density plots, and yet don't overwhelm the viewer. The code below (and given above) is for a quick and dirty version of one of these plots, but there are also [much more detailed (and complex) examples](https://rpubs.com/rana2hin/raincloud). Let's break it down line-by-line: 
 
 ```{r raincloud_1var, exercise = TRUE, warning = FALSE}
 

@@ -298,7 +298,7 @@ If you determine it isn't, then you have to figure out what the problem was. The
 
 Once you identify what situation you have, you can figure out what to do:
 
-* If it's actually supposed to be a missing observation, re-code it to `NA` (or however what software you're using stores missing values; SAS, for example, uses `.`)
+* If it's actually supposed to be a missing observation, re-code it to `NA`
 
 * If it's a data entry error, can you get the correct value? Think back to HW4 in QTM 150. We had a song by Elton John that said it was released in the year 1071. You can pretty well guess based on context clues or a little bit of external research that it should actually be 1971!
 
@@ -425,7 +425,7 @@ This mismatch happened because someone stored one of our numbers using commas ev
 How can we make `widgets_made` a numeric variable? Let's try a very simple solution:
 
 
-```{r char_to_num2, exercise = TRUE}
+```{r char_to_num2, exercise = TRUE, exercise.setup = "char_to_num"}
 
 # Simple solution to make widgets_made numeric
 widgets |> 
@@ -443,7 +443,7 @@ First look at Wuhan, which had a literal character value of "NA", is changed to 
 
 Unfortunately we also lost the numeric value for Guangdong. Because it had commas, R couldn't figure out how to automatically coerce it to a number - so it just set it to missing. To fix that we have to first remove the commas. To do that we have to learn how to manipulate and change character strings. We'll cover that in much more detail in the next Tutorial, but for now here's how you could accomplish it:
 
-```{r char_to_num3}
+```{r char_to_num3, exercise = TRUE, exercise.setup = "char_to_num"}
 
 # Correct solution to make widgets_made numeric
 widgets |> 
@@ -576,6 +576,12 @@ stocks <- tibble(
 
 ```{r missing_data_types}
 
+stocks <- tibble(
+  year   = c(2019, 2019, 2019, 2019, 2020, 2020, 2020),
+  qtr    = c(   1,    2,    3,    4,    2,    3,    4),
+  price = c(NA, 62, 91.88, 73.55, 124.51, 245.87, 492.41)
+)
+
 # Print some data on Zoom stock prices
 stocks
 
@@ -699,7 +705,7 @@ treatment
 
 The first three rows are all data on Derrick - we just left the second and third ones blank. It's quite easy to fill them in by carrying prior values forward using the `fill()` function, also in `tidyverse`:
 
-```{r fill2, exercise = TRUE}
+```{r fill2, exercise = TRUE, exercise.setup = "fill1"}
 
 treatment |> 
   fill(person) # Specify the variable name(s) you want to fill with prior values
@@ -783,7 +789,7 @@ The most sophisticated (and best) methods for imputing missing data right now in
 The big issue with implicit missing observations is identifying them and making them explicit so they can be dealt with properly. The best strategy I can offer you for this is the `complete()` function in the tidyverse. This function takes a sequence of variables, creates all possible combinations of them, and makes sure they all appear in your data frame. If one doesn't, it creates that combination and fills in `NA`s for all the other variables. Here's an example:
 
 
-```{r complete, exercise = TRUE}
+```{r complete, exercise = TRUE, exercise.setup = "create_data"}
 
 # Print some data on Zoom stock prices, with the missing quarter filled in
 stocks |> 

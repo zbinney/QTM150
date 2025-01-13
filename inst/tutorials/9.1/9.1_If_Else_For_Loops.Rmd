@@ -22,7 +22,7 @@ pacman::p_load(learnr)
 
 Today we enter our final chapter, where we superficially cover some major statistical programming techniques you might need in your careers: if-else statements, for-loops, basic function writing, iteration, and statistical simulation. Today we cover the first two of these.
 
-Once again we don't need much from packages today - just `lubridate` for dates and the `tidyverse`, plus `palmerpenguins` for some data. **Just remember to run this code in your own script before proceeding.**
+Once again we don't need much from packages today - just the `tidyverse`, plus `palmerpenguins` for some data. **Just remember to run this code in your own script before proceeding.**
 
 ```{r setup, message = FALSE}
 pacman::p_load(tidyverse, lubridate, palmerpenguins)
@@ -161,18 +161,18 @@ An `else` condition simply always returns `TRUE`, so it is executed if everythin
 
 If the code inside an `if()` or `else if()` function returns `NA`, the whole **if-else** statement will throw an error. If it returns a vector rather than a single `TRUE`/`FALSE` logical value, you'll get a warning and R will execute or not execute the code based on the first value of that vector.
 
-This also means you need to be careful if you want to test for equality in an `if()` or `else if()` condition. The normal equality operator `==` is vectorized, so if you feed it any vector of length 2 or more on either side it will return a vector of length 2 or more. Instead you can use the function `identical()` - but be careful, as you can run into problems with type comparisons (e.g. `identical(6L, 6)` will return `FALSE` because the former is an integer and the latter a double) and floating point arithmetic (e.g. `identical(sqrt(2)**2, 2)` will return `FALSE` because R has to round the former so it's not *exactly* 2).
+This also means you need to be careful if you want to test for equality in an `if()` or `else if()` condition. The normal equality operator `==` is vectorized, so if you feed it any vector of length 2 or more on either side it will return a vector of length 2 or more. Instead you can use the function `identical()` - but be careful, as you can run into problems with type comparisons (e.g. `identical(6L, 6)` will return `FALSE` because the former is an integer and the latter a double).
 
-One other way to deal with vectors being returned is to use `any()` or `all()`. For example:
+One other way to deal with vectors in **if-else statements** is to use `any()` or `all()`. For example:
 
 ```{r any_all, exercise = TRUE}
 # == operator is vectorized
 2 == c(1:3)
 
-# any() returns TRUE if, well, ANY element of the vector is TRUE
+# any() returns TRUE if ANY element of the vector is TRUE
 any(2 == c(1:3))
 
-# all() returns TRUE if, well, ALL elements of the vector are TRUE
+# all() returns TRUE if ALL elements of the vector are TRUE
 all(2 == c(1:3))
 
 all(2 == c(2, 2, 2))
@@ -182,7 +182,7 @@ all(2 == c(2, 2, 2))
 
 ### Multiple Conditions
 
-If you want code to execute only if multiple conditions are met, use the operators `||` for "OR" and `&&` for "AND". Don't use a single `|` or `&` as these functions are vectorized, and you don't want a vector - you want to produce a single `TRUE` or `FALSE`.
+If you want code to execute only if multiple conditions are met, use the operators `|` for "OR" and `&` for "AND".
 
 For example, what if I want my computer to only wish *me* good morning, and not you?
 
@@ -193,7 +193,7 @@ name <- "Zach"
 
 hr <- 6 # Setting the hour manually to 6am for this example so you know that condition is met
 
-if (between(hr, 5, 11) && name == "Zach") { # Check if it's between 5am and 11am
+if (between(hr, 5, 11) & name == "Zach") { # Check if it's between 5am and 11am
   
   print("Good Morning, Zach!")
 
@@ -211,7 +211,7 @@ if (between(hr, 5, 11) && name == "Zach") { # Check if it's between 5am and 11am
 
 If you find yourself writing a lot of else-if statements and creating a very long block that's hard to read and understand, consider another technique to create more compact code, like `switch()`. 
 
-In `mutate()`, `case_when()` fills that same kind of role - allowing you to write compactly what might otherwise take a nasty string of nested if-else statements. We're not going to get into these strategies in more detail today, though, since we covered them back in Tutorial 3.2. See [*R for Data Science* Ch. 19.4.2 for an example, though.](https://r4ds.had.co.nz/functions.html#multiple-conditions)
+In `mutate()`, `case_when()` fills that same kind of role - allowing you to write compactly what might otherwise take a nasty string of nested if-else statements. We're not going to get into these strategies in more detail today, though, since we covered them back in Tutorial 3.2. See [*R for Data Science* Ch. 12.5.2 for an example, though.](https://r4ds.hadley.nz/logicals#case_when)
 
 
 ## For-Loops

@@ -65,7 +65,7 @@ Maps, at their core, are just collections of shapes. And you (sort of) already k
 
 ### [If You Can Plot a Rectangle, You Can Plot a Map](https://www.youtube.com/watch?v=1ZXHsNqkDI4)
 
-How would we plot a rectangle in `ggplot()`? Try this code. We introduce one new **geom** you haven't encountered before, but with you existing skills you should be able to make a good guess about what it does:
+How would we plot a rectangle in `ggplot()`? Try this code. We introduce one new **geom** you haven't encountered before, but with your existing skills you should be able to make a good guess about what it does:
 
 ```{r squareplot, exercise = TRUE}
 #Create tibble of coordinates with two columns, X and Y
@@ -81,7 +81,7 @@ wyoming |>
 ```
 All we did here was specify a set of x and y-coordinates specifying the corners of a polygon (in this case, four coordinates for a rectangle), and then ask R to draw (and fill) that using `geom_polygon()`. `geom_polygon()` works pretty much like `geom_line()`, except it will "close" the shape by drawing a line back from the last point to the first point!
 
-Now imagine if instead of abstract "X" and "Y" values, these coordinates represented latitudes and longitudes. 
+Now imagine if instead of abstract "X" and "Y" values, these coordinates represented longitudes and latitudes, respectively. 
 
 Congratulations, you just drew a map of Wyoming (or Colorado), America's most boringly-shaped states.
 

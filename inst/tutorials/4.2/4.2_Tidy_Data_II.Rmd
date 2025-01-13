@@ -103,7 +103,13 @@ knitr::include_graphics("images/pivot_longer.png")
 
 <mark>Challenge:</mark> What if I hadn't added the third year column `yr_2001` above? What would have happened to the dimensions of our wide and long data frames? Do you notice anything interesting about that? 
 
-<mark>Challenge:</mark> Duplicate and modify the code above to turn `table4b` from wide to long. It should require several minor modifications.
+<mark>Challenge:</mark> Duplicate and modify the code above to turn `table4b` from wide to long. It should require several minor modifications. (Recall `table4b` was one of our tables of disease data from Tutorial 4.1. It is replicated in the code chunk below.)
+
+```{r chal_table4b, exercise = TRUE}
+# Change `table4b` from wide to long format
+table4b 
+
+```
 
 ### `select()` Syntax?
 
