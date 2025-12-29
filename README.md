@@ -1,6 +1,6 @@
-# QTM 150 learnr Tutorials
+# DASCI 150 learnr Tutorials
 
-This is a package of tutorials for Oxford College of Emory QTM 150 course.
+This is a package of tutorials for Oxford College of Emory DASCI 150 course.
 
 To run a tutorial, make sure you've installed the `learnr` package and then run `learnr::run_tutorial("[NUMBER OF TUTORIAL]", package = "QTM150Tutorials")`.
 
