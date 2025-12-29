@@ -54,7 +54,7 @@ Some analogies may help. Let's go to our first interactive question of the cours
     answer("Cars", message = "Sorry, try again!"),
     answer("Video Games", message = "Get off the couch and try again."),
     answer("Movies", correct = TRUE, message = "That'll work! Keep reading below."),
-    answer("Taylor Swift", message = "I wish this were correct, but try again."),
+    answer("Onions", message = "I wish this were correct, but try again."),
     type = "learnr_radio",
     allow_retry = TRUE)
 ```
