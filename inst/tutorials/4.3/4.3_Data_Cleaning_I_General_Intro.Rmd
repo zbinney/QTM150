@@ -653,27 +653,24 @@ Explicit missing values are relatively simple to deal with, because you know the
     
 Also recognize you will also have to use `na.rm = TRUE` for many functions that act on any variable with *any* missing data. Those observations will be ignored for that function. Depending on the number of observations that are ignored, this may be OK or it may not be. It's a judgement call for you to make - and one that you need to be aware of at all times. That's why investigating how much data is missing and any patterns is so important.
 
-#### DON'T USE `na.omit()`!!!
+#### DON'T DROP ALL MISSING DATA!!!
 
-If you Google around for solutions to missing data you will see a LOT of people using `na.omit()`. Avoid these solutions like the plague.
+A tempting common sense solution when you find missing data is to just drop all your observations with missing data so you have only clean and complete data left. This is sometimes referred to as **complete case analysis**. **IT IS A VERY BAD IDEA! YOU WILL NOT DO IT IN THIS CLASS!**
 
-The big problem is this will drop observations with *any* missing values for *any* variable. It's the "simplest" way to deal with missing data, and leaves you with a nice, clean, complete data frame.
-
-But simple != good.
+Simple != good.
 
 In fact it is BAD to throw out observations without a very, very good reason. In addition to dumping the missing values, you're also dumping a lot of useful, known, non-missing data on other variables. It's too arbitrary and sacrifices information. Not a good practice to get into. 
 
-You could also induce massive bias if, for example, a subpopulation refused to answer (or couldn't answer, because it wasn't applicable) 1-2 questions on a survey - and you just threw out all their data entirely! 
+You could also induce massive bias if, for example, a subpopulation refused to answer (or couldn't answer, because it wasn't applicable, like pregnancy history for people who can't get pregnant) 1-2 questions on a survey - and you just threw out all their data entirely! Or if a question was not asked in the 2024 version of a survey and you just threw out all data from 2024.
 
 Plus, this could substantially reduce your sample size.
 
-#### Use `drop_na()` Cautiously
+Instead, just note which variables have a lot of missing data, look for patterns, and think about whether you still want to use that variable in your analysis at all. Assuming you do, let the functions in R drop those observations as needed for specific analyses where they are missing key data. For example, if you run a regression model R's `lm()` (for linear model) function will only run the regression on observations with the outcome and all predictors. If you are creating a visualization, `ggplot()` will, for example, at the time it runs, exclude observations for a scatterplot that lack data on the X- or Y-coordinate. You don't need to manually do this ahead of time and risk excluding those same observations from *other* analyses where they have everything you need.
 
-The `drop_na()` function is a somewhat better solution because it allows you to drop observations only if they are missing a certain set of values rather than just any value, but be very careful. Specifically, **always specify the columns where, if the data is missing, you want the observation dropped**. 
+In summary: exclude observations with missing values on an analysis-by-analysis basis and as late as possible, right when you're doing the analysis itself.
 
-It will do the same thing as `na.omit()` if you don't specify which columns you want to drop if they are missing.
+As a corollary, if you Google around for solutions to missing data you will see a LOT of people using `na.omit()` or `drop_na()`. Avoid these solutions like the plague because they do what I've just explained above. They will drop observations with *any* missing values for *any* variable.
 
-The same warnings as above about dropping observations because they have certain variables missing also apply.
     
 #### How to Deal With Explicit Missing Values
 
