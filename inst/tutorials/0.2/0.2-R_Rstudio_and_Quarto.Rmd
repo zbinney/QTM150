@@ -1,7 +1,9 @@
 ---
 title: "Tutorial 0.2 - Intro to R, Rstudio and Quarto"
 
-author: "Zachary Binney, PhD; Adapted by Charis Wiltshire, MPH"
+author: 
+- "Zachary Binney, PhD" 
+- "Adapted by Charis Wiltshire, MPH"
 date: "January 2026"
 
 output: 
@@ -54,7 +56,7 @@ Some analogies may help. Let's go to our first interactive question of the cours
     answer("Cars", message = "Sorry, try again!"),
     answer("Cooking", message = "Yum, I wish! Try again."),
     answer("Movies", correct = TRUE, message = "That'll work! Keep reading below."),
-    answer("Shrek", message = "While he does have layers like an onion, try again."),
+    answer("Shrek", message = "While Shrek and R both have layers, much like an onion, this is incorrect- try again."),
     type = "learnr_radio",
     allow_retry = TRUE)
 ```
