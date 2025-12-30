@@ -1,7 +1,7 @@
 ---
 title: "Tutorial 0.3 - Files, Folders, and Directories"
 
-author: "Zachary Binney, PhD"
+author: "Zachary Binney, PhD; Adapted by Charis Wiltshire, MPH"
 date: "January 2024"
 
 output:

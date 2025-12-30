@@ -1,8 +1,8 @@
 ---
 title: "Tutorial 0.2 - Intro to R, Rstudio and Quarto"
 
-author: "Zachary Binney, PhD"
-date: "January 2024"
+author: "Zachary Binney, PhD; Adapted by Charis Wiltshire, MPH"
+date: "January 2026"
 
 output: 
   learnr::tutorial:
@@ -50,11 +50,11 @@ There are (at least) 3 confusingly named things in this course we should tease o
 Some analogies may help. Let's go to our first interactive question of the course!
 
 ```{r r-analogies, echo=FALSE}
-  question("Which of the following might make for a good analogy for R, RStudio, and Quarto?",
+  question("Which of the following do you think might make for a good analogy for R, RStudio, and Quarto?",
     answer("Cars", message = "Sorry, try again!"),
-    answer("Video Games", message = "Get off the couch and try again."),
+    answer("Cooking", message = "Yum, I wish! Try again."),
     answer("Movies", correct = TRUE, message = "That'll work! Keep reading below."),
-    answer("Taylor Swift", message = "I wish this were correct, but try again."),
+    answer("Shrek", message = "While he does have layers like an onion, try again."),
     type = "learnr_radio",
     allow_retry = TRUE)
 ```
