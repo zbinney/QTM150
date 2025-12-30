@@ -4,11 +4,12 @@ Version: 0.0.1.1000
 Authors@R: c(
     person(given = "Zachary",
            family = "Binney",
-           role = c("aut"),
+           role = "aut",
            email = "zbinney@emory.edu",
            comment = c(ORCID = "0000-0002-8409-5283")),
     person(given = "Charis",
            family = "Wiltshire",
+           email = "cwiltsh@emory.edu",
             role = c("aut", "cre")))
 Description: This is a package to contain the R coding tutorials for DASCI 150 at Oxford College of Emory University.
 License: `use_gpl3_license()`
