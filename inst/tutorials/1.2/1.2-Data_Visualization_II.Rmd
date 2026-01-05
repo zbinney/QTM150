@@ -1,8 +1,10 @@
 ---
 title: "Tutorial 1.2 - Data Visualization II"
 
-author: "Zachary Binney, PhD"
-date: "January 2024"
+author: 
+- "Zachary Binney, PhD" 
+- "Adapted by Charis Wiltshire, MPH"
+date: "January 2026"
 
 output: 
   learnr::tutorial:
@@ -322,7 +324,7 @@ Look again - do compacts and SUVs have about the same average highway mileage, o
 
 This is element #4 in our **Grammar of Graphics** framework. We've already covered #1 (data), #2 (geoms), #3 (aesthetics), and #7 (facetting).
 
-When I got engaged to my wife I had a jeweler re-set a diamond from my grandmother's engagement ring. Part of that process involved getting that diamond appraised. How could I know I was getting a good deal? What should a diamond of a certain size and quality be worth? We can explore the `diamonds` dataset to get an idea!
+When my husband was planning to propose, he used heirloom diamonds from the ring that his dad had given to his mom. Part of that process involved getting those diamonds appraised. How could he know that he was getting a good deal? Well, we have a good jeweler but, we can also explore the `diamonds` dataset to get an idea of what diamonds of a certain size and quality might be worth! 
 
 Consider a basic scatterplot of two variables from the `diamonds` dataset. Note `carat` is a measure of the weight of a diamond; in case you're curious, it's equivalent to 200 mg.
 
@@ -443,7 +445,7 @@ This is element #5 in our **Grammar of Graphics** framework. We've already cover
 
 Bar charts are once again the easiest way to demonstrate what we mean by a **position adjustment (position)**.
 
-My grandmother's diamond had an "Ideal" cut and a color grade of "H". Color grades technically run from D-Z, where just like your grades earlier letters are better. I wonder how her diamond - which, as a reminder, I'm using for my wife's engagement ring - compares to this huge dataset of diamonds in cut and color. Am I giving her a particularly nice diamond? (NOTE: I honestly think diamonds are far too expensive and often morally questionable due to how they are mined. My wife did not even want a diamond, and in no way am I suggesting this is something you should do for your own partners. But since I already had my grandmother's sitting around and she had expressed a desire for me to use it, I did.)
+His mom's diamonds had a "Premium" cut and a color grade of "E". Color grades technically run from D-Z, where just like your grades earlier letters are better. I wonder how these inherited heirlooms compare to this huge dataset of diamonds in cut and color. Did my late father-in-law do good back in the 90's? (NOTE: I actually love non-conventional diamonds and think that all of the flaws in cut, clarity, or color make for really unique pieces! He ended up with a cognac salt and pepper oval shaped diamond for the center stone, but you won't find fun gems like that in this dataset.)
 
 Let's create a bar chart to investigate this:
 
@@ -454,7 +456,7 @@ ggplot(data = diamonds) +
 
 ```
 
-Where does my grandmother's - now my wife's diamond - fit in? Is it a common cut? A common color? Near the best, the worst, or kind of in the middle on both these dimensions?
+Where do my little inherited pieces fit in? Are they a common cut? A common color? Near the best, the worst, or kind of in the middle on both these dimensions?
 
 Notice how the default is for `geom_bar()`, when using the fill aesthetic mapped to a second variable, to produce a *stacked* bar chart. Why does it do that? Check the default of the `position =` argument in `geom_bar()`. Do you remember how to do that? 
 

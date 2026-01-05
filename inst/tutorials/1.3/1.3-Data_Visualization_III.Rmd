@@ -1,8 +1,10 @@
 ---
 title: "Tutorial 1.3 - Data Visualization III"
 
-author: "Zachary Binney, PhD"
-date: "January 2024"
+author: 
+- "Zachary Binney, PhD" 
+- "Adapted by Charis Wiltshire, MPH"
+date: "January 2026"
 
 output: 
   learnr::tutorial:
@@ -180,12 +182,12 @@ The distributions are a little hard to differentiate because the relative height
 
 ```{r fp3, exercise = TRUE}
 # Frequency polygon by cut, standardized
-ggplot(data = diamonds, mapping = aes(x = price, y = ..density.., color = cut)) +
+ggplot(data = diamonds, mapping = aes(x = price, y = after_stat(density), color = cut)) +
   geom_freqpoly() 
 
 ```
 
-What the heck is `..density..`??? It's a **computed variable** that `geom_freqpoly()` automatically creates behind the scenes. It standardizes all the counts in each group so that the area under every curve will be 1.0.
+What the heck is `after_stat(density)`??? It's a **computed variable** that `geom_freqpoly()` automatically creates behind the scenes. It standardizes all the counts in each group so that the area under every curve will be 1.0.
 
 #### Histograms
 
@@ -195,7 +197,7 @@ Let's look again at the distribution of body mass by penguin species. Unfortunat
 # Histogram polygon by species - can you fill in the facet_wrap() function as instructed below?
 ggplot(data = penguins, mapping = aes(x = body_mass_g, fill = species)) +
   geom_histogram() +
-  facet_wrap () # Force 3 rows, one for each species, so plots display vertically rather than side-by-side
+  facet_wrap() # Force 3 rows, one for each species, so plots display vertically rather than side-by-side
 
 ```
 

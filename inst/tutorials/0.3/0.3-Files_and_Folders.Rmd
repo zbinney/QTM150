@@ -1,8 +1,10 @@
 ---
 title: "Tutorial 0.3 - Files, Folders, and Directories"
 
-author: "Zachary Binney, PhD; Adapted by Charis Wiltshire, MPH"
-date: "January 2024"
+author: 
+- "Zachary Binney, PhD" 
+- "Adapted by Charis Wiltshire, MPH"
+date: "January 2026"
 
 output:
   learnr::tutorial:
@@ -59,7 +61,10 @@ An important thing to realize is computers are kind of dumb. Imagine we're sitti
 
 But instead of  the instructions I wrote above or an address like you might write on an envelope, though, it needs a **file path**.
 
-For example, if I want to run this Tutorial I have to tell my laptop its location, which is: `C:\Users\zbinney\OneDrive - Emory University\QTM_150\Tutorials\QTM150Tutorials\inst\tutorials\0.3\0.3-Files_and_Folders.Rmd`.  Then it will go to that folder and open and run the file. Otherwise it'll get lost and angry. And then I'll be angry. No fun.
+For example, if I want to run this Tutorial I have to tell my laptop its location, which is: 
+```
+C:\Users\cwiltsh\DASCI150\Tutorials\QTM150Tutorials\inst\tutorials\0.3\0.3-Files_and_Folders.Rmd
+```.  Then it will go to that folder and open and run the file. Otherwise it'll get lost and angry. And then I'll be angry. No fun.
 
 
 ### File, Folder, and Directory Example
@@ -72,9 +77,9 @@ knitr::include_graphics("images/Screenshot_File.png")
 
 The **file** itself is highlighted in GREEN.
 
-You can see some of the **file path** highlighted in YELLOW. You can see, for example, all the way at the right that the **folder** containing this file is named `0.3` - this is like the house number on an address. The folder above that, called the **parent folder**, is `tutorials` - this is like the street number. *Its* parent is `inst` - this is like the city. And so on and so on up the chain, all the way to my main drive folder `C:/`.
+You can see some of the **file path** highlighted in YELLOW. You can see, for example, all the way at the right that the **folder** containing this file is named `0.3` - this is like the house number on an address. The folder above that, called the **parent folder**, is `tutorials` - this is like the street number. *Its* parent is `inst` - this is like the city. And so on and so on up the chain, all the way to my main drive folder `C:/`. Sometimes, if the file pathway is really long it won't all show up but that's okay! You can still copy and paste it into your code as needed.
 
-This folder also has two **sub-folders**, highlighted in orange - `css` and `images`. In our analogy maybe this would be like separate sub-folders for people and pets in the house. Or maybe the analogy is breaking down here. But you get the idea.
+This folder also has two **sub-folders**, highlighted in red - `css` and `images`. In our analogy maybe this would be like separate sub-folders for people and pets in the house. Or maybe the analogy is breaking down here. But you get the idea.
 
 You can get more details on the location of a file in Windows by right-clicking on the file and selecting `Properties`. This is an example of what comes up, with the file's location highlighted in BLUE:
 
@@ -96,7 +101,7 @@ A folder will likely be chosen by default (usually the last place you saved a fi
 
 #### ...Download It?
 
-When you download a file, it will often go to a folder on your computer labeled "Downloads." The file will be accessible there through that folder's file path (for example, on my laptop that's `C:\Users\zbinney\Downloads`).
+When you download a file, it will often go to a folder on your computer labeled "Downloads." The file will be accessible there through that folder's file path (for example, on my laptop that's `C:\Users\cwiltsh\Downloads`).
 
 ### Where Should I Store My Files: Best Practices for Staying Organized
 
