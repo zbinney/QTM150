@@ -1,8 +1,10 @@
 ---
 title: "Tutorial 1.4 - Advanced Visualization: Interactive Graphs and Plotly"
 
-author: "Zachary Binney, PhD"
-date: "January 2024"
+author: 
+- "Zachary Binney, PhD" 
+- "Adapted by Charis Wiltshire, MPH"
+date: "January 2026"
 
 output:
   learnr::tutorial:
@@ -22,7 +24,7 @@ pacman::p_load(learnr)
 
 You've learned a lot about how to make static plots you can show to people. These are nice because they allow you to perfectly control what people see. But their major limitation is the same: they require you to choose ahead of time exactly what people see.
 
-Sometimes you may want your readers to be able to interact with your data visualizations (or tables). Maybe you want, for example, to let someone scroll over a specific point or bar and get more information about it. Or [here](https://stateofchildhoodobesity.org/adult-obesity/), where hovering over a state highlights a line showing its obesity trend over time. This looks very slick and modern! Much more impressive than a simple static graph.
+Sometimes you may want your readers to be able to interact with your data visualizations (or tables). Maybe you want, for example, to let someone scroll over a specific point or bar and get more information about it. Or [here](https://stateofchildhoodobesity.org/adult-obesity/), where hovering over a state highlights a line showing its obesity trend over time. This looks very slick and modern! Much more impressive than a simple static graph.*RIP science is changing*
 
 These sort of interactive data presentations are already very common in, for example, in business analytics dashboards like those made in Tableau. They're becoming more common every day in other areas, too.
 

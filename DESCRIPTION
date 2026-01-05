@@ -1,15 +1,20 @@
-Package: QTM150Tutorials
-Title: Tutorials for QTM 150 at Oxford College of Emory University
-Version: 0.0.0.1000
-Authors@R: 
+Package: DASCI150Tutorials
+Title: Tutorials for DASCI 150 at Oxford College of Emory University
+Version: 0.0.1.1000
+Authors@R: c(
     person(given = "Zachary",
            family = "Binney",
-           role = c("aut", "cre"),
+           role = "aut",
            email = "zbinney@emory.edu",
-           comment = c(ORCID = "0000-0002-8409-5283"))
-Description: This is a package to contain the R coding tutorials for QTM 150 at Oxford College of Emory University.
+           comment = c(ORCID = "0000-0002-8409-5283")),
+    person(given = "Charis",
+           family = "Wiltshire",
+           email = "cwiltsh@emory.edu",
+            role = c("aut", "cre")))
+Description: This is a package to contain the R coding tutorials for DASCI 150 at Oxford College of Emory University.
 License: `use_gpl3_license()`
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.3
+

@@ -1,8 +1,10 @@
 ---
 title: "Tutorial 1.1 - Dataset Exploration + Data Visualization I"
 
-author: "Zachary Binney, PhD"
-date: "January 2024"
+author: 
+- "Zachary Binney, PhD" 
+- "Adapted by Charis Wiltshire, MPH"
+date: "January 2026"
 
 output: 
   learnr::tutorial:
